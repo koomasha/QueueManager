@@ -1,0 +1,77 @@
+<head>
+   <title>תורים</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+ </head>
+ <body dir="rtl">
+      {{> navbar}}
+      {{> content}}
+</body>
+
+<template name="navbar">
+   <div class="navbar navbar-inverse navbar-fixed-top">
+       <div class="navbar-inner" >
+          <div style="float:right">
+            <div class="container">
+               <!--<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                 <span class="icon-bar"></span>
+                 <span class="icon-bar"></span>
+                 <span class="icon-bar"></span>
+              </button> -->
+			  <a class="brand" href="#new" id="newqueue">הוסף תור</a>
+			  <a class="brand" href="#queues" id="myqueues">התורים שלי</a>
+           <!--<div class="nav-collapse collapse" dir="rtl">
+             <ul class="nav">
+               <li class="navbar-right"><a href="#">קרא קוד חדש</a></li>
+               <li class="navbar-right"><a href="#about">עזוב תור</a></li>
+               <li class="navbar-right"><a href="#contact">Contact</a></li>
+             </ul>
+           </div> -->
+         </div>
+       </div>
+     </div>
+    </div>
+</template>
+
+<template name="content">
+        <center>
+          {{#if ismain}}
+			{{> maincontent}}
+         {{else}}
+			{{> queuecontent}}
+          {{/if}}
+        </center>
+</template>
+
+<template name="maincontent">
+	<div id="maincontent">
+		  <br><br>
+              <h1>ברוכים הבאים</h1>
+              <br><br>
+              <button type="button" class="btn btn-default navbar-btn" id="scangps">סרוק באמצעות GPS</button>
+              <button type="button" class="btn btn-default navbar-btn" id="scanqr">סרוק באמצעות QR</button>
+          </div>
+</template>
+
+<template name="queuecontent">
+	<div id="queuecontent">
+	    <div class="panel-group" id="accordion">
+		{{#each queueitem}}
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" data-parent="#accordion" href="#{{index}}">{{name}}</a>
+					</h4>
+				</div>
+				<div id="{{index}}" class="panel-collapse collapse">
+					<div class="panel-body">
+					 <h3>מיקומך בתור</h3>
+					  <p>{{userlocation}}</p>
+					  <h3>מיקום נוכחי</h3>
+					  <p>{{currentlocation}}</p>
+					</div>
+				</div>
+			</div>
+		{{/each}}
+		</div>
+	</div>
+</template>

@@ -1,0 +1,31 @@
+template(name="home")
+  #home-page-wrapper
+    .row
+      .col-lg-12
+        h1.page-header Cool Home
+
+template(name="homeLayout")
+  +homehead
+  +hometopbar
+  +home
+  +loginModal
+
+template(name="homehead")
+  head
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    meta(name="description", content="")
+    meta(name="author", content="")
+
+template(name="hometopbar")
+  #wrapper
+    // Navigation
+    nav.navbar.navbar-default.navbar-static-top(role="navigation", style="margin-bottom: 0")
+      .navbar-header
+        button.navbar-toggle(type="button", data-toggle="collapse", data-target=".navbar-collapse")
+          span.sr-only Toggle navigation
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        a.navbar-brand(href="/") Queue Manager
