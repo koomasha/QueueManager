@@ -7,7 +7,7 @@
 			Meteor.loginWithPassword(emailVar, passwordVar, function(error) {
 	        	if (Meteor.user()) 
 	        	{
-	            	Router.go('/bo')
+	            	Router.go('/')
 	        	} 
 	        	else 
 	        	{

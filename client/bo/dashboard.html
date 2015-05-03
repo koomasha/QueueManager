@@ -1,0 +1,8 @@
+<template name="dashboard">
+{{#if currentUser}}
+  {{>branches}}
+{{else}}
+  {{>login}}  
+{{/if}} 
+
+</template>

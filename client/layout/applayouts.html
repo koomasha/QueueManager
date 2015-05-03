@@ -1,0 +1,14 @@
+<template name="applayout">
+	<div class="navbar navbar-static-top">
+		<div class="navbar-inner">
+			<a class="brand" href="/">Queue Manager </a>
+			<ul class="nav">
+			  <li><a class="brand" href="/newqueue" id="newqueue">הוסף תור</a></li>
+			 <li> <a class="brand" href="/myqueues" id="myqueues">התורים שלי</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="container">
+		{{>yield}}
+	</div>
+</template>	
