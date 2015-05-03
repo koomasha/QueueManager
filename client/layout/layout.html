@@ -20,6 +20,7 @@
 			<ul class="nav">
 				<li><a href="/dashboard">Dashboard</a></li>
 				<li><a href="#">Desk</a></li>
+				<li>{{> loginButtons}}</li>
 			</ul>
 		</div>
 	</div>
@@ -28,13 +29,28 @@
 	</div>
 </template>	
 
+<template name="bologinlayout">
+	<div class="navbar navbar-static-top">
+		<div class="navbar-inner">
+			<a class="brand" href="/">Queue Manager </a>
+			<ul class="nav">
+				<li>{{> loginButtons}}</li>
+			</ul>
+		</div>
+	</div>
+	<div class="container">
+		{{>yield}}
+	</div>
+</template>	
+
+
 <template name="mobilelayout">
 	<div class="navbar navbar-static-top">
 		<div class="navbar-inner">
 			<a class="brand" href="/">Queue Manager </a>
 			<ul class="nav">
-			  <li><a class="brand" href="#new" id="newqueue">הוסף תור</a></li>
-			 <li> <a class="brand" href="#queues" id="myqueues">התורים שלי</a></li>
+			  <li><a class="brand" href="/newqueue" id="newqueue">הוסף תור</a></li>
+			 <li> <a class="brand" href="/myqueues" id="myqueues">התורים שלי</a></li>
 			</ul>
 		</div>
 	</div>

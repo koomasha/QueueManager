@@ -1,5 +1,9 @@
 Router.map(function () {
 
+/* ********************************************
+		INDEX PAGE ROUTING
+	***********************************  */
+
   	if (Meteor.isCordova) 
   	{
 	  	this.route('mobile',{
@@ -21,14 +25,35 @@ Router.map(function () {
 		});
 	}
 
+/* ********************************************
+		BO ROUTING
+	***********************************  */
+
 	this.route('bo',{
 		path:'/bo',
-		layoutTemplate: 'bolayout',
+		layoutTemplate: 'bologinlayout',
 	});
+
 	this.route('dashboard',{
 	  	path:'/dashboard',
 	  	layoutTemplate: 'bolayout',
 	});
+
+
+/* ********************************************
+		MOBILE ROUTING
+	***********************************  */
+
+		this.route('newqueue',{
+	  	path:'/newqueue',
+	  	layoutTemplate: 'mobilelayout',
+	});
+
+	this.route('myqueues',{
+	  	path:'/myqueues',
+	  	layoutTemplate: 'mobilelayout',
+	});
+
 	  
 });
 

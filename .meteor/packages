@@ -14,3 +14,4 @@ iron:router
 accounts-base
 accounts-password
 jquery
+accounts-ui
