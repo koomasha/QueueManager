@@ -29,4 +29,8 @@ Router.map(function () {
   		data: {ismain:true}
   	});
 });
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/master
