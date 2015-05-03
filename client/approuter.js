@@ -1,4 +1,4 @@
-/*function approute()
+approute = function()
 {
 	Router.map(function () {
 	  	this.route('app',{
@@ -16,4 +16,4 @@
 		  	layoutTemplate: 'applayout',
 		}); 
 	});
-}*/
+}

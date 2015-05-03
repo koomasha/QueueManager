@@ -1,4 +1,4 @@
-/*function boroute()
+ boroute = function()
 {
 	Router.map(function () {
 	  	this.route('dashboard',{
@@ -14,4 +14,4 @@
 			layoutTemplate: 'bolayout',
 		});	  
 	});
-}*/
+}
