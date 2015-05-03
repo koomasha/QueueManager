@@ -1,7 +1,7 @@
 Session.set("ismain", true);
 
 
-Template.queuecontent.helpers({
+Template.appQueuecontent.helpers({
 	queueitem: function() {
 		return Tickets.find();
 	}
@@ -9,22 +9,22 @@ Template.queuecontent.helpers({
 
 // --------------Content---------------------
 
-Template.content.events = {
+Template.appMaincontent.events = {
   'click #scangps': move,
   'click #scanqr': scanqueueqr
 }
 
-Template.content.helpers({
+Template.appMaincontent.helpers({
   ismain: checkismain
 });
 
 // --------------Navbar---------------------
-
+/*
 Template.navbar.events = {
   'click #newqueue': moveback,
   'click #myqueues': move
 }
-
+*/
 // ---------------------------------------------
 
 function scanqueueqr() {

@@ -1,17 +1,17 @@
- boroute = function()
+ boRoute = function()
 {
 	Router.map(function () {
-	  	this.route('dashboard',{
+	  	this.route('boDashboard',{
 			path:'/',
-			layoutTemplate: 'bolayout'
+			layoutTemplate: 'boLayout'
 		});
-		this.route('login',{
+		this.route('boLogin',{
 			path:'/login',
-			layoutTemplate: 'bolayout',
+			layoutTemplate: 'boLayout',
 		});
-		this.route('signup',{
+		this.route('boSignup',{
 			path:'/signup',
-			layoutTemplate: 'bolayout',
+			layoutTemplate: 'boLayout',
 		});	  
 	});
 }

@@ -1,19 +1,19 @@
-approute = function()
+appRoute = function()
 {
 	Router.map(function () {
-	  	this.route('app',{
+	  	this.route('appHome',{
 		  	path:'/',
-		  	layoutTemplate: 'applayout',
+		  	layoutTemplate: 'appLayout',
 		  	data: {ismain:true}
 		});
-		this.route('newqueue',{
+		this.route('appNewqueue',{
 		  	path:'/newqueue',
-		  	layoutTemplate: 'applayout',
+		  	layoutTemplate: 'appLayout',
 		});
 
-		this.route('myqueues',{
+		this.route('appMyqueues',{
 		  	path:'/myqueues',
-		  	layoutTemplate: 'applayout',
+		  	layoutTemplate: 'appLayout',
 		}); 
 	});
 }

@@ -1,5 +1,5 @@
 /*Login*/
-	Template.login.events({
+	Template.boLogin.events({
 		'submit form':function(event,template){
 			event.preventDefault();
 			var emailVar = template.find('#login-email').value;
@@ -19,7 +19,7 @@
 		}
 	});
 
-	Template.signup.events({
+	Template.boSignup.events({
 		'submit form':function(event,template){
 			event.preventDefault();
 			var emailVar = template.find('#sign-up-email').value;
@@ -32,7 +32,7 @@
 		}
 	});
 
-	Template.bolayout.events({
+	Template.boLayout.events({
 		'click .logout':function(event){	
 			event.preventDefault();
 			Meteor.logout();

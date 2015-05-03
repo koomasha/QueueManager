@@ -4,12 +4,12 @@
 
   	if (Meteor.isCordova) 
   	{
-  		approute();
+  		appRoute();
   	}
   	/* ********************************************
 		BO ROUTING
 	***********************************  */
   	else
   	{
-  		boroute();
+  		boRoute();
 	  }	

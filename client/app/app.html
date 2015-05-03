@@ -1,14 +1,14 @@
-<template name="app">
+<template name="appHome">
         <center>
           {{#if ismain}}
-			{{> maincontent}}
+			{{> appMaincontent}}
          {{else}}
-			{{> queuecontent}}
+			{{> appQueuecontent}}
           {{/if}}
         </center>
 </template>
 
-<template name="maincontent">
+<template name="appMaincontent">
 	<div id="maincontent">
 		  <br><br>
               <h1>ברוכים הבאים</h1>
@@ -18,7 +18,7 @@
           </div>
 </template>
 
-<template name="queuecontent">
+<template name="appQueuecontent">
 	<div id="queuecontent">
 	    <div class="panel-group" id="accordion">
 		{{#each queueitem}}
