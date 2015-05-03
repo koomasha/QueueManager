@@ -1,3 +1,8 @@
 <template name="bo">
-    {{>loginForm}}
+{{#if currentUser}}
+	{{>dashboard}}
+{{else}}
+	{{>login}}	
+{{/if}}	
+
 </template>

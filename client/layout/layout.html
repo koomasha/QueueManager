@@ -1,40 +1,15 @@
-<template name="homelayout">
-	<div class="navbar navbar-static-top">
-		<div class="navbar-inner">
-			<a class="brand" href="/">Queue Manager </a>
-			<ul class="nav">
-				<li><a href="/mobile">Mobile</a></li>
-				<li><a href="/bo">BO</a></li>
-			</ul>
-		</div>
-	</div>
-	<div class="container">
-		{{>yield}}
-	</div>
-</template>	
-
 <template name="bolayout">
 	<div class="navbar navbar-static-top">
 		<div class="navbar-inner">
 			<a class="brand" href="/">Queue Manager </a>
 			<ul class="nav">
-				<li><a href="/dashboard">Dashboard</a></li>
-				<li><a href="#">Desk</a></li>
-				<li>{{> loginButtons}}</li>
-			</ul>
-		</div>
-	</div>
-	<div class="container">
-		{{>yield}}
-	</div>
-</template>	
-
-<template name="bologinlayout">
-	<div class="navbar navbar-static-top">
-		<div class="navbar-inner">
-			<a class="brand" href="/">Queue Manager </a>
-			<ul class="nav">
-				<li>{{> loginButtons}}</li>
+				{{#if currentUser}}
+					<li><a href="/bo">Dashboard</a></li>
+					<li><a href="#">Desk</a></li>
+					<li><a href="/" class="logout">Log Out</a></li>
+				{{else}}
+					<li><a href="/login">Log In</a></li>
+				{{/if}}	
 			</ul>
 		</div>
 	</div>
@@ -44,7 +19,7 @@
 </template>	
 
 
-<template name="mobilelayout">
+<template name="applayout">
 	<div class="navbar navbar-static-top">
 		<div class="navbar-inner">
 			<a class="brand" href="/">Queue Manager </a>

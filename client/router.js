@@ -6,9 +6,9 @@ Router.map(function () {
 
   	if (Meteor.isCordova) 
   	{
-	  	this.route('mobile',{
+	  	this.route('app',{
 		  	path:'/',
-		  	layoutTemplate: 'mobilelayout',
+		  	layoutTemplate: 'applayout',
 		  	data: {ismain:true}
 		});
   	}
@@ -16,11 +16,11 @@ Router.map(function () {
   	{
 	  	this.route('home',{
 			path:'/',
-			layoutTemplate: 'homelayout'
+			layoutTemplate: 'bolayout'
 		});
-	  	this.route('mobile',{
-			path:'/mobile',
-			layoutTemplate: 'mobilelayout',
+	  	this.route('app',{
+			path:'/app',
+			layoutTemplate: 'applayout',
 			data: {ismain:true}
 		});
 	}
@@ -31,9 +31,17 @@ Router.map(function () {
 
 	this.route('bo',{
 		path:'/bo',
-		layoutTemplate: 'bologinlayout',
+		layoutTemplate: 'bolayout',
 	});
 
+	this.route('login',{
+		path:'/login',
+		layoutTemplate: 'bolayout',
+	});
+	this.route('signup',{
+		path:'/signup',
+		layoutTemplate: 'bolayout',
+	});
 	this.route('dashboard',{
 	  	path:'/dashboard',
 	  	layoutTemplate: 'bolayout',
@@ -46,12 +54,12 @@ Router.map(function () {
 
 		this.route('newqueue',{
 	  	path:'/newqueue',
-	  	layoutTemplate: 'mobilelayout',
+	  	layoutTemplate: 'applayout',
 	});
 
 	this.route('myqueues',{
 	  	path:'/myqueues',
-	  	layoutTemplate: 'mobilelayout',
+	  	layoutTemplate: 'applayout',
 	});
 
 	  
