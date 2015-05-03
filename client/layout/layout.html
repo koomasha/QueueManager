@@ -1,0 +1,44 @@
+<template name="homelayout">
+	<div class="navbar navbar-static-top">
+		<div class="navbar-inner">
+			<a class="brand" href="/">Queue Manager </a>
+			<ul class="nav">
+				<li><a href="/mobile">Mobile</a></li>
+				<li><a href="/bo">BO</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="container">
+		{{>yield}}
+	</div>
+</template>	
+
+<template name="bolayout">
+	<div class="navbar navbar-static-top">
+		<div class="navbar-inner">
+			<a class="brand" href="/">Queue Manager </a>
+			<ul class="nav">
+				<li><a href="#">Dashboard</a></li>
+				<li><a href="#">Desk</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="container">
+		{{>yield}}
+	</div>
+</template>	
+
+<template name="mobilelayout">
+	<div class="navbar navbar-static-top">
+		<div class="navbar-inner">
+			<a class="brand" href="/">Queue Manager </a>
+			<ul class="nav">
+			  <li><a class="brand" href="#new" id="newqueue">הוסף תור</a></li>
+			 <li> <a class="brand" href="#queues" id="myqueues">התורים שלי</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="container">
+		{{>yield}}
+	</div>
+</template>	
