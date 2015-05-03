@@ -7,9 +7,17 @@ Router.map(function () {
   		path:'/bo',
   		layoutTemplate: 'bolayout',
   	});
+  this.route('dashboard',{
+      path:'/dashboard',
+      layoutTemplate: 'bolayout',
+    });
+  
   this.route('mobile',{
   		path:'/mobile',
   		layoutTemplate: 'mobilelayout',
   		data: {ismain:true}
   	});
 });
+
+
+dashboard
