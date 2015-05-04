@@ -30,7 +30,7 @@
     */
     // ---------------------------------------------
 
-    function scanqueueqr() {
+    var scanqueueqr = function() {
         if (Meteor.isCordova) {
     	 cordova.plugins.barcodeScanner.scan(
                 function (result) {
@@ -55,11 +55,11 @@
         }
     }
 
-    function getUserPhone() {
+    var getUserPhone = function() {
       return '0504345645';
     }
 
-    function move() {
+    var move = function() {
         if (checkismain()) {
           $("#maincontent").fadeOut('slow', function() {
               Session.set("ismain", false);
@@ -67,7 +67,7 @@
         }
     }
 
-    function moveback() {
+    var moveback = function() {
         if (!checkismain()) {
           $("#queuecontent").fadeOut('slow', function() {
               Session.set("ismain", true);
@@ -75,7 +75,7 @@
         }
     }
 
-    function checkismain() {
+    var checkismain = function() {
       return Session.get("ismain");
     }
 }
