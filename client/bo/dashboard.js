@@ -6,6 +6,7 @@ if(!Meteor.isCordova)
 		Session.setDefault('companyName','Queue Manager');
 		Session.setDefault('showBoAddBranch',false);
 		Session.setDefault('branchId',null);
+		Session.setDefault('branchSearchString',null);
 
 	/*//////////////////////////////
 	     LAYOUT
@@ -17,9 +18,12 @@ if(!Meteor.isCordova)
 			}
 		});
 
-		Template.boLayout.getCompanyName=function(){
-			return Session.get('companyName');
-		}
+		Template.boLayout.helpers({
+			getCompanyName:function(){
+				return Session.get('companyName');
+			}
+		});
+
 	/*//////////////////////////////
 	     LOGIN
 	/////////////////////////////*/	
@@ -68,12 +72,17 @@ if(!Meteor.isCordova)
 	/*//////////////////////////////
 	     BRANCH
 	/////////////////////////////*/
+		Template.boBranches.helpers({
+			showBranchDetails: 	function(id){
+				return Session.get('branchId');
+			}
+		});	
+
 		Template.boAddBranch.events({
 			'click .save':function(evt,tmpl){
 				var name = tmpl.find('.branch-name').value;
 				var location = tmpl.find('.branch-location').value;
 				var active = tmpl.find('.branch-active').value;
-				console.log(name+location+active);
 				addBranch(name,location,active);
 				Session.set('showBoAddBranch',false);
 			},
@@ -90,34 +99,38 @@ if(!Meteor.isCordova)
 
 			'click .branchItem':function(evt,tmpl){
 				Session.set('branchId',$(evt.target).closest('tr').data('id'));
-			}
+			},
+			'keyup input.search': function (evt) {
+		        Session.set("branchSearchString", evt.currentTarget.value);
+		    }, 
 		});
 
+		Template.boBranchList.helpers({
+		    branchList: function () {
+		    	var searchString = Session.get("branchSearchString");
+		    	if(searchString)
+		    		return Branches.find({"name": new RegExp(searchString)});
+		    	else
+		    		return Branches.find();
+		    },
+		    showBoAddBranch:function(){
+				return Session.get('showBoAddBranch');
+			}
+  		});
 
-		Template.boBranches.showBranchDetails=function(id){
-			return Session.get('branchId');
-		}
-
-		Template.boBranchList.branchList = function(){
-			return Branches.find();
-		}
-
-		Template.boBranchList.showBoAddBranch = function(){
-			return Session.get('showBoAddBranch');
-		}
-
-		Template.boBranchDetails.branch = function(){
-			return Branches.findOne({_id:Session.get('branchId')});
-		}
+  		Template.boBranchDetails.helpers({
+  			branch:function(){
+				return Branches.findOne({_id:Session.get('branchId')});
+			}
+  		});
 
 		var addCompany = function(name)
 		{
 			return Companies.insert({name:name});
 
 		}
+
 		var addBranch = function(name,location,active){
-			Branches.insert({name:name,location:location,active:a});	
+			Branches.insert({name:name,location:location,active:active});	
 		}
-
-
 }

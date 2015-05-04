@@ -1,7 +1,8 @@
 <template name="boLayout">
 	<div class="navbar navbar-static-top">
 		<div class="navbar-inner">
-			<a class="brand" href="/">{{$.Session.get 'companyName'}}</a>
+		<a class="brand" href="/">{{getCompanyName}}</a>
+		<!--	<a class="brand" href="/">{{$.Session.get 'companyName'}}</a> -->
 			<ul class="nav">
 				{{#if currentUser}}
 					<li><a href="/">Dashboard</a></li>
