@@ -1,6 +1,8 @@
 //http://matteodem.github.io/meteor-easy-search/
+Companies = new Meteor.Collection("companies");
 Queues = new Meteor.Collection("queues");
 Branches = new Meteor.Collection("branches");
-Branches.initEasySearch('name');
 Tickets = new Meteor.Collection("tickets");
-/*hello world*/
+
+
+Branches.initEasySearch('name');

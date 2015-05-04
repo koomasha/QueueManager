@@ -4,7 +4,7 @@ appRoute = function()
 	  	this.route('appHome',{
 		  	path:'/',
 		  	layoutTemplate: 'appLayout',
-		  	data: {ismain:true}
+		  	data: {ismain:Session.get('ismain')}
 		});
 		this.route('appNewqueue',{
 		  	path:'/newqueue',

@@ -1,12 +1,12 @@
 <template name="boBranches">
     <div class="row">
-        <div class="col-md-3 bo-sidebar">
+        <div class="col-md-3">
             {{>boBranchList}}
         </div>
         <div class="col-md-9">
            <div class="row">
               <div class="col-md-12">
-                <div class="container-fluid branch-details">
+                <div class="container-fluid">
                   {{#if showBranchDetails}}
                     {{>boBranchDetails}}
                   {{/if}}
@@ -14,10 +14,12 @@
               </div>
            </div>
            <div class="row">
-              <div class="col-md-12 branch-dashboard">
-                  {{#if showBranchDetails}}
-                    {{>boBranchDashboard}}
-                  {{/if}}
+              <div class="col-md-12">
+                <div class="container-fluid">
+                    {{#if showBranchDetails}}
+                      {{>boBranchDashboard}}
+                    {{/if}}
+                </div>
               </div>
            </div>
         </div>
@@ -94,27 +96,43 @@
       BRANCH DETAILS TAMPLATES
 /////////////////////////////-->
 <template name="boBranchDetails">
-  <table class = "table" style="border:none;">
-    <tbody>
-      <tr>
-        <td><div class="text-center"><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span></div></td>
-        <td><div class="text-center"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></div></td>
-        <td><div class="text-center"><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span></div></td>
-      </tr>
-      <tr>
-        <td><div class="text-center"><span>Name</span></div></td>
-        <td><div class="text-center"><span>Location</span></div></td>
-        <td><div class="text-center"><span>Activity</span></div></td>
-      </tr>
-      <tr>
-        <td><div class="text-center"><span>{{branch.name}}</span></div></td>
-        <td><div class="text-center"><span>{{branch.location}}</span></div></td>
-        <td><div class="text-center"><span>{{branch.active}}</span></div></td>
-      </tr>
-    </tbody>
-  </table>
+  <div class = "row well well-lg">
+      <div class="row">
+        <div class="col-md-4 text-center"><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span></div>
+        <div class="col-md-4 text-center"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></div>
+        <div class="col-md-4 text-center"><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span></div>
+      </div>
+      <div class="row">
+        <div class="col-md-4 text-center"><span>Name</span></div>
+        <div class="col-md-4 text-center"><span>Location</span></div>
+        <div class="col-md-4 text-center"><span>Activity</span></div>
+      </div>
+      <div class="row">
+        <div class="col-md-4 text-center"><span>{{branch.name}}</span></div>
+        <div class="col-md-4 text-center"><span>{{branch.location}}</span></div>
+        <div class="col-md-4 text-center"><span>{{branch.active}}</span></div>
+      </div>
+  </div>
 </template>
 
-<template name="boBranchDashboard">
 
+<!--//////////////////////////////
+      BRANCH DASHBOARD TAMPLATES
+/////////////////////////////-->
+<template name="boBranchDashboard">
+  <div class="row well well-lg">
+    <div class="col-md-3">
+      <div class="brand text-center">Queues</div>
+    </div>
+    <div class="col-md-3">
+      <div class="brand text-center">Users</div>
+      {{currentUser._id}}
+    </div>
+    <div class="col-md-3">
+      <div class="brand text-center">Kiosks</div>
+    </div>
+    <div class="col-md-3">
+      <div class="brand text-center">Statistics</div>
+    </div>
+  </div>
 </template>
