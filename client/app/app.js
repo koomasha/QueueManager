@@ -46,6 +46,32 @@ Template.appHome.helpers({
 	}
 });
 
+Handlebars.registerHelper('turnStatus', function(sequence, current) {
+	//return 'panel panel-default';
+	console.log('seq (' + sequence + ')');
+	console.log('cur (' + current + ')');
+
+	// TEMP
+	if (sequence === current) {
+		console.log('same');
+		return 'panel panel-success';
+	} else {
+		console.log('not same');
+		return 'panel panel-default';
+	}
+
+	// FULL 
+	// if (sequence === current) {
+	// 	return 'panel panel-success';	
+	// } else if (current < sequence){ cannot compare yet
+	// 	return 'panel panel-default';
+	// } else {
+	// 	// Also add a message that he missed his turn but he can restart
+	// 	return 'panel panel-danger';
+	// }
+	
+});
+
 // --------------Navbar---------------------
 
 Template.appLayout.events = {

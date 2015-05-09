@@ -21,7 +21,8 @@
 	<div id="queuecontent">
 		<div class="panel-group" id="accordion">
 			{{#each queueitem}}
-				<div class="panel panel-default">
+				<!-- <div class="panel panel-default"> -->
+				<div class="{{turnStatus current '1'}}">
 					<div class="panel-heading">
 						<h4 class="panel-title">
 							<a data-toggle="collapse" data-parent="#accordion" href="#c{{name}}">{{name}}</a>
