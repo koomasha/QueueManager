@@ -1,5 +1,3 @@
-var queueCounter = 0; // Save to DB
-
 Meteor.methods({
 	addUserToQueue: function (phone, queueId) {
 		// 1. Check if queue exists
@@ -12,9 +10,25 @@ Meteor.methods({
 
 
 		// ----------------------------
-	
-		console.log('server');
-		Tickets.insert({index:'c' + queueCounter, name:queueId, userlocation: '12A', currentlocation: '45B'});
-		queueCounter++;
+		console.log('server and parameters are (' + phone + ') and (' + queueId + ')');
+
+		var queue = Queues.findOne(new Meteor.Collection.ObjectID(queueId));
+
+		if (queue === undefined || queue === null) {
+			console.log('cant find queue because it is ' + queue);
+			// error
+		} else {
+			var current = queue.current;
+			var next = queue.last + 1;
+
+			Tickets.insert({phone: phone, 
+					sequence: next, 
+					queueId: queueId, 
+					creationTime: new Date().toTimeString(),
+					status: "waiting"
+			});
+
+			Queues.update(new Meteor.Collection.ObjectID(queueId), {$set: {last: next}});
+		}		
 	}
-	}); 
+}); 

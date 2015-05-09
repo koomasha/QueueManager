@@ -1,42 +1,50 @@
 <template name="appHome">
-        <center>
-          {{#if ismain}}
+	<center>
+		{{#if ismain}}
 			{{> appMaincontent}}
-         {{else}}
+		{{else}}
 			{{> appQueuecontent}}
-          {{/if}}
-        </center>
+		{{/if}}
+	</center>
 </template>
 
 <template name="appMaincontent">
 	<div id="maincontent">
-      <h1>ברוכים הבאים</h1>
-      <br><br>
-      <button type="button" class="btn btn-default navbar-btn" id="scangps">סרוק באמצעות GPS</button>
-      <button type="button" class="btn btn-default navbar-btn" id="scanqr">סרוק באמצעות QR</button>
-    </div>
+		<h1>ברוכים הבאים</h1>
+		<br><br>
+		<button type="button" class="btn btn-default navbar-btn" id="scangps">סרוק באמצעות GPS</button>
+		<button type="button" class="btn btn-default navbar-btn" id="scanqr">סרוק באמצעות QR</button>
+	</div>
 </template>
 
 <template name="appQueuecontent">
 	<div id="queuecontent">
-	    <div class="panel-group" id="accordion">
-		{{#each queueitem}}
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h4 class="panel-title">
-						<a data-toggle="collapse" data-parent="#accordion" href="#{{index}}">{{name}}</a>
-					</h4>
-				</div>
-				<div id="{{index}}" class="panel-collapse collapse">
-					<div class="panel-body">
-					 <h3>מיקומך בתור</h3>
-					  <p>{{userlocation}}</p>
-					  <h3>מיקום נוכחי</h3>
-					  <p>{{currentlocation}}</p>
+		<div class="panel-group" id="accordion">
+			{{#each queueitem}}
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion" href="#c{{name}}">{{name}}</a>
+						</h4>
+					</div>
+					<div id="c{{name}}" class="panel-collapse collapse">
+						<div class="panel-body">
+					 		<h3>מיקומך בתור</h3>
+					  		{{> appUserturn queueId=_id}}
+					  		<h3>מיקום נוכחי</h3>
+					  		<p>{{current}}</p>
+						</div>
 					</div>
 				</div>
-			</div>
-		{{/each}}
+			{{/each}}
 		</div>
 	</div>
+</template>
+
+<template name="appUserturn">
+	{{#each ticketItem}}
+		{{#if queueIs queueId}}
+			<p>{{sequence}}</p>
+		{{/if}}
+	{{/each}}
 </template>
