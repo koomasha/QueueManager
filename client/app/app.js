@@ -1,81 +1,123 @@
-  if(Meteor.isCordova)
-  {
-    Session.setDefault('ismain', true);
+Session.setDefault('ismain', true);
+var phoneid;
 
-    Template.appQueuecontent.helpers({
-    	queueitem: function() {
-    		return Tickets.find();
-    	}
-    });
 
-    // --------------Content---------------------
+Meteor.startup(function () {
+	window.plugins.uniqueDeviceID.get(
+		function (result) {
+			console.log("phone id is: " + result);
+	    		phoneid = result;
+		}, 
+		function () {
+			alert("getting phone id failed ");
+		}
+	);
+});
 
-    Template.appMaincontent.events = {
-      'click #scangps': move,
-      'click #scanqr': scanqueueqr
-    }
 
-    Template.appHome.helpers({
-      ismain: function(){
-        return Session.get("ismain");
-      }
-    });
+Template.appQueuecontent.helpers({
+	queueitem: function() {
+		var relevantQueueIds = Tickets.find({phone: phoneid}, { queueId: 1, _id:0}).fetch();
+		var converted = relevantQueueIds.map(function(item) { return new Meteor.Collection.ObjectID(item.queueId); });
 
-    // --------------Navbar---------------------
-    /*
-    Template.navbar.events = {
-      'click #newqueue': moveback,
-      'click #myqueues': move
-    }
-    */
-    // ---------------------------------------------
+		return Queues.find({_id: { $in: converted }})
+	}
+});
 
-    var scanqueueqr = function() {
-        if (Meteor.isCordova) {
-    	 cordova.plugins.barcodeScanner.scan(
-                function (result) {
-                    alert("We got a barcode\n" +
-                     "Result: " + result.text + "\n" +
-                     "Format: " + result.format + "\n" +
-                     "Cancelled: " + result.cancelled);
+Template.appUserturn.helpers({
+	ticketItem: function() {
+		return Tickets.find({phone: phoneid});
+	},
+	queueIs: function(queueId) {
+    		return this.queueId === queueId;
+  	}
+});
 
-                		if (!result.cancelled) {
-                      console.debug('not cancelled');
-                      console.log('not cancelled');
+// --------------Content---------------------
 
-                      Meteor.call('addUserToQueue', getUserPhone(), result.text, function(err, response) {
-                          move();
-                      }); 
-        		        }
-                }, 
-                function (error) {
-                    alert("Scanning failed: " + error);
-                }
-            );
-        }
-    }
+Template.appMaincontent.events = {
+	'click #scangps': move,
+	'click #scanqr': scanqueueqr
+}
 
-    var getUserPhone = function() {
-      return '0504345645';
-    }
+Template.appHome.helpers({
+	ismain: function(){
+		return Session.get("ismain");
+	}
+});
 
-    var move = function() {
-        if (checkismain()) {
-          $("#maincontent").fadeOut('slow', function() {
-              Session.set("ismain", false);
-          });  
-        }
-    }
+Handlebars.registerHelper('turnStatus', function(sequence, current) {
+	//return 'panel panel-default';
+	console.log('seq (' + sequence + ')');
+	console.log('cur (' + current + ')');
 
-    var moveback = function() {
-        if (!checkismain()) {
-          $("#queuecontent").fadeOut('slow', function() {
-              Session.set("ismain", true);
-          });  
-        }
-    }
+	// TEMP
+	if (sequence === current) {
+		console.log('same');
+		return 'panel panel-success';
+	} else {
+		console.log('not same');
+		return 'panel panel-default';
+	}
 
-    var checkismain = function() {
-      return Session.get("ismain");
-    }
+	// FULL 
+	// if (sequence === current) {
+	// 	return 'panel panel-success';	
+	// } else if (current < sequence){ cannot compare yet
+	// 	return 'panel panel-default';
+	// } else {
+	// 	// Also add a message that he missed his turn but he can restart
+	// 	return 'panel panel-danger';
+	// }
+	
+});
+
+// --------------Navbar---------------------
+
+Template.appLayout.events = {
+	'click #newqueue': moveback,
+	'click #myqueues': move
+}
+
+// ---------------------------------------------
+
+function scanqueueqr() {
+	cordova.plugins.barcodeScanner.scan(
+		function (result) {
+			// alert("We got a barcode\n" +
+			// "Result: " + result.text + "\n" +
+			// "Format: " + result.format + "\n" +
+			// "Cancelled: " + result.cancelled);
+
+			if (!result.cancelled) {
+				Meteor.call('addUserToQueue', phoneid, result.text, function(err, response) {
+					move();
+				}); 
+		        	}
+        		}, 
+        		function (error) {
+			alert("Scanning failed: " + error);
+        		});
+}
+
+function move() {
+	console.log("move")
+	if (checkismain()) {
+		$("#maincontent").fadeOut('slow', function() {
+			console.log("is main set to false")
+			Session.set("ismain", false);
+		});  
+	}
+}
+
+function moveback() {
+    	if (!checkismain()) {
+		$("#queuecontent").fadeOut('slow', function() {
+			Session.set("ismain", true);
+		});  
+	}
+}
+
+function checkismain() {
+	return Session.get("ismain");
 }
