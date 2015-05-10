@@ -18,8 +18,9 @@ Meteor.methods({
 			console.log('cant find queue because it is ' + queue);
 			// error
 		} else {
-			var current = queue.current;
-			var next = queue.last + 1;
+			var next = queue.last;
+			var lastNum = parseInt(next.match(/\d+/)[0]) + 1;
+			next = next.replace(/(\d+)/g, lastNum);
 
 			Tickets.insert({phone: phone, 
 					sequence: next, 
