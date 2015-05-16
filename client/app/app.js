@@ -24,14 +24,41 @@ Template.appQueuecontent.helpers({
 	}
 });
 
-Template.appUserturn.helpers({
-	ticketItem: function() {
-		return Tickets.find({phone: phoneid});
-	},
-	queueIs: function(queueId) {
-    		return this.queueId === queueId;
-  	}
+Template.appQueuecontent.events({
+	'click .leave' : leaveQueue,
+	'click .postpone' : potponeTurn
 });
+
+function leaveQueue() {
+	Modal.show('modal');
+	// $('#dialog-confirm').dialog({
+	// 	resizable: false,
+	// 	height: 140,
+	// 	modal: true,
+	// 	buttons: {
+	// 		"yes" : function() {
+	// 			console.log('you pressed yes bitch');
+	// 			$(this).dialog('close');
+	// 		},
+	// 		"no" : function() {
+	// 			console.log('you pressed no bitch');
+	// 			$(this).dialog('close');
+	// 		}
+	// 	}
+	// });
+}
+
+function potponeTurn() {
+	alert('u postpone turn now?');
+}
+// Template.appUserturn.helpers({
+// 	ticketItem: function() {
+// 		return Tickets.find({phone: phoneid});
+// 	},
+// 	queueIs: function(queueId) {
+//     		return this.queueId === queueId;
+//   	}
+// });
 
 // --------------Content---------------------
 
@@ -46,13 +73,19 @@ Template.appHome.helpers({
 	}
 });
 
-Handlebars.registerHelper('turnStatus', function(sequence, current) {
+Handlebars.registerHelper('getSequence', function() {
+	var tick = Tickets.findOne({phone:phoneid, queueId:this._id.toHexString()}, { sequence: 1, _id:0});
+	return tick.sequence;
+});
+
+Handlebars.registerHelper('turnStatus', function(sequence) {
 	//return 'panel panel-default';
+
 	console.log('seq (' + sequence + ')');
-	console.log('cur (' + current + ')');
+	console.log('cur (' + this.current + ')');
 
 	// TEMP
-	if (sequence === current) {
+	if (sequence === this.current) {
 		console.log('same');
 		return 'panel panel-success';
 	} else {
@@ -84,13 +117,15 @@ Template.appLayout.events = {
 function scanqueueqr() {
 	cordova.plugins.barcodeScanner.scan(
 		function (result) {
-			// alert("We got a barcode\n" +
-			// "Result: " + result.text + "\n" +
-			// "Format: " + result.format + "\n" +
-			// "Cancelled: " + result.cancelled);
+			 /*alert("We got a barcode\n" +
+			 "Result: " + result.text + "\n" +
+			 "Format: " + result.format + "\n" +
+			 "Cancelled: " + result.cancelled);*/
 
 			if (!result.cancelled) {
+				console.log('why u no move2');
 				Meteor.call('addUserToQueue', phoneid, result.text, function(err, response) {
+					console.log('why u no move');
 					move();
 				}); 
 		        	}
@@ -121,3 +156,4 @@ function moveback() {
 function checkismain() {
 	return Session.get("ismain");
 }
+
