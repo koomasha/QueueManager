@@ -22,7 +22,7 @@
 		<div class="panel-group" id="accordion">
 			{{#each queueitem}}
 				<!-- <div class="panel panel-default"> -->
-				<div class="{{turnStatus current '1'}}">
+				<div class="{{turnStatus getSequence}}">
 					<div class="panel-heading">
 						<h4 class="panel-title">
 							<a data-toggle="collapse" data-parent="#accordion" href="#c{{name}}">{{name}}</a>
@@ -31,21 +31,36 @@
 					<div id="c{{name}}" class="panel-collapse collapse">
 						<div class="panel-body">
 					 		<h3>מיקומך בתור</h3>
-					  		{{> appUserturn queueId=_id}}
+					  		<!-- {{> appUserturn queueId=_id}} -->
+					  		<p>{{getSequence}}</p>
 					  		<h3>מיקום נוכחי</h3>
 					  		<p>{{current}}</p>
+					  		<button type="button" class="btn btn-default postpone">דחה תור</button>
+					  		<button type="button" class="btn btn-default leave">עזוב תור</button>
 						</div>
 					</div>
 				</div>
 			{{/each}}
 		</div>
 	</div>
+	<div id="dialog-confirm" title="leave bitch">
+	<p>
+		<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+		you leave, bitch?
+	</p>
+	</div>
 </template>
 
+<template name="modal">	
+	Bla bla bla bla
+	<button>YES</button>
+</template>
+<!-- 
 <template name="appUserturn">
 	{{#each ticketItem}}
 		{{#if queueIs queueId}}
 			<p>{{sequence}}</p>
 		{{/if}}
 	{{/each}}
-</template>
+</template> -->
+
