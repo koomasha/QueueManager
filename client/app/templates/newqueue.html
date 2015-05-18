@@ -1,3 +1,69 @@
-<template name="appNewqueue">
-	<h1> New Queue</h1>
+<template name="appMaincontent">
+	<div id="maincontent">
+		{{> appChooseQueue}}
+		{{> appAdditionalDetails}}
+
+		<h1>ברוכים הבאים</h1>
+		<br><br>
+		<button type="button" class="btn btn-default navbar-btn" id="scangps">סרוק באמצעות GPS</button>
+		<button type="button" class="btn btn-default navbar-btn" id="scanqr">סרוק באמצעות QR</button>
+
+		<div id="erroralert" class="alert alert-danger notvisible errorlabel" role="alert">
+		  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+		  <span class="sr-only">Error:</span>
+		  <p id="errorLabel"></p>
+		</div>
+
+	</div>
+</template>
+
+<template name="appChooseQueue">
+  <div id="appChooseQueueModal" class="modal notvisible">
+      <div class="modal-content">
+      	<div class="modal-header">
+          	<center>
+        		<h4>לאיזה תור ברצונך להצטרף?</h4>
+        	</center>
+        </div>
+
+        <div class="modal-body">
+        	<div id="queuesgroup" class="list-group">
+        		{{#each queueItem}}
+			  		<a href="#" id="{name}}" class="list-group-item">{{name}}</a>
+			  	{{/each}}
+			</div>
+
+			<center> 
+				<button class="btn cancel" data-dismiss="modal">בטל</button>
+			</center>
+        </div>
+      </div>
+  </div>
+</template>
+
+<template name="appAdditionalDetails">
+  <div id="appAdditionalDetailsModal" class="modal notvisible">
+      <div class="modal-content">
+      <div class="modal-header">
+          	<center>
+        		<h4>נדרשים פרטים נוספים</h4>
+        	</center>
+        </div>
+        <div class="modal-body">
+        	{{#each detail}}
+        		<div class="input-group" dir="ltr" style="margin-top: 4px;">
+				      <input type="text" class="form-control {{type}}" aria-describedby="sizing-addon2" style="height: 30px;" onfocus=inputFocus(this) required>
+				      <id class="input-group-addon">{{name}}</id>
+				    </div>
+        	{{/each}}
+        </div>
+        <div class="modal-footer">
+        	<center>
+            <p id="message" style="color: red;"></p>
+        	  <button class="btn cancel" data-dismiss="modal">בטל</button>
+	          <button class="btn btn-success save">אשר</button>
+            </center>
+        </div>
+      </div>
+  </div>
 </template>

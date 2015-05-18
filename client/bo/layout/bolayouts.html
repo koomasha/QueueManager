@@ -1,14 +1,9 @@
 <template name="boLayout">
 	<div class="navbar navbar-static-top">
 		<div class="navbar-inner">
-		<a class="brand" href="/">{{getCompanyName}}</a>
-		<!--	<a class="brand" href="/">{{$.Session.get 'companyName'}}</a> -->
+		<a class="brand" href="/">{{getLogoText}}</a>	
 			<ul class="nav">
 				{{#if currentUser}}
-					<li><a href="/">Dashboard</a></li>
-					<li><a href="#">Users</a></li>
-					<li><a href="#">Queues</a></li>
-					<li><a href="#">Kiosks</a></li>
 					<li><a href="/" class="logout">Log Out</a></li>
 				{{else}}
 					<li><a href="/login">Log In</a></li>
