@@ -283,7 +283,7 @@ if(!Meteor.isCordova)
 				var name = tmpl.find('.queue-name').value;
 				var active = tmpl.find('.queue-active').value;
 				var showtoclerk = !(tmpl.find('.queue-permission').checked);
-				var prefix = Queues.find({branchid:Session.get('branchId')}).count();
+				var prefix = tmpl.find('.queue-prefix').value;
 				Queues.insert({name:name,showtoclerk:showtoclerk,active:active,prefix:prefix,branchid:Session.get('branchId')});
 				Session.set('showBoAddQueue',false);
 			},
