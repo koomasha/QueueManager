@@ -1,23 +1,4 @@
-<<<<<<< HEAD
 if(Meteor.isCordova){
-=======
-Skip to content
-This repository  
-Explore
-Gist
-Blog
-Help
-@koomasha koomasha
- 
- Unwatch 4
-  Star 0
-  Fork 0
-koomasha/QueueManager
- tree: fff7f7235e  QueueManager/client/app/app.js
-@SoulManStSoulManSt 19 hours ago leave queue, postpone queue, addtional details(without some validations)
-2 contributors @koomasha @SoulManSt
-RawBlameHistory    292 lines (237 sloc)  7.096 kb
->>>>>>> ae7aab2504932baa9d7f8ddddc18bafd94bd540c
 Session.setDefault('ismain', true);
 Session.setDefault('lastClickedQueue', undefined);
 Session.setDefault('optionalQueues', undefined);
@@ -309,9 +290,6 @@ function moveback() {
 function checkismain() {
 	return Session.get("ismain");
 }
-<<<<<<< HEAD
+
 }
-=======
-Status API Training Shop Blog About
-© 2015 GitHub, Inc. Terms Privacy Security Contact
->>>>>>> ae7aab2504932baa9d7f8ddddc18bafd94bd540c
+
