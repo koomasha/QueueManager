@@ -266,7 +266,7 @@ if(!Meteor.isCordova)
 		    	if(searchString)
 					return Queues.find({name:new RegExp(searchString),branchid:Session.get('branchId')}).fetch();
 		    	else
-  					return Queues.find({branchid:Session.get('branchId')}).fetch();
+					return Queues.find({branchid:Session.get('branchId')}).fetch();
 		    	
 			},
 
