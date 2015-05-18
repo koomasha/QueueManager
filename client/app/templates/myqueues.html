@@ -1,3 +1,64 @@
-<template name="appMyqueues">
-	<h1>My Queues</h1>
+<template name="appQueuecontent">
+	<div id="queuecontent" class="toppad">
+		{{> appLeaveQueueConfirm}}
+		{{> appPostponeQueueConfirm}}
+
+		<div class="panel-group" id="accordion">
+			{{#each queueitem}}
+				<div class="{{turnStatus getSequence}}">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion" href="#{{name}}">{{name}}</a>
+						</h4>
+					</div>
+					<div id="{{name}}" class="panel-collapse collapse">
+						<div class="panel-body">
+					 		<h3>מיקומך בתור</h3>
+					  		<p>{{getSequence}}</p>
+					  		<h3>מיקום נוכחי</h3>
+					  		<p>{{current}}</p>
+					  		<button type="button" class="btn btn-default postpone">דחה תור</button>
+					  		<button type="button" class="btn btn-default leave">עזוב תור</button>
+						</div>
+					</div>
+				</div>
+			{{else}}
+				<p>אינך רשום כרגע לאף תור פעיל</p>
+			{{/each}}
+		</div>
+	</div>
+</template>
+
+<template name="appLeaveQueueConfirm">
+  <div id="appLeaveQueueModal" class="modal notvisible">
+      <div class="modal-content">
+        <div class="modal-body">
+        	<p>האם אתה בטוח שברצונך לעזוב את התור?</p>
+        </div>
+        <div class="modal-footer">
+        	<center>
+	          <button class="btn cancel" data-dismiss="modal">לא</button>
+	          <button class="btn btn-success save">כן</button>
+          </center>
+        </div>
+      </div>
+  </div>
+</template>
+
+<template name="appPostponeQueueConfirm">
+  <div id="appPostponeQueueModal" class="modal notvisible">
+      <div class="modal-content">
+        <div class="modal-body">
+        	<p>האם אתה בטוח שברצונך לעבור לסוף התור?</p>
+        	<p>מיקומך בתור יהיה {{newLocation}}</p>
+        	<p>זמן המתנה משוער {{newEstimatedTime}}</p>
+        </div>
+        <div class="modal-footer">
+        	<center>
+        	  <button class="btn cancel" data-dismiss="modal">לא</button>
+	          <button class="btn btn-success save">כן</button>
+            </center>
+        </div>
+      </div>
+  </div>
 </template>

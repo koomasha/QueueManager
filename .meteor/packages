@@ -16,3 +16,8 @@ accounts-ui
 aldeed:simple-schema
 aldeed:collection2
 matb33:collection-hooks
+<<<<<<< HEAD
+=======
+autopublish
+insecure
+>>>>>>> ae7aab2504932baa9d7f8ddddc18bafd94bd540c
