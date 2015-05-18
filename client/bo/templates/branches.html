@@ -1,5 +1,5 @@
 <template name="boBranches">
-    <div class="row">
+    <div class="row ">
         <div class="col-md-3">
             {{>boBranchList}}
         </div>
@@ -31,52 +31,56 @@
       BRANCH SIDEBAR TAMPLATES
 /////////////////////////////-->      
 <template name="boBranchList">
-  {{#if showBoAddBranch}}
-    {{>boAddBranch}}
-  {{/if}} 
 
-  <div class="col-sm-12">  
-    <div class="col-sm-6">
-      <button type="button" class="btn btn-info add-branch">Create Branch</button>
+    {{#if showBoAddBranch}}
+      {{>boAddBranch}}
+    {{/if}} 
+<div class="container-fluid">
+    <div class="col-sm-12 text-center well well-lg outerbg">     
+        <h4>Branches</h4>
+     </div> 
+    <div class="col-sm-12 well well-lg outerbg">  
+      <div class="col-sm-6">
+        <button type="button" class="btn btn-info add-branch">Create Branch</button>
+      </div>
+      <div class="col-sm-6 ">
+        <input type="search" class="form-control search-branch" placeholder="Search branch"/>
+      </div>
+    </div>  
+    
+    <div class="col-sm-12 well well-lg outerbg">
+
+            {{#each branchList}}
+                  {{>boBranchItem}}
+            {{/each}}
+
     </div>
-    <div class="col-sm-6">
-      <input type="search" class="form-control search" placeholder="Search branch"/>
-    </div>
-  </div>  
-  <div class="col-sm-12">
-    <table class="table table-hover">
-      <tbody>
-          {{#each branchList}}
-                {{>boBranchItem}}
-          {{/each}}
-        </tbody>
-    </table>
-  </div>
+</div>    
 </template>
 
 <template name="boBranchItem">
-    <tr data-name="{{name}}" data-id="{{_id}}" class="branchItem">
-      <td>{{name}}</td>
-    </tr>
+    <div data-name="{{name}}" data-id="{{_id}}" class="branchItem well well-lg innerbg">
+      {{name}}
+    </div>
 </template>
 
 <template name="boAddBranch">
-  <div class="modal">
+  <div class="modal" id="addBranchModal">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close cancel" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Modal title</h4>
+          <h4 class="modal-title">Create New Branch</h4>
         </div>
         <div class="modal-body">
           <form>
             <div class="form-group">
-              <label for="name">Branch Name</label>
+
               <input value="{{branch.name}}" class="form-control branch-name" placeholder="Branch Name">
-
-              <label for="location">Branch Location</label>
+            </div>  
+            <div class="form-group">  
               <input value="{{branch.location}}" class="form-control branch-location" placeholder="Branch Location">
-
-              <label for="active">Branch Activity</label>
+            </div> 
+            <div class="form-group">  
               <select class="form-control branch-active">
                 <option value="Active">Active</option>
                 <option value="Not active">Not Active</option>
@@ -96,17 +100,17 @@
       BRANCH DETAILS TAMPLATES
 /////////////////////////////-->
 <template name="boBranchDetails">
-  <div class = "row well well-lg">
+  <div class = "row well well-lg outerbg">
       <div class="row">
         <div class="col-md-4 text-center"><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span></div>
         <div class="col-md-4 text-center"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></div>
         <div class="col-md-4 text-center"><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span></div>
       </div>
-      <div class="row">
+    <!--  <div class="row">
         <div class="col-md-4 text-center"><span>Name</span></div>
         <div class="col-md-4 text-center"><span>Location</span></div>
         <div class="col-md-4 text-center"><span>Activity</span></div>
-      </div>
+      </div>-->
       <div class="row">
         <div class="col-md-4 text-center"><span>{{branch.name}}</span></div>
         <div class="col-md-4 text-center"><span>{{branch.location}}</span></div>
@@ -116,23 +120,23 @@
 </template>
 
 
+
 <!--//////////////////////////////
       BRANCH DASHBOARD TAMPLATES
 /////////////////////////////-->
 <template name="boBranchDashboard">
-  <div class="row well well-lg">
-    <div class="col-md-3">
-      <div class="brand text-center">Queues</div>
-    </div>
-    <div class="col-md-3">
-      <div class="brand text-center">Users</div>
-      {{currentUser._id}}
-    </div>
-    <div class="col-md-3">
-      <div class="brand text-center">Kiosks</div>
-    </div>
-    <div class="col-md-3">
-      <div class="brand text-center">Statistics</div>
+  <div class = "row well well-lg outerbg">
+    <ul class="nav nav-tabs" role="tablist" id="BranchTabs">
+      <li role="presentation" class="active"><a href="#queues" aria-controls="queues" role="tab" data-toggle="tab">Queues</a></li>
+      <li role="presentation"><a href="#users" aria-controls="users" role="tab" data-toggle="tab">Users</a></li>
+   <!--   <li role="presentation"><a href="#statistics" aria-controls="statistics" role="tab" data-toggle="tab">Statistics</a></li> -->
+    </ul>
+
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active" id="queues">{{>boBranchQueues}}</div>
+      <div role="tabpanel" class="tab-pane" id="users">{{>boBranchUsers}}</div>
+      <!--<div role="tabpanel" class="tab-pane" id="statistics">Statistics</div> -->
     </div>
   </div>
 </template>
+
