@@ -1,3 +1,4 @@
+if(Meteor.isCordova){
 Session.setDefault('ismain', true);
 var phoneid;
 
@@ -156,4 +157,4 @@ function moveback() {
 function checkismain() {
 	return Session.get("ismain");
 }
-
+}
