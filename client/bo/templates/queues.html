@@ -1,8 +1,5 @@
 <template name="boBranchQueues">
 	{{#if showWorkStation}}
-		<div class="col-md-12">  
-			 <button type="button" class="close close-workstation" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		</div> 
 		{{>boQueueWorkStation}}
 	{{else}}
 		<div class="col-md-12">  
@@ -72,19 +69,59 @@
 
 
 <template name="boQueueWorkStation">
+	<div class="col-md-12">  
+		 <button type="button" class="close close-workstation" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	</div> 
 	<div class="row container-fluid">
-		<div class="col-md-4">
-			Current Ticket:
+		<div class="col-md-4 col-md-offset-1 well well-lg innerbg text-center">
+			 <h4>Next Ticket: {{nextTicket}}</h4>
 		</div>
-		<div class="col-md-4">Last Ticket:</div>
-		<div class="col-md-4">Open stations for queue:</div>
+		<div class="col-md-4 col-md-offset-1 well well-lg innerbg text-center">
+			<h4>Waiting in line : {{openTickets}}</h4>
+		</div>
+		
 	</div>
 	<div class="row">
 		<hr>
 	</div>
 	<div class="row container-fluid	">
-		<div class="col-md-12 col-md-offset-5">
-			<button type="button" class="btn btn-info next-ticket">Next</button>
-		</div>
+	{{#if ticket}}
+		{{>boTicketDetails}}
+	{{else}}	
+		<div class="row">
+			<button type="button" class="col-md-3 col-md-offset-4 btn btn-info next-ticket">Next</button>
+		</div>	
+	{{/if}}	
 	</div>
+</template>
+
+<template name="boTicketDetails">
+		<div class="col-md-9 col-md-offset-1 well well-lg innerbg">
+			<div class="row">
+				<div class="col-md-12 text-center">
+					<h4>Current Ticket: {{currentTicket}}</h4>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-8 col-md-offset-2 text-center well well-lg innerbg">
+					<div>Details</div>
+					<div>Masha</div>
+					<div>27</div>
+				</div>
+			</div>
+			<div class="row">	
+				<div class="col-md-8 col-md-offset-2 well well-lg innerbg ">
+					<div class="row container-fluid">
+					<textarea class="col-md-12 form-control ticket-comment" rows="4" placeholder="Comment"></textarea>
+					</div>
+						<div class="row container-fluid">
+				<!--	<button type="button" class="col-md-2 col-md-offset-10 btn btn-info save-ticket-comment">save</button> -->
+					</div>
+				</div>
+			</div>	
+			<div class="row">
+					<button type="button" class="col-md-2 col-md-offset-2 btn btn-success done-ticket">Done</button>
+					<button type="button" class="col-md-2 col-md-offset-4 btn btn-danger skip-ticket">Skip</button>
+			</div>
+		</div>	
 </template>

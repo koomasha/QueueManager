@@ -16,7 +16,7 @@ Meteor.methods({
 	},
 	addUserToQueue: addUser,
 	removeUserFromQueue: function (phone, queueId) {
-		removeUser(phone, queueId, "left");
+		removeUser(phone, queueId, "Left");
 	},
 	postponeTurn: function (phone, queueId) {
 		console.log('postponeTurn: server and parameters are (' + phone + ') and (' + queueId + ')');
@@ -28,7 +28,7 @@ Meteor.methods({
 		if (ticket === undefined || ticket === null) {
 			console.log('no such ticket');
 		} else {
-			removeUser(phone, queueId, "passed");
+			removeUser(phone, queueId, "Postponed");
 			addUser(phone, queueId.toHexString(), ticket.additionalDetails);
 		}
 	}
@@ -54,32 +54,22 @@ function removeUser(phone, queueId, status) {
 function addUser(phone, queueId, additionalDetails) {
 	console.log('addUserToQueue: server and parameters are (' + phone + ') and (' + queueId + ')');
 
-	var queue = Queues.findOne(new Meteor.Collection.ObjectID(queueId));
-
+	var queue = Queues.findAndModify({
+						query: { _id: queueId },
+						update: { $inc: { last: 1,opentickets: 1 }},
+						new: true
+					});
 	if (queue === undefined || queue === null) {
 		console.log('no such queue');
 	} else {
-		var next = queue.last;
-		var lastNum = parseInt(next.match(/\d+/)[0]) + 1;
-		next = next.replace(/(\d+)/g, lastNum);
-
-		if (additionalDetails != null) {
-			Tickets.insert({phone: phone, 
-				sequence: next, 
-				queueId: queueId, 
-				creationTime: new Date().toTimeString(),
-				status: "waiting",
-				additionalDetails: additionalDetails
-			});
-		} else {
-			Tickets.insert({phone: phone, 
-				sequence: next, 
-				queueId: queueId, 
-				creationTime: new Date().toTimeString(),
-				status: "waiting"
-			});
-		}
-
-		Queues.update(new Meteor.Collection.ObjectID(queueId), {$set: {last: next}});
+		console.log(queue.last);
+		Tickets.insert({phone: phone, 
+		sequence: queue.last, 
+		queueId: queueId, 
+		creationTime: Date.now(),
+		status: "Waiting",
+		additionalDetails: additionalDetails || {}
+		});
 	}
+
 }
