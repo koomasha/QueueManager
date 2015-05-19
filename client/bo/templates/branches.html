@@ -77,9 +77,13 @@
 
               <input value="{{branch.name}}" class="form-control branch-name" placeholder="Branch Name">
             </div>  
-            <div class="form-group">  
-              <input value="{{branch.location}}" class="form-control branch-location" placeholder="Branch Location">
-            </div> 
+            <div class="form-group">
+              <input value="{{branch.location}}" class="form-control branch-location" placeholder="Branch Location (e.g. Address)">
+                <a href="#" class="btn btn-map">Show on Map...</a>
+            </div>
+              {{#if showBoAddBranchMap}}
+                  <img src="http://maps.googleapis.com/maps/api/staticmap?center={{boAddressMapData}}&zoom=18&size=700x350&maptype=roadmap&markers=color:blue%7C{{boAddressMapData}}" />
+              {{/if}}
             <div class="form-group">  
               <select class="form-control branch-active">
                 <option value="Active">Active</option>
@@ -113,7 +117,9 @@
       </div>-->
       <div class="row">
         <div class="col-md-4 text-center"><span>{{branch.name}}</span></div>
-        <div class="col-md-4 text-center"><span>{{branch.location}}</span></div>
+        <div class="col-md-4 text-center"><span>{{branch.location}} lat: {{branch.locationLat}} lng: {{branch.locationLong}}
+            <img src="http://maps.googleapis.com/maps/api/staticmap?center={{branch.locationLat}},{{branch.locationLong}}&zoom=18&size=700x350&maptype=roadmap&markers=color:blue%7C{{branch.locationLat}},{{branch.locationLong}}" />
+</span></div>
         <div class="col-md-4 text-center"><span>{{branch.active}}</span></div>
       </div>
   </div>

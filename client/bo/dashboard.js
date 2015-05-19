@@ -6,6 +6,7 @@ if(!Meteor.isCordova)
 
 		Session.setDefault('logotext','Queue Manager');
 		Session.setDefault('showBoAddBranch',false);
+		Session.setDefault('showBoAddBranchMap',false);
 		Session.setDefault('showBoAddUser',false);
 		Session.setDefault('branchId',null);
 		Session.setDefault('branchSearchString',null);
@@ -91,15 +92,51 @@ if(!Meteor.isCordova)
 
 		Template.boAddBranch.events({
 			'click .save':function(evt,tmpl){
-				var name = tmpl.find('.branch-name').value;
-				var location = tmpl.find('.branch-location').value;
-				var active = tmpl.find('.branch-active').value;
-				Branches.insert({name:name,location:location,active:active});
-				Session.set('showBoAddBranch',false);
-			},
+				function doWithLocation(error, geolocation){
+					console.log("entered doWithLocation");
+					console.log("error is " + error);
+					console.log("location is " + JSON.stringify(geolocation));
+					var name = tmpl.find('.branch-name').value;
+					var location = tmpl.find('.branch-location').value;
+					var locationLat = geolocation[0].latitude;
+					var locationLong = geolocation[0].longitude;
+					console.log("lat is " + locationLat);
+					var active = tmpl.find('.branch-active').value;
+					Branches.insert({name:name,location:location,locationLat:locationLat,locationLong:locationLong,active:active});
+					Session.set('showBoAddBranch',false);
+					Session.set('showBoAddBranchMap',false);
+				};
 
+				Meteor.call('bar', function(error, result){console.log("i called bar and got " + result)});
+				var address = tmpl.find('.branch-location').value;
+				console.log("address is " + address);
+				Meteor.call('addressToLocation', address, doWithLocation);
+			},
 			'click .cancel':function(evt,tmpl){
 				Session.set('showBoAddBranch',false);
+				Session.set('showBoAddBranchMap',false);
+			},
+			'click .btn-map':function(evt,tmpl){
+				function generateMap(error, geoLocation) {
+					console.log("reached generateMap with error " + error + " and geoLocation " + JSON.stringify(geoLocation));
+					Session.set('boAddressMapData', geoLocation[0].latitude + "," + geoLocation[0].longitude);
+				};
+				console.log("CLICKED SHOW ON MAP!");
+				Session.set('showBoAddBranchMap',true);
+				var address = tmpl.find('.branch-location').value;
+				console.log("calling addressToLocation with " + address);
+				Meteor.call('addressToLocation', address, generateMap);
+			}
+		});
+
+		Template.boAddBranch.helpers({
+			showBoAddBranchMap:function(){
+				console.log("inside showBoAddBranchMap - " + Session.get('showBoAddBranchMap'));
+				return Session.get('showBoAddBranchMap');
+			},
+			boAddressMapData:function(){
+				console.log("inside boAddressMapData - " + Session.get('boAddressMapData'));
+				return Session.get('boAddressMapData');
 			}
 		});
 
@@ -116,8 +153,9 @@ if(!Meteor.isCordova)
 			},
 			'keyup input.search-branch': function (evt) {
 		        Session.set("branchSearchString", evt.currentTarget.value);
-		    }, 
+		    }
 		});
+
 
 		Template.boBranchList.helpers({
 		    branchList: function () {
@@ -268,14 +306,14 @@ if(!Meteor.isCordova)
 		    	else
 					return Queues.find({branchid:Session.get('branchId')}).fetch();
 		    	
-			},
+			}
 
 		});
 		Template.boQueueList.events({
 			'click .queueItem':function(evt,tmpl){
 				Session.set('queueId',$(evt.target).closest('div').data('id'));
 				Session.set('showWorkStation',true);
-			},
+			}
 		});
 
 		Template.boAddQueue.events({

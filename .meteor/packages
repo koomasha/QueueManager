@@ -16,3 +16,5 @@ accounts-ui
 aldeed:simple-schema
 aldeed:collection2
 matb33:collection-hooks
+mdg:geolocation
+aldeed:geocoder
