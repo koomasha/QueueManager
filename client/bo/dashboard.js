@@ -4,6 +4,9 @@ if(!Meteor.isCordova)
 	     Sesion Settings
 	/////////////////////////////*/
 
+  		boUsersInBranch = new Meteor.Collection("boUsersInBranch");
+  		boUsersByEmail = new Meteor.Collection("boUsersByEmail");
+
 		Session.setDefault('logotext','Queue Manager');
 		Session.setDefault('showBoAddBranch',false);
 		Session.setDefault('showBoAddUser',false);
@@ -16,9 +19,8 @@ if(!Meteor.isCordova)
 		Session.setDefault("showBoAddQueue",false);
 		Session.setDefault("queueSearchString",null);
 		Session.setDefault("showBoAddKiosk",false);
-
-  		boUsersInBranch = new Meteor.Collection("boUsersInBranch");
-  		boUsersByEmail = new Meteor.Collection("boUsersByEmail");
+		Session.setDefault("ticket",null);
+		
 
 	$('#BranchTabs a').click(function (e) {
 	  e.preventDefault()
@@ -94,7 +96,7 @@ if(!Meteor.isCordova)
 				var name = tmpl.find('.branch-name').value;
 				var location = tmpl.find('.branch-location').value;
 				var active = tmpl.find('.branch-active').value;
-				Branches.insert({name:name,location:location,active:active});
+				Meteor.call('boSaveNewBranch',name,location,active);
 				Session.set('showBoAddBranch',false);
 			},
 
@@ -191,15 +193,15 @@ if(!Meteor.isCordova)
   			},
 
   			'click .userItem' :function(evt,tmpl){
-  				$('td').css('background','#fff');
-  				Session.set('userId', $(evt.target).closest('tr').data('id'));
-  				$(evt.target).closest('td').css('background','#5DBB5D');
+  				$('.userItem').css('background','rgba(251,253,234,0.8)');
+  				Session.set('userId', $(evt.target).closest('div').data('id'));
+  				$(evt.target).closest('div').css('background','#5DBB5D');
   			},
 			'keyup input.search-new-user': function (evt) {
 		        Session.set("userSearchString", evt.currentTarget.value);
 		    }, 
 		    'click .save':function(evt,tmpl){
-				Branches.update({ _id:Session.get('branchId') },{ $push: {users: { userid: Session.get('userId'), role: 'Clerk' }}});
+		    	Meteor.call('boAddUserToBranch',Session.get('branchId'),Session.get('userId'),'Clerk');
 				Session.set('userId',null);
 				Session.set("showBoAddUser",false);
   				Session.set("userSearchString",null);
@@ -207,6 +209,7 @@ if(!Meteor.isCordova)
 				  	Meteor.subscribe("boUsersInBranch", Session.get("branchId"));
 				  	Meteor.subscribe("boUsersByEmail", Session.get("userSearchString"),Session.get("branchId"));
 				});
+				
 			},
   		});
 
@@ -253,11 +256,7 @@ if(!Meteor.isCordova)
 		    },
 		    'keyup input.search-queue': function (evt) {
 		        Session.set("queueSearchString", evt.currentTarget.value);
-		    }, 
-		    'click .close-workstation' : function(evt,tmpl){
-		    	Session.set('queueId',null);
-				Session.set('showWorkStation',false);
-		    },	
+		    }, 	
 		});
 
 		Template.boQueueList.helpers({
@@ -275,6 +274,13 @@ if(!Meteor.isCordova)
 			'click .queueItem':function(evt,tmpl){
 				Session.set('queueId',$(evt.target).closest('div').data('id'));
 				Session.set('showWorkStation',true);
+				var currTicket = Tickets.findOne({queueId:Session.get('queueId'), userid:Meteor.user()._id, status:"Getting Service"});
+				if(currTicket){
+					Session.set('ticket',currTicket);
+				}
+				else if(Session.get('ticket'))
+					if(Session.get('queueId') != Session.get('ticket').queueId)	
+						Session.set('ticket',null);
 			},
 		});
 
@@ -284,12 +290,65 @@ if(!Meteor.isCordova)
 				var active = tmpl.find('.queue-active').value;
 				var showtoclerk = !(tmpl.find('.queue-permission').checked);
 				var prefix = tmpl.find('.queue-prefix').value;
-				Queues.insert({name:name,showtoclerk:showtoclerk,active:active,prefix:prefix,branchid:Session.get('branchId')});
+				Meteor.call('boSaveNewQueue',name,showtoclerk,active,prefix,Session.get('branchId'));
 				Session.set('showBoAddQueue',false);
 			},
 
 			'click .cancel':function(evt,tmpl){
 				Session.set('showBoAddQueue',false);
 			}
+		});
+
+		Template.boQueueWorkStation.helpers({
+			ticket: function(){
+				return Session.get("ticket");
+			},
+			nextTicket: function(){
+				if(Session.get('queueId'))
+					if(Queues.findOne({_id:Session.get('queueId')}).opentickets > 0)
+						return Queues.findOne({_id:Session.get('queueId')}).currentSec+1;
+					else return '--';
+			},
+			openTickets: function(){
+				if(Session.get('queueId'))
+					return Queues.findOne({_id:Session.get('queueId')}).opentickets;
+			},
+		});
+
+		Template.boQueueWorkStation.events({
+		'click .close-workstation' : function(evt,tmpl){
+		    	Session.set('queueId',null);
+				Session.set('showWorkStation',false);
+		    },
+			'click .next-ticket':function(evt,tmpl){
+				var queue = Queues.findOne({_id:Session.get('queueId')});
+				if(queue.opentickets > 0){
+					Meteor.call('boNextTicket',Session.get('queueId'),function(err, data) {Session.set('ticket', data)});
+				}
+			},
+		});
+
+		Template.boTicketDetails.helpers({
+			currentTicket: function(){
+				if(Session.get('ticket'))
+					return Session.get('ticket').sequence;
+				else return '--';
+			},
+
+		});
+
+		Template.boTicketDetails.events({
+			'click .done-ticket':function(evt,tmpl){
+				comment = tmpl.find('.ticket-comment').value;
+				Meteor.call('boDoneTicket',Session.get('ticket'),comment);
+				Session.set('ticket',null);
+			},
+
+
+			'click .skip-ticket':function(evt,tmpl){
+				comment = tmpl.find('.ticket-comment').value;
+				Meteor.call('boSkipTicket',Session.get('ticket'),comment);
+				Session.set('ticket',null);
+			},
 		});
 }
