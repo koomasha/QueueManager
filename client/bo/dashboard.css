@@ -16,6 +16,24 @@ input[type="checkbox"]{
     *overflow: hidden;
 }
 
+input[type="password"]{
+  height: auto;
+  padding: auto;
+  margin-right:auto;
+  vertical-align:auto;
+  position:auto;
+  top:auto;
+  background-color:none;
+  border:none;
+  -webkit-box-shadow:none;
+  -moz-box-shadow:none;
+  box-shadow:none;
+  -webkit-transition:none;
+  -moz-transition:none;
+  -o-transition:none;
+  transition:none;
+}
+
 label {
     display: block;
     padding-left: 15px;
@@ -26,6 +44,10 @@ hr{
   	border-bottom: 1px solid #dddddd;
 }
 
+textarea {
+    resize: none;
+}
+
 .modal{
 	display:block;
 	border:none;
@@ -34,9 +56,34 @@ hr{
 	background:transparent;
 }
 
+.modal-content{
+    background-image: url('bubbles.jpg') !important;
+}
+
+.modal-footer{
+    background-color:transparent !important;
+}
 .modal-dialog{
     margin-right: 0;
     margin-left: 0;
+    width:auto;
+}
+
+.modal-header,.modal-footer,.modal-body{
+  border-top: none !important;
+  border-bottom: none !important;
+
+}
+
+.modal-footer{
+    -moz-box-shadow:none;
+     box-shadow:none; 
+}
+.modal-backdrop {
+
+  z-index: auto;
+  opacity: 0.2 !important;
+  background-color: #7F7F7F;
 }
 
 .tab-content {
@@ -44,7 +91,7 @@ hr{
 }
 
 .outerbg{
-  background-color: rgba(251,253,234,0.5);
+  background-color: rgba(251,253,234,0.5) !important;
 }
 
 .innerbg{
@@ -55,4 +102,80 @@ hr{
 	background-color: rgba(251,253,234,0.8);
 }
 
+.data-missing{
+   -webkit-box-shadow: inset 0px 0px 7px 0px rgba(224,27,44,1);
+    -moz-box-shadow: inset 0px 0px 7px 0px rgba(224,27,44,1);
+    box-shadow: inset 0px 0px 7px 0px #AB0505;
+}
+
+.name-header{
+    /*margin-left: 30px;*/
+    color: #5A8E3C;
+}
+
+.text-item{
+      color: #426B00;
+      font-size: 20px;
+}
+
+.line-stats{
+    color: #FAA732;
+}
+
+.red-icon{
+  color:#AB0505;
+}
+
+.green-icon{
+  color: #52B339;
+}
+
+.blue-icon{
+  color:#2f96b4
+}
+.selected-user{
+  background: #5DBB5D;
+}
+
+.icon{
+  cursor:pointer;
+}
+
+.overlay{
+    position:absolute;
+    top:0px;
+    left:0px;
+    bottom:0px;
+    right:0px;
+    background-color:rgba(255,255,0,0.5);
+}
+.branch-name-title{
+    font-size: 30px;
+    font-weight: bold;
+    text-shadow: -3px 3px 3px rgba(106, 192, 94, 1);
+    color:#FAA327;
+}
+
+.branch-address{
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: -3px 3px 3px rgba(106, 192, 94, 1);
+}
+
+#geoMap{
+  width: 400px;
+  height: 130px;
+  margin-left: 63px;
+  margin-bottom: 30px;
+  margin-top: 10px;
+  }
+
+  .pac-container{
+    z-index:2000;
+  } 
+
+.add-branch-input{
+    width: 80%;
+  margin: 0 auto;
+}
 
