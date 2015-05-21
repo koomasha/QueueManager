@@ -14,6 +14,9 @@
 			{{#if showBoAddQueue}}
 				{{>boAddQueue}}
 			{{/if}}
+			{{#if showBoQueuePrefix}}
+				{{>boChangePrefix}}
+			{{/if}}
         </div>
         <div class="modal-footer">
           <a href="/" class="btn btn-{{modalButtonColor}} save-{{modalAction}}">{{modalButton}}</a>
@@ -68,5 +71,11 @@
 			<label><input class="queue-permission" type="checkbox"/>Visible only to managers</label>
 			
 		</div>
+	</form>
+</template>
+
+<template name="boChangePrefix">
+	<form>
+		<input class="form-control queue-prefix-input" value="{{queue.prefix}}"/>
 	</form>
 </template>
