@@ -12,12 +12,12 @@ if(!Meteor.isCordova)
 	Session.setDefault('showBoModal',false);
 	Session.setDefault('showBoQueueList',true);
 	Session.setDefault('showBoAdditionalDetails',false);
-	Session.setDefault('showWorkStation',false);
+	Session.setDefault('showBoWorkStation',false);
 	Session.setDefault("showBoAddQueue",false);
 	Session.setDefault("showBoAddKiosk",false);
 	Session.setDefault('showBoAddBranch',false);
 	Session.setDefault('showBoAddUser',false);
-
+	Session.setDefault('showBoQueueStatistics',false);
 
 	Session.setDefault('branchId',null);
 	Session.setDefault('userId',null);
@@ -247,7 +247,7 @@ if(!Meteor.isCordova)
 		'click .branchItem':function(evt,tmpl){
 			Session.set('branchId',$(evt.target).closest('div').data('id'));
 			Session.set('queueId',null);
-			Session.set('showWorkStation',false);
+			Session.set('showBoWorkStation',false);
 			Session.set('showBoAdditionalDetails',false);
 			Session.set('showBoQueueList',true);
 
@@ -293,14 +293,17 @@ if(!Meteor.isCordova)
      QUEUES
 /////////////////////////////*/
 	Template.boBranchQueues.helpers({
-		showWorkStation : function(){
-			return Session.get('showWorkStation');
+		showBoWorkStation : function(){
+			return Session.get('showBoWorkStation');
 		},
 		showBoAdditionalDetails: function(){
 			return Session.get('showBoAdditionalDetails');
 		},
 		showBoQueueList:function(){
 			return Session.get('showBoQueueList');
+		},
+		showBoQueueStatistics: function(){
+			return Session.get('showBoQueueStatistics');
 		},
 		queueList: function(){
 			var searchString = Session.get("queueSearchString");
@@ -330,8 +333,9 @@ if(!Meteor.isCordova)
 	Template.boQueueHeader.events({
 		'click .close-queue' : function(evt,tmpl){
 	    	Session.set('queueId',null);
-			Session.set('showWorkStation',false);
+			Session.set('showBoWorkStation',false);
 			Session.set('showBoAdditionalDetails',false);
+			Session.set('showBoQueueStatistics',false);
 			Session.set('showBoQueueList',true);
 	    }, 
 	});
@@ -339,7 +343,7 @@ if(!Meteor.isCordova)
 	Template.boQueueItem.events({
 		'click .open-workstation':function(evt,tmpl){
 			Session.set('queueId',$(evt.target).closest('div').data('id'));
-			Session.set('showWorkStation',true);
+			Session.set('showBoWorkStation',true);
 			Session.set('showBoQueueList',false);
 			var currTicket = Tickets.findOne({queueId:Session.get('queueId'), userid:Meteor.user()._id, status:"Getting Service"});
 			if(currTicket){
@@ -409,6 +413,11 @@ if(!Meteor.isCordova)
 				'Please confirm deletion of '+ queueName,
 				'Delete','danger','remove');
 		},
+		'click .queue-statistics':function(evt,tmpl){
+			Session.set('queueId',this._id);
+			Session.set('showBoQueueStatistics',true);
+			Session.set('showBoQueueList',false);
+		}
 	});
 
 	Template.boQueueItem.helpers({

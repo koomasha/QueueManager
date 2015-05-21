@@ -1,5 +1,5 @@
 <template name="boBranchQueues">
-	{{#if showWorkStation}}
+	{{#if showBoWorkStation}}
 		{{>boQueueHeader}}
 		{{>boQueueWorkStation}}
 	{{/if}}	
@@ -7,6 +7,11 @@
 	{{#if showBoAdditionalDetails}}
 		{{>boQueueHeader}}
 		{{>boAdditionalDetails}}
+	{{/if}}
+
+	{{#if showBoQueueStatistics}}
+		{{>boQueueHeader}}
+		{{>boQueueStatistics}}
 	{{/if}}
 	
 	{{#if showBoQueueList}}		
@@ -69,8 +74,8 @@
 						<span class="glyphicon glyphicon-user icon red-icon" title="Managers" aria-hidden="true"></span>
 					</div>
 				{{/if}}	
-				<div class="col-md-1 icon blue-icon" data-id="{{_id}}" title="Statistics">
-					<span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+				<div class="col-md-1 queue-statistics" data-id="{{_id}}" title="Statistics">
+					<span class="glyphicon icon blue-icon glyphicon-stats" title="Statistics" aria-hidden="true"></span>
 				</div>
 				<div class="col-md-1 remove-queue" data-id="{{_id}}">
 					<span class="glyphicon glyphicon-remove icon red-icon" title="Delete Queue" aria-hidden="true"></span>
