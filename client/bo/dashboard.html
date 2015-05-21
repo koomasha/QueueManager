@@ -1,5 +1,8 @@
 <template name="boDashboard">
 {{#if currentUser}}
+  {{#if showBoModal}}
+	{{>boModal}}
+  {{/if}}
   {{>boBranches}}
 {{else}}
   {{>boLogin}}  

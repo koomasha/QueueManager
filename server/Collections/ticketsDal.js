@@ -1,12 +1,13 @@
 	Meteor.publish("Tickets", function () {
 	  return Tickets.find(); // everything
 	});
-/*
+
 	Tickets.allow({
   		insert: function (userId, branch) {return true;},
+  		remove: function(userId, doc){return true;},
 	});
 
-*/
+
 	Meteor.methods({
 		boDoneTicket:function(ticket,comment){
 			boChangeTicketStatus(ticket,"Done",this.userId, comment);

@@ -5,18 +5,29 @@ Meteor.publish("Branches", function () {
 });
 
 
-/*
+
 Branches.allow({
 	insert: function (userId, branch) {return true;},
-  update: function (userId, doc, fieldNames, modifier){return true}
+  update: function (userId, doc, fieldNames, modifier){return GetAllowBranches(userId,doc._id,['Admin'])},
+  remove: function(userId, doc){return GetAllowBranches(userId,doc._id,['Admin']);},
 });
-*/
+
 
 Branches.before.insert(function (userId, doc) {
   doc.createdAt = Date.now();
   doc.users = [{userid:userId,role:'Admin'}];
 });
 
+
+GetAllowBranches = function(userId,branchId,roles)
+{
+    if(Branches.findOne({_id:branchId,users:{$elemMatch:{userid:userId,role:{$in:roles}}}}))
+      {
+      return true;
+      }
+    else
+      return false;
+}
 
 
 Meteor.publish("boUsersInBranch", function (branchid) {		
@@ -42,15 +53,5 @@ Meteor.publish("boUsersByEmail", function (email,branchid) {
            self.added('boUsersByEmail', u._id, {_id:u._id,email:u.emails[0].address});
         });
       self.ready();
-    }
-});
-
-Meteor.methods({
-    boSaveNewBranch:function(name,location,active){
-      Branches.insert({name:name,location:location,active:active});
-    },
-
-    boAddUserToBranch:function(branchid,userid,role){
-      Branches.update({ _id:branchid },{ $push: {users: { userid:userid, role:role }}});
     }
 });

@@ -1,0 +1,72 @@
+<template name="boModal">
+	 <div class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close cancel" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title text-item">{{modalTitle}}</h4>
+        </div>
+        <div class="modal-body text-center outerbg text-item">
+			{{modalContent}}
+			
+			{{#if showBoAddBranch}}
+				{{>boAddBranch}}
+			{{/if}} 
+			{{#if showBoAddQueue}}
+				{{>boAddQueue}}
+			{{/if}}
+        </div>
+        <div class="modal-footer">
+          <a href="/" class="btn btn-{{modalButtonColor}} save-{{modalAction}}">{{modalButton}}</a>
+          <a href="#" class="btn btn-success cancel" data-dismiss="modal">Cancel</a>
+        </div>
+      </div>
+  </div>
+</template>
+
+<template name="boAddBranch">
+    <form>
+      <div class="form-group col-md-10 col-md-offset-1">
+        <input value="{{branch.name}}" class="form-control branch-name" placeholder="Branch Name">
+      </div>
+      <div class="form-group col-md-10 col-md-offset-1">  
+        <select class="form-control branch-active ">
+          <option {{selected branch.active true}} value="true">Active</option>
+          <option {{selected branch.active false}} value="false">Not Active</option>
+        </select>
+      </div>
+       <div class="form-group col-md-10 col-md-offset-1">
+        <input value="{{branch.password}}" class="form-control branch-password" type="password" placeholder="Kiosk and realtime password">
+      </div>
+      {{>map}}
+    </form>
+</template> 
+
+<template name="map">  
+	<div class="form-group col-md-10 col-md-offset-1">  
+		<input id="geoInput" class="form-control branch-location" name="place" placeholder="Address">
+	</div>
+	<div>  
+		<div id="geoMap" class="outerbg"></div>
+	</div>
+</template>  
+
+<template name="boAddQueue">
+	<form>
+		<div class="form-group col-md-10 col-md-offset-1">  
+			<input value="{{queue.name}}" class="form-control queue-name" placeholder="Queue Name">
+		</div>
+		<div class="form-group col-md-10 col-md-offset-1">  
+			<select class="form-control queue-active">
+				<option value="true">Active</option>
+				<option value="false">Not Active</option>
+			</select>
+		</div>
+		<div class="form-group col-md-10 col-md-offset-1">  
+			<input class="form-control queue-prefix" placeholder="Queue prefix">
+		</div>
+		<div class="form-group col-md-10 col-md-offset-1">  
+			<label><input class="queue-permission" type="checkbox"/>Visible only to managers</label>
+			
+		</div>
+	</form>
+</template>
