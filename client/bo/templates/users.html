@@ -4,10 +4,10 @@
         <input type="search" class="form-control search-user" placeholder="Search Email"/>
       </div>
       <div class="col-md-2">
-         <button type="button" class="btn btn-info add-user">Add new user to branch</button>
+         <button type="button" class="btn btn-warning add-user">Add new user to branch</button>
       </div>
       <div class="col-md-2">
-         <button type="button" class="btn btn-info add-kiosk">Add new kiosk to branch</button>
+         <button type="button" class="btn btn-warning add-kiosk">Add new kiosk to branch</button>
       </div>
   </div>
 
@@ -30,7 +30,7 @@
 
 <template name="boUserItem">
     <div class="col-md-10 well well-lg innerbg userItem" data-id="{{_id}}">
-     {{email}}
+     <span class="text-item userItem" data-id="{{_id}}"> {{email}}</span>
     </div>
 </template>
 

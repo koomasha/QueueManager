@@ -1,0 +1,51 @@
+
+<template name="boAdditionalDetails">
+	{{#each additionalDetails}}
+          {{>boAdditionalDetailsItem}}
+    {{/each}}
+    <div class="row container-fluid new-property-item">
+    	<div class="col-md-4 col-md-offset-1 form-group"><input class="form-control new-property-name" placeholder="Property name" value="{{name}}" /></div>
+		<div class="col-md-3 col-md-offset-1 form-group">
+			<select class="form-control new-property-type">
+				<option value="appText">Text</option>
+				<option value="appEmail">Email</option>
+				<option value="appNumber">Number</option>
+				<option value="appPhone">Phone</option>
+				<option value="appId">Id</option>
+			</select>
+		</div>	
+		{{#if userIsManager}}
+		<div class="col-md-1 ">
+			<div class="col-md-1 col-md-offset-5 add-property">
+				<span class="glyphicon glyphicon-plus icon green-icon" title="Add" aria-hidden="true"></span>
+			</div>
+		</div>
+		{{/if}}
+	</div>	
+</template>
+
+<template name="boAdditionalDetailsItem">
+	<div class="row container-fluid property-item">
+		<div class="col-md-4 col-md-offset-1 form-group">
+			<input name="test" class="form-control property-name" placeholder="Property name" value="{{name}}" /></div>
+		<div class="col-md-3 col-md-offset-1 form-group">
+			<select class="form-control property-type" value="{{type}}" name="type">
+				<option  {{selected type 'appText'}} value="appText">Text</option>
+				<option {{selected type 'appEmail'}} value="appEmail">Email</option>
+				<option  {{selected type 'appNumber'}} value="appNumber">Number</option>
+				<option  {{selected type 'appPhone'}}  value="appPhone">Phone</option>
+				<option {{selected type 'appId'}}  value="appId">Id</option>
+			</select>
+		</div>
+		{{#if userIsManager}}
+		<div class="col-md-1">
+			<div class="col-md-1 edit-property">
+				<span class="glyphicon glyphicon-floppy-saved green-icon" title="Saved"  data-name="{{name}}"  data-type="{{type}}" aria-hidden="true"></span>
+			</div>
+			<div class="col-md-1 remove-property">
+				<span class="glyphicon glyphicon-minus icon red-icon" title="Remove"  data-name="{{name}}"  data-type="{{type}}" aria-hidden="true"></span>
+			</div>
+		</div>
+		{{/if}}
+	</div> 		
+</template>
