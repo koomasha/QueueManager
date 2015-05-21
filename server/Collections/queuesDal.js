@@ -1,20 +1,20 @@
 Meteor.publish("Queues", function (branchid) {
-	if(this.userId) {		
-		return Queues.find({branchid:branchid});
-	}
+  if(this.userId) {   
+    return Queues.find();
+  }
 });
 
 
 
 Queues.allow({
   insert: function (userId, doc) {
-  	return GetAllowBranches(userId,doc.branchid,['Admin','Manager']) ;
+    return GetAllowBranches(userId,doc.branchid,['Admin','Manager']) ;
   },
   update: function (userId, doc, fieldNames, modifier){
-  	return GetAllowBranches(userId,doc.branchid,['Admin','Manager']) ;
+    return GetAllowBranches(userId,doc.branchid,['Admin','Manager']) ;
   },
   remove: function(userId, doc){
-  	return GetAllowBranches(userId,doc.branchid,['Admin','Manager']) ;
+    return GetAllowBranches(userId,doc.branchid,['Admin','Manager']) ;
   },
 });
 
@@ -30,13 +30,13 @@ Queues.before.insert(function (userId, doc) {
 });
 
 Meteor.methods({
-	boNextTicket:function(queueId){
-		var queue = Queues.findAndModify({
-			query: { _id: queueId },
-			update: { $inc: { currentSec: 1,opentickets: -1 }},
-			new: true
-		});	
-		var ticket = Tickets.findOne({queueId:queueId,sequence:queue.currentSec,status:'Waiting'});
-		return boChangeTicketStatus(ticket,"Getting Service",this.userId,'');
-	},
+  boNextTicket:function(queueId){
+    var queue = Queues.findAndModify({
+      query: { _id: queueId },
+      update: { $inc: { currentSec: 1,opentickets: -1 }},
+      new: true
+    }); 
+    var ticket = Tickets.findOne({queueId:queueId,sequence:queue.currentSec,status:'Waiting'});
+    return boChangeTicketStatus(ticket,"Getting Service",this.userId,'');
+  },
 });
