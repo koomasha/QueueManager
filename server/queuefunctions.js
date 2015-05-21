@@ -1,12 +1,12 @@
 Meteor.methods({
 	getQueuesByBranch: function (branchId) {
 		console.log('getQueuesByBranch: server and parameters are (' + branchId + ')');
-		return Queues.find({branchId: branchId}).fetch();
+		return Queues.find({branchid: branchId}).fetch();
 	},
 	getQueueAdditionalDetails: function (queueId) {
 		console.log('getQueueAdditionalDetails: server and parameters are (' + queueId + ')');
 
-		var queue = Queues.findOne(new Meteor.Collection.ObjectID(queueId));
+		var queue = Queues.findOne(queueId);
 
 		if (queue === undefined || queue === null) {
 			console.log('no such queue');
@@ -23,16 +23,16 @@ Meteor.methods({
 		// leave queue
 		// join again	
 
-		var ticket = Tickets.findOne({phone: phone, queueId: queueId.toHexString()});
+		var ticket = Tickets.findOne({phone: phone, queueId: queueId});
 
 		if (ticket === undefined || ticket === null) {
 			console.log('no such ticket');
 		} else {
 			removeUser(phone, queueId, "Postponed");
-			addUser(phone, queueId.toHexString(), ticket.additionalDetails);
+			addUser(phone, queueId, ticket.additionalDetails);
 		}
 	}
-}); 
+});
 
 function removeUser(phone, queueId, status) {
 	// 1. TODO:Remove from tickets
@@ -41,34 +41,34 @@ function removeUser(phone, queueId, status) {
 
 	console.log('removeUserFromQueue: server and parameters are (' + phone + ') and (' + queueId + ')');
 
-	var ticket = Tickets.findOne({phone: phone, queueId: queueId.toHexString()});
+	var ticket = Tickets.findOne({phone: phone, queueId: queueId});
 
 	if (ticket === undefined || ticket === null) {
 		console.log('no such ticket');
 	} else {
 		console.log('removeUserFromQueue: found');
-		Tickets.remove({phone: phone, queueId: queueId.toHexString()});
-	}	
+		Tickets.remove({phone: phone, queueId: queueId});
+	}
 }
 
 function addUser(phone, queueId, additionalDetails) {
 	console.log('addUserToQueue: server and parameters are (' + phone + ') and (' + queueId + ')');
 
 	var queue = Queues.findAndModify({
-						query: { _id: queueId },
-						update: { $inc: { last: 1,opentickets: 1 }},
-						new: true
-					});
+		query: { _id: queueId },
+		update: { $inc: { last: 1,opentickets: 1 }},
+		new: true
+	});
 	if (queue === undefined || queue === null) {
 		console.log('no such queue');
 	} else {
 		console.log(queue.last);
-		Tickets.insert({phone: phone, 
-		sequence: queue.last, 
-		queueId: queueId, 
-		creationTime: Date.now(),
-		status: "Waiting",
-		additionalDetails: additionalDetails || {}
+		Tickets.insert({phone: phone,
+			sequence: queue.last,
+			queueId: queueId,
+			creationTime: Date.now(),
+			status: "Waiting",
+			additionalDetails: additionalDetails || []
 		});
 	}
 

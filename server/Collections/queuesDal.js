@@ -1,23 +1,21 @@
-Meteor.publish("Queues", function (branchid) {
-	if(this.userId) {		
-		return Queues.find({branchid:branchid});
-	}
+Meteor.publish("Queues", function () {
+	return Queues.find();
 });
 
 
 /*
-Queues.allow({
-  insert: function (userId, branch) {return true;},
-  update: function (userId, doc, fieldNames, modifier){return true},
-});
-*/
+ Queues.allow({
+ insert: function (userId, branch) {return true;},
+ update: function (userId, doc, fieldNames, modifier){return true},
+ });
+ */
 
 
 Queues.before.insert(function (userId, doc) {
-  doc.createdAt = Date.now();
-  doc.last = 0;
-  doc.currentSec = 0;
-  doc.opentickets = 0;
+	doc.createdAt = Date.now();
+	doc.last = 0;
+	doc.currentSec = 0;
+	doc.opentickets = 0;
 });
 
 Meteor.methods({
