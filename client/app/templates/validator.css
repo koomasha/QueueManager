@@ -1,11 +1,11 @@
-.isValid {
+input[type=text].isValid {
 	border-style: solid;
     border-color: green;
     border-width: 1px;
     background-color: #CEFFE7;
 }
 
-.isInvalid {
+input[type=text].isInvalid {
 	border-style: solid;
     border-color: red;
     border-width: 1px;

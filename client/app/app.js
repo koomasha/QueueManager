@@ -248,7 +248,7 @@ if(Meteor.isCordova) {
 				return '0';
 			}
 
-			return (lastClickedQueue.last + 1) + lastClickedQueue.prefix;
+			return lastClickedQueue.prefix + (lastClickedQueue.last + 1);
 		},
 		'newEstimatedTime': function() {
 			if (Session.get('lastClickedQueue') === undefined) {
