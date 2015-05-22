@@ -1,7 +1,7 @@
 Meteor.methods({
 	getQueuesByBranch: function (branchId) {
 		console.log('getQueuesByBranch: server and parameters are (' + branchId + ')');
-		return Queues.find({branchid: branchId}).fetch();
+		return Queues.find({branchId: branchId}).fetch();
 	},
 	getQueueAdditionalDetails: function (queueId) {
 		console.log('getQueueAdditionalDetails: server and parameters are (' + queueId + ')');
@@ -56,7 +56,7 @@ function addUser(phone, queueId, additionalDetails) {
 
 	var queue = Queues.findAndModify({
 		query: { _id: queueId },
-		update: { $inc: { last: 1,opentickets: 1 }},
+		update: { $inc: { last: 1,openTickets: 1 }},
 		new: true
 	});
 	if (queue === undefined || queue === null) {
