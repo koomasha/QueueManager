@@ -1,7 +1,7 @@
 Meteor.publish("Branches", function () {
-	if(this.userId) {		
+	//if(this.userId) {		
 		return Branches.find({users:{$elemMatch:{userid:this.userId}}});
-	}
+	//}
 });
 
 

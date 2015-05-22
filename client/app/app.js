@@ -3,6 +3,7 @@ if(Meteor.isCordova) {
 	Session.setDefault('ismain', true);
 	Session.setDefault('lastClickedQueue', undefined);
 	Session.setDefault('optionalQueues', undefined);
+	Session.setDefault('optionalBranches', undefined);
 	Session.setDefault('additionalDetails', undefined);
 	Session.setDefault('branchid', undefined);
 	Session.setDefault('phoneid', undefined);
@@ -25,9 +26,27 @@ if(Meteor.isCordova) {
 // --------------Main-----------------------
 
 	Template.appMaincontent.events = {
-		'click #scangps': move,
+		'click #scangps': scangps,
 		'click #scanqr': scanqueueqr
 	}
+
+	Template.appChooseBranch.events = {
+		'click #branchesgroup a': function() {
+			getQueuesByBranch(this._id);
+			$('#appChooseBranchModal').addClass('notvisible');
+			Session.set('optionalBranches', undefined);
+		},
+		'click .cancel': function() {
+			Session.set('optionalBranches', undefined);
+			$('#appChooseBranchModal').addClass('notvisible');
+		}
+	}
+
+	Template.appChooseBranch.helpers({
+		branchItem: function() {
+			return Session.get('optionalBranches');
+		}
+	});
 
 	Template.appChooseQueue.events = {
 		'click #queuesgroup a': function() {
@@ -97,26 +116,36 @@ if(Meteor.isCordova) {
 		}
 	});
 
+	function scangps() {
+		//navigator.geolocation.getCurrentPosition(findnearbranches);
+		console.log('searching..');
+		$('#erroralert').addClass('notvisible');
+		GPSLocation.getCurrentPosition(findnearbranches, onGpsError, { timeout: 30000 });
+	}
+
+	function onGpsError(error) {
+		console.log('failed..');
+		$('#errorLabel').text(error.message);
+		$('#erroralert').removeClass('notvisible');
+	}
+
+	function findnearbranches(location) {
+		Meteor.call('getNearBranchesByLocation', location, function(err, response) {
+			if (response.length === 0) {
+				$('#errorLabel').text('Nothing was found in your area');
+				$('#erroralert').removeClass('notvisible');
+			} else {
+				$('#erroralert').addClass('notvisible');
+				showAvailableBranches(response);
+			}
+		});
+	}
+
 	function scanqueueqr() {
 		cordova.plugins.barcodeScanner.scan(
 			function (result) {
-				var branchId = result.text;
-
 				if (!result.cancelled) {
-
-					Meteor.call('getQueuesByBranch', branchId, function(err, response) {
-						console.log('response');
-						if (response.length === 0) {
-							$('#errorLabel').text('Branch not found');
-							$('#erroralert').removeClass('notvisible');
-						} else if (response.length === 1) {
-							$('#erroralert').addClass('notvisible');
-							addUserToQueue(response[0]);
-						} else {
-							$('#erroralert').addClass('notvisible');
-							showAvailableQueues(response);
-						}
-					});
+					getQueuesByBranch(result.text)
 				}
 			},
 			function (error) {
@@ -124,8 +153,24 @@ if(Meteor.isCordova) {
 			});
 	}
 
+	function getQueuesByBranch(branchId) {
+		Meteor.call('getQueuesByBranch', branchId, function(err, response) {
+			console.log('response');
+			if (response.length === 0) {
+				$('#errorLabel').text('Branch not found');
+				$('#erroralert').removeClass('notvisible');
+			} else if (response.length === 1) {
+				$('#erroralert').addClass('notvisible');
+				addUserToQueue(response[0]);
+			} else {
+				$('#erroralert').addClass('notvisible');
+				showAvailableQueues(response);
+			}
+		});
+	}
+
 	function addUserToQueue(queue) {
-		if (queue.additionalDetails === undefined || queue.additionalDetails === null) {
+		if (queue.additionalDetails === undefined || queue.additionalDetails === null || queue.additionalDetails.length === 0) {
 
 			Meteor.call('addUserToQueue', Session.get('phoneid'), queue._id, null, function(err, response) {
 				move();
@@ -137,7 +182,6 @@ if(Meteor.isCordova) {
 	}
 
 	function showAdditionalDetails(queue) {
-		console.log('additional details here');
 		Session.set('additionalDetails', queue);
 		$('#appAdditionalDetailsModal').removeClass('notvisible');
 	}
@@ -147,6 +191,10 @@ if(Meteor.isCordova) {
 		$('#appChooseQueueModal').removeClass('notvisible');
 	}
 
+	function showAvailableBranches(branches) {
+		Session.set('optionalBranches', branches);
+		$('#appChooseBranchModal').removeClass('notvisible');
+	}
 // --------------Queues---------------------
 
 	Template.appQueuecontent.helpers({
