@@ -1,66 +1,63 @@
 <template name="boLogin">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-        <div class="login-panel panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Please Log In</h3>
-          </div>
-          <div class="panel-body">
-            <form id="sign-up-form" role="form">
-              <fieldset>
-                <div class="form-group">
-                  <input id="login-email" type="email" placeholder="E-mail" name="email" autofocus="" class="form-control"/>
-                </div>
-                <div class="form-group">
-                  <input id="login-password" type="password" placeholder="Password" name="password" value="" class="form-control"/>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 col-md-offset-4">
-                    <input id="login-button" type="submit" value="login" class="btn btn-primary form-control"/>
-                  </div>
-                </div>
-              </fieldset>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+<div class="col-md-4 col-md-offset-4">
+  <div class="row outerbg" style="margin-top: 150px;">
+    <div class="col-md-12" style="background: #7DD852; height: 30px;"></div>
+    {{#if showBoAlert}}
+      {{> boAlert}}
+    {{/if}}
+    {{#if showBoLoginForm}}
+      {{> boLoginForm}}
+    {{/if}} 
+    {{#if showBoSignUpForm}}
+      {{> boSignupForm}}
+    {{/if}}  
+    <div class="col-md-12" style="background: #7DD852; height: 30px;"></div>
   </div>
+</div>
+
 </template>
 
 
 
-<template name="boSignup">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-        <div class="login-panel panel panel-default">
-          <div class="panel-heading"><a href="/" class="close">&#215;</a>
-            <h3 class="panel-title">Please Sign Up</h3>
+
+<template name="boLoginForm">
+  <div class="col-md-10 col-md-offset-1" style="margin-top: 30px;">
+      <div class="row container-fluid text-center  text-item">
+          <div class="form-group col-md-10 col-md-offset-1">  
+            <input class="form-control login-email" placeholder="Email or Kiosk name">
           </div>
-          <div class="panel-body">
-            <form id="sign-up-form" role="form">
-              <fieldset>
-                <div class="form-group">
-                  <input id="sign-up-name" type="text" placeholder="Company Name" name="name" autofocus="" class="form-control"/>
-                </div>
-                <div class="form-group">
-                  <input id="sign-up-email" type="email" placeholder="E-mail" name="email" autofocus="" class="form-control"/>
-                </div>
-                <div class="form-group">
-                  <input id="sign-up-password" type="password" placeholder="Password" name="password" value="" class="form-control"/>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 col-md-offset-4">
-                    <input id="sign-up-button" type="submit" value="Create New Account" class="btn btn-primary form-control"/>
-                  </div>
-                </div>
-              </fieldset>
-            </form>
+          <div class="form-group col-md-10 col-md-offset-1">  
+           <input class="form-control login-password" type="password" placeholder="Password">
           </div>
-        </div>
       </div>
-    </div>
+      <div class="row container-fluid" style="margin-bottom:30px;">
+        <div class="col-md-8 col-md-offset-2 btn btn-warning user-bo-login">Login</div>
+      </div> 
   </div>
+  <div class="col-md-2 col-md-offset-10 icon green-icon user-open-signup ">Sign up  <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></div>
 </template>
+
+
+
+
+
+<template name="boSignupForm">
+  <div class="col-md-10 col-md-offset-1" style="margin-top: 30px;">
+      <div class="row container-fluid text-center  text-item">
+          <div class="form-group col-md-10 col-md-offset-1">  
+            <input class="form-control signup-name" placeholder="Name">
+          </div>
+          <div class="form-group col-md-10 col-md-offset-1">  
+            <input class="form-control signup-email" placeholder="Email">
+          </div>
+          <div class="form-group col-md-10 col-md-offset-1">  
+           <input class="form-control signup-password" type="password" placeholder="Password">
+          </div>
+      </div>
+      <div class="row container-fluid" style="margin-bottom:30px;">
+        <div class="col-md-8 col-md-offset-2 btn btn-warning user-bo-signup">Sign up</div>
+      </div>
+  </div>
+  <div class="col-md-2 col-md-offset-10 icon green-icon user-open-login">Log in  <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></div>
+</template>
+

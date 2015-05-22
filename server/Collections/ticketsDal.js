@@ -7,6 +7,12 @@
   		remove: function(userId, doc){return true;},
 	});
 
+	Tickets.before.insert(function (userId, doc) {
+	  doc.creationTime = Date.now();
+	  doc.status = "Waiting",
+	  doc.branchId = Queues.findOne({_id:doc.queueId}).branchId;
+	});
+
 
 	Meteor.methods({
 		boDoneTicket:function(ticket,comment){
@@ -22,10 +28,10 @@
 
 
 
-	boChangeTicketStatus = function (ticket,status,userid,comment){
+	boChangeTicketStatus = function (ticket,status,userId,comment){
 		return Tickets.findAndModify({
 			query: { _id: ticket._id },
-			update: { $set: {status: status, userid:userid, comment:comment}},
+			update: { $set: {status: status, userId:userId, comment:comment}},
 			new: true
 		});
 	}
