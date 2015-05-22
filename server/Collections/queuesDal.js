@@ -1,7 +1,5 @@
 Meteor.publish("Queues", function (branchId) {
-  if(this.userId) {   
     return Queues.find();
-  }
 });
 
 

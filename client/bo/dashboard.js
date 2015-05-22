@@ -234,6 +234,7 @@ if(!Meteor.isCordova)
 			{
 				Session.set('showBoAddBranch',false);
 				Session.set('showBoModal',false);
+				Session.set('showBoAlert',false);
 			}		
 		},
 		'click .save-edit-branch':function(evt,tmpl){
@@ -241,6 +242,7 @@ if(!Meteor.isCordova)
 			{
 				Session.set('showBoAddBranch',false);
 				Session.set('showBoModal',false);
+				Session.set('showBoAlert',false);
 			}
 		},
 		'click .save-delete-branch':function(evt,tmpl){
@@ -248,18 +250,23 @@ if(!Meteor.isCordova)
 			deleteBranch(Session.get('branchId'))
 		},
 		'click .save-add-queue':function(evt,tmpl){
-			Session.set('showBoModal',false);
 			var name = tmpl.find('.queue-name').value;
 			var active = (tmpl.find('.queue-active').value == 'true');
 			var showToClerk = !(tmpl.find('.queue-permission').checked);
 			var prefix = tmpl.find('.queue-prefix').value;
 			if(name){
+				console.log(name);
 				if(!prefix) prefix = '';
 				Queues.insert({name:name,showToClerk:showToClerk,active:active,prefix:prefix,branchId:Session.get('branchId')});
 				Session.set('showBoAddQueue',false);
+				Session.set('showBoModal',false)
+				Session.set('showBoAlert',false);;
 			}
 			else
+			{
 				$('.queue-name').addClass('data-missing');
+				setAlertData('Please give queue a name');
+			}
 		},
 
 		'click .save-reset-tickets':function(evt,tmpl){
@@ -314,6 +321,7 @@ if(!Meteor.isCordova)
 				Meteor.users.update({_id: Meteor.user()._id}, {$set:{profile:{name:name}}});
 	      		Session.set("showBoMyProfile",false);
 				Session.set('showBoModal',false);
+				Session.set('showBoAlert',false);
 			 }	
 			
 		},
@@ -321,10 +329,6 @@ if(!Meteor.isCordova)
 			$('input').removeClass('data-missing');
 			Session.set('showBoAlert',false);
 		},
-		'click':function(){
-			Session.set('showBoAlert',false);
-		}
-
 
 	});
 
@@ -361,6 +365,10 @@ if(!Meteor.isCordova)
 		},
 		showBoMyProfile:function(){
 			return Session.get('showBoMyProfile');
+		},
+		submitButton:function(action){
+			console.log(action);
+			return (action != 'none');
 		}
 
 	});
@@ -632,6 +640,7 @@ if(!Meteor.isCordova)
 				}	
 			return false;
 		}
+
 	});
 
 /*//////////////////////////////
@@ -800,7 +809,7 @@ if(!Meteor.isCordova)
 	    	setModalData(
 				'Add new user',
 				'',
-				'','','');
+				'','','none');
 		},
 
 	});
@@ -849,11 +858,20 @@ if(!Meteor.isCordova)
 		'click .user-remove': function(){
 			Session.set('userId',this.userId);
 			Session.set('showBoModal',false);
+			var branchUsers = Branches.findOne({_id:Session.get('branchId')}).users;
 			var userName = Meteor.users.findOne({_id:this.userId}).profile.name;
-			setModalData(
-				'Remove user '+userName,
-				'Confirm removing '+userName,
-				'Remove','danger','user-remove');
+			if(users.length > 0){
+				setModalData(
+					'Remove user '+userName,
+					'Confirm removing '+userName,
+					'Remove','danger','user-remove');
+			}
+			else{
+				setModalData(
+					'Remove user '+userName,
+					'Last user in branch can not be deleted',
+					'','','none');
+			}	
 		},
 	});
 
