@@ -32,9 +32,9 @@
 
         </div>
         <div class="modal-footer">
-        {{#unless showBoAddUser}}
+        {{#if submitButton modalAction}}
           <a href="/" class="btn btn-{{modalButtonColor}} save-{{modalAction}}">{{modalButton}}</a>
-        {{/unless}}  
+        {{/if}}  
           <a href="#" class="btn btn-success cancel" data-dismiss="modal">Cancel</a>
         </div>
       </div>
