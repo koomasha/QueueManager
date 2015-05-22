@@ -1,87 +1,88 @@
 <template name="boBranchQueues">
 	{{#if showWorkStation}}
-		<div class="col-md-12">  
-			 <button type="button" class="close close-workstation" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		</div> 
+		{{>boQueueHeader}}
 		{{>boQueueWorkStation}}
-	{{else}}
+	{{/if}}	
+
+	{{#if showBoAdditionalDetails}}
+		{{>boQueueHeader}}
+		{{>boAdditionalDetails}}
+	{{/if}}
+	
+	{{#if showBoQueueList}}		
 		<div class="col-md-12">  
 			<div class="col-md-5">
 				<input type="search" class="form-control search-queue" placeholder="Search Queue"/>
 			</div>
-			<div class="col-md-2">
-				<button type="button" class="btn btn-info add-queue">Add new queue to branch</button>
-			</div>
+			{{#if userIsManager}}	
+				<div class="col-md-2">
+					<button type="button" class="btn btn-warning add-queue">Add new queue to branch</button>
+				</div>
+			{{/if}}	
 		</div>  
-		{{#if showBoAddQueue}}
-			{{>boAddQueue}}
-		{{/if}}
-		{{>boQueueList}}
+		{{#each queueList}}
+          {{>boQueueItem}}
+      	{{/each}}
 	{{/if}} 
 </template>
 
-
-<template name="boQueueList">
-      {{#each queueList}}
-          {{>boQueueItem}}
-      {{/each}}
+<template name="boQueueHeader">
+	<div class="row container-fluid" rows="20">
+		<div class="col-md-11">  
+		 	<h3 class="name-header text-center">{{queueName}}</h3>
+		</div> 
+		<div class="col-md-1">  
+			 <button type="button" class="close close-queue" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		</div> 
+	</div>
 </template>
-
 
 <template name="boQueueItem">
-	 <div class="col-md-10 well well-lg innerbg queueItem" data-id="{{_id}}">{{name}}</div>
-</template>
+	<div class="col-md-10 well well-lg innerbg">
+		<div class="row container-fluid">
+			<div class="col-md-3 text-item">
+				{{name}}
+			</div>
+			<div class="col-md-1 open-workstation" data-id="{{_id}}">
+				<span class="glyphicon glyphicon-play icon blue-icon" title="Open Workstation" aria-hidden="true"></span>
+			</div>	
+			<div class="col-md-1 add-details-to-queue" data-id="{{_id}}">
+					<span class="glyphicon glyphicon-th-list icon blue-icon" title="Aditional data" aria-hidden="true"></span>
+			</div>	
+			{{#if userIsManager}}
+				{{#if queueIsActive ./_id}}
+					<div class="col-md-1 col-md-offset-3 active-queue" data-id="{{_id}}">
+						<span class="glyphicon glyphicon-eye-open icon green-icon" title="Close queue" aria-hidden="true"></span>
+					</div>
+				{{else}}
+					<div class="col-md-1 col-md-offset-3 unactive-queue" data-id="{{_id}}">
+						<span class="glyphicon glyphicon-eye-close icon red-icon"  title="Open queue" aria-hidden="true"></span>
+					</div>
+				{{/if}}
 
-
-<template name="boAddQueue">
-    <div class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close cancel" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Add new Queue</h4>
-        </div>
-        <div class="modal-body">
-			<form>
-				<div class="form-group">
-					<input value="{{queue.name}}" class="form-control queue-name" placeholder="Queue Name">
+				{{#if queueIsPublic ./_id}}
+					<div class="col-md-1 public-queue" data-id="{{_id}}">
+						<span class="glyphicon glyphicon-user icon green-icon" title="Public" aria-hidden="true"></span>
+					</div>
+				{{else}}
+					<div class="col-md-1 unpublic-queue" data-id="{{_id}}">
+						<span class="glyphicon glyphicon-user icon red-icon" title="Managers" aria-hidden="true"></span>
+					</div>
+				{{/if}}	
+				<div class="col-md-1 icon blue-icon" data-id="{{_id}}" title="Statistics">
+					<span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
 				</div>
-				<div class="form-group">
-					<select class="form-control queue-active">
-						<option value="Active">Active</option>
-						<option value="Not active">Not Active</option>
-					</select>
+				<div class="col-md-1 remove-queue" data-id="{{_id}}">
+					<span class="glyphicon glyphicon-remove icon red-icon" title="Delete Queue" aria-hidden="true"></span>
 				</div>
-				<div class="form-group">
-					<label><input class="queue-permission" type="checkbox"/>Visible only to managers</label>
-					
-				</div>
-			</form>
-
-
-        </div>
-        <div class="modal-footer">
-          <a href="/" class="btn btn-success save">Create</a>
-          <a href="#" class="btn cancel" data-dismiss="modal">Cancel</a>
-        </div>
-      </div><!-- /.modal-content -->
-  </div><!-- /.modal -->
-</template>
-
-
-<template name="boQueueWorkStation">
-	<div class="row container-fluid">
-		<div class="col-md-4">
-			Current Ticket:
+			{{/if}}
 		</div>
-		<div class="col-md-4">Last Ticket:</div>
-		<div class="col-md-4">Open stations for queue:</div>
-	</div>
-	<div class="row">
-		<hr>
-	</div>
-	<div class="row container-fluid	">
-		<div class="col-md-12 col-md-offset-5">
-			<button type="button" class="btn btn-info next-ticket">Next</button>
+		{{#if showClientsInLine ./_id}}
+		<div class="row container-fluid">					
+			<div class="col-md-2 red-icon">
+				Waiting in line: {{clientsInLine}}
+			</div>
 		</div>
+		{{/if}}	
 	</div>
 </template>

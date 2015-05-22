@@ -1,13 +1,17 @@
 Meteor.publish("Branches", function () {
-	if(this.userId) {		
+	//if(this.userId) {		
 		return Branches.find({users:{$elemMatch:{userid:this.userId}}});
-	}
+	//}
 });
+
+
 
 Branches.allow({
 	insert: function (userId, branch) {return true;},
-  update: function (userId, doc, fieldNames, modifier){return true}
+  update: function (userId, doc, fieldNames, modifier){return GetAllowBranches(userId,doc._id,['Admin'])},
+  remove: function(userId, doc){return GetAllowBranches(userId,doc._id,['Admin']);},
 });
+
 
 Branches.before.insert(function (userId, doc) {
   doc.createdAt = Date.now();
@@ -15,9 +19,18 @@ Branches.before.insert(function (userId, doc) {
 });
 
 
+GetAllowBranches = function(userId,branchId,roles)
+{
+    if(Branches.findOne({_id:branchId,users:{$elemMatch:{userid:userId,role:{$in:roles}}}}))
+      {
+      return true;
+      }
+    else
+      return false;
+}
+
 
 Meteor.publish("boUsersInBranch", function (branchid) {		
-  //var branchid = 'bR6xBeu8ThfrfecSs';
   var branch = Branches.findOne({users:{$elemMatch:{userid:this.userId}},_id:branchid});
   if(branch){
     var self = this;
@@ -42,15 +55,3 @@ Meteor.publish("boUsersByEmail", function (email,branchid) {
       self.ready();
     }
 });
-
-Meteor.methods({
-        search: function(query, options) {
-            options = options || {};
-            options.limit = 50;
-            var regex = new RegExp("^" + query);
-
-            //return Meteor.users.find({emails:{$elemMatch:{address:new RegExp(regex)}}}, options)
-			//	.map(function(u) { return {_id:u._id,email:u.emails[0].address}} );
-},
-
-    });

@@ -1,12 +1,25 @@
 Meteor.methods({
+	getNearBranchesByLocation: function (currentLocation) {
+		console.log('getNearBranchesByLocation: server and parameters are (' + currentLocation.coords.longitude + ') and (' + currentLocation.coords.latitude + ')');
+
+		var result = [];
+
+		Branches.find().forEach( function(branch) {
+		 	if (distance(branch.location.lng, branch.location.lat, currentLocation.coords.longitude, currentLocation.coords.latitude) <= 2000) {
+		 		result.push(branch);
+		 	}
+		} );
+
+		return result;
+	},
 	getQueuesByBranch: function (branchId) {
 		console.log('getQueuesByBranch: server and parameters are (' + branchId + ')');
-		return Queues.find({branchId: branchId}).fetch();
+		return Queues.find({branchid: branchId}).fetch();
 	},
 	getQueueAdditionalDetails: function (queueId) {
 		console.log('getQueueAdditionalDetails: server and parameters are (' + queueId + ')');
 
-		var queue = Queues.findOne(new Meteor.Collection.ObjectID(queueId));
+		var queue = Queues.findOne(queueId);
 
 		if (queue === undefined || queue === null) {
 			console.log('no such queue');
@@ -16,23 +29,23 @@ Meteor.methods({
 	},
 	addUserToQueue: addUser,
 	removeUserFromQueue: function (phone, queueId) {
-		removeUser(phone, queueId, "left");
+		removeUser(phone, queueId, "Left");
 	},
 	postponeTurn: function (phone, queueId) {
 		console.log('postponeTurn: server and parameters are (' + phone + ') and (' + queueId + ')');
 		// leave queue
 		// join again	
 
-		var ticket = Tickets.findOne({phone: phone, queueId: queueId.toHexString()});
+		var ticket = Tickets.findOne({phone: phone, queueId: queueId});
 
 		if (ticket === undefined || ticket === null) {
 			console.log('no such ticket');
 		} else {
-			removeUser(phone, queueId, "passed");
-			addUser(phone, queueId.toHexString(), ticket.additionalDetails);
+			removeUser(phone, queueId, "Postponed");
+			addUser(phone, queueId, ticket.additionalDetails);
 		}
 	}
-}); 
+});
 
 function removeUser(phone, queueId, status) {
 	// 1. TODO:Remove from tickets
@@ -41,45 +54,55 @@ function removeUser(phone, queueId, status) {
 
 	console.log('removeUserFromQueue: server and parameters are (' + phone + ') and (' + queueId + ')');
 
-	var ticket = Tickets.findOne({phone: phone, queueId: queueId.toHexString()});
+	var ticket = Tickets.findOne({phone: phone, queueId: queueId});
 
 	if (ticket === undefined || ticket === null) {
 		console.log('no such ticket');
 	} else {
 		console.log('removeUserFromQueue: found');
-		Tickets.remove({phone: phone, queueId: queueId.toHexString()});
-	}	
+		Tickets.remove({phone: phone, queueId: queueId});
+	}
 }
 
 function addUser(phone, queueId, additionalDetails) {
 	console.log('addUserToQueue: server and parameters are (' + phone + ') and (' + queueId + ')');
 
-	var queue = Queues.findOne(new Meteor.Collection.ObjectID(queueId));
-
+	var queue = Queues.findAndModify({
+		query: { _id: queueId },
+		update: { $inc: { last: 1,opentickets: 1 }},
+		new: true
+	});
 	if (queue === undefined || queue === null) {
 		console.log('no such queue');
 	} else {
-		var next = queue.last;
-		var lastNum = parseInt(next.match(/\d+/)[0]) + 1;
-		next = next.replace(/(\d+)/g, lastNum);
-
-		if (additionalDetails != null) {
-			Tickets.insert({phone: phone, 
-				sequence: next, 
-				queueId: queueId, 
-				creationTime: new Date().toTimeString(),
-				status: "waiting",
-				additionalDetails: additionalDetails
-			});
-		} else {
-			Tickets.insert({phone: phone, 
-				sequence: next, 
-				queueId: queueId, 
-				creationTime: new Date().toTimeString(),
-				status: "waiting"
-			});
-		}
-
-		Queues.update(new Meteor.Collection.ObjectID(queueId), {$set: {last: next}});
+		console.log(queue.last);
+		Tickets.insert({phone: phone,
+			sequence: queue.last,
+			queueId: queueId,
+			creationTime: Date.now(),
+			status: "Waiting",
+			additionalDetails: additionalDetails || []
+		});
 	}
+
+}
+
+function distance(lon1, lat1, lon2, lat2) {
+	var R = 6371; // Radius of the earth in km
+	var dLat = (lat2-lat1).toRad();  // Javascript functions in radians
+	var dLon = (lon2-lon1).toRad();
+	var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+		Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
+		Math.sin(dLon/2) * Math.sin(dLon/2);
+	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+	var d = R * c; // Distance in km
+	var m = d * 1000; // Distance in meters
+	console.log('in meters : ' + m);
+	return m;
+}
+
+if (typeof(Number.prototype.toRad) === "undefined") {
+  Number.prototype.toRad = function() {
+    return this * Math.PI / 180;
+  }
 }

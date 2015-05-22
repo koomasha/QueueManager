@@ -13,17 +13,17 @@
 					</div>
 					<div id="{{name}}" class="panel-collapse collapse">
 						<div class="panel-body">
-					 		<h3>מיקומך בתור</h3>
-					  		<p>{{getSequence}}</p>
-					  		<h3>מיקום נוכחי</h3>
-					  		<p>{{current}}</p>
+					 		<h3>Your Location</h3>
+					  		<p>{{prefix}}{{getSequence}}</p>
+					  		<h3>Current Location</h3>
+					  		<p>{{prefix}}{{currentSec}}</p>
 					  		<button type="button" class="btn btn-default postpone">דחה תור</button>
 					  		<button type="button" class="btn btn-default leave">עזוב תור</button>
 						</div>
 					</div>
 				</div>
 			{{else}}
-				<p>אינך רשום כרגע לאף תור פעיל</p>
+				<p>You are not in any active queue</p>
 			{{/each}}
 		</div>
 	</div>
@@ -33,13 +33,13 @@
   <div id="appLeaveQueueModal" class="modal notvisible">
       <div class="modal-content">
         <div class="modal-body">
-        	<p>האם אתה בטוח שברצונך לעזוב את התור?</p>
+        	<p>Are you sure that you want to leave the queue?</p>
         </div>
         <div class="modal-footer">
         	<center>
-	          <button class="btn cancel" data-dismiss="modal">לא</button>
-	          <button class="btn btn-success save">כן</button>
-          </center>
+                <button class="btn btn-success save">Yes</button>
+	          	<button class="btn cancel" data-dismiss="modal">No</button>
+           </center>
         </div>
       </div>
   </div>
@@ -49,14 +49,14 @@
   <div id="appPostponeQueueModal" class="modal notvisible">
       <div class="modal-content">
         <div class="modal-body">
-        	<p>האם אתה בטוח שברצונך לעבור לסוף התור?</p>
-        	<p>מיקומך בתור יהיה {{newLocation}}</p>
-        	<p>זמן המתנה משוער {{newEstimatedTime}}</p>
+        	<p>Are you sure that you want to postpone your turn?</p>
+        	<p>Your new location would be {{newLocation}}</p>
+        	<p>Estimated wait time would be {{newEstimatedTime}}</p>
         </div>
         <div class="modal-footer">
         	<center>
-        	  <button class="btn cancel" data-dismiss="modal">לא</button>
-	          <button class="btn btn-success save">כן</button>
+                <button class="btn btn-success save">Yes</button>
+        	  	<button class="btn cancel" data-dismiss="modal">No</button>
             </center>
         </div>
       </div>
