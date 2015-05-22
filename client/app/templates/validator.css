@@ -11,3 +11,8 @@ input[type=text].isInvalid {
     border-width: 1px;
     background-color: #FFCECE;
 }
+
+button.disabledQueue{
+    text-decoration:none;
+    color: #ccc;
+}
