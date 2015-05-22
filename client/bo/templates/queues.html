@@ -13,8 +13,8 @@
 		{{>boQueueHeader}}
 		{{>boQueueStatistics}}
 	{{/if}}
-	
-	{{#if showBoQueueList}}		
+
+	{{#if showBoQueueList}}	
 		<div class="col-md-12">  
 			<div class="col-md-5">
 				<input type="search" class="form-control search-queue" placeholder="Search Queue"/>
@@ -70,7 +70,7 @@
 				</div>
 
 				<div class="col-md-1 queue-prefix" data-id="{{_id}}">
-					<span class="glyphicon glyphicon-font icon blue-icon"  title="Change prefix" aria-hidden="true"></span>
+					<span class="glyphicon glyphicon-font icon blue-icon" title="Change prefix" aria-hidden="true"></span>
 				</div>
 
 				{{#if queueIsPublic ./_id}}
