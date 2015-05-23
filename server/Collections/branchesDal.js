@@ -1,9 +1,11 @@
 sequences = new Meteor.Collection("sequences");
 
 Meteor.publish("Branches", function () {
-	if(this.userId) {		
-		return Branches.find({users:{$elemMatch:{userId:this.userId}}});
-	}
+  if(this.userId) { 
+      if(Meteor.users.find({_id:this.userId, "profile.branchId": { $exists: true }}).count() > 0)
+        return  Branches.find({kioskId:this.userId});
+    return Branches.find({users:{$elemMatch:{userId:this.userId}}});
+  }
 });
 
 
@@ -31,6 +33,7 @@ Branches.before.insert(function (userId, doc) {
   doc.creationTime = Date.now();
   doc.users = [{userId:userId,role:'Admin',email:u.emails[0].address,name:u.profile.name, station:0}];
   doc.kioskUsername = 'iticket'+sequence;
+  doc.kioskId = kioskId;
 });
 
 

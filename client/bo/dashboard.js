@@ -651,10 +651,10 @@ if(!Meteor.isCordova)
 		},
 		clerkStationNumber: function(){
 			if(!Session.get('clerkStationNumber')){
-				var branchUsers = Branches.findOne({_id:Session.get('queueId')}).users;
+				var users = Branches.findOne({_id:Session.get('branchId')}).users;
 				for(var i = 0; i < users.length; i++){
-					if(user[i].userId == Meteor.user()._id){
-						Session.set('clerkStationNumber',user[i].station);
+					if(users[i].userId == Meteor.user()._id){
+						Session.set('clerkStationNumber',users[i].station);
 					}
 				}
 			}
