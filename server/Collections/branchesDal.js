@@ -1,8 +1,11 @@
+sequences = new Meteor.Collection("sequences");
+
 Meteor.publish("Branches", function () {
-	//if(this.userId) {		
-		//return Branches.find({users:{$elemMatch:{userid:this.userId}}});
-	//}
-  return Branches.find();
+	if(this.userId) {		
+		return Branches.find({users:{$elemMatch:{userId:this.userId}}});
+	}
+  else
+    return Branches.find();
 });
 
 
@@ -15,14 +18,27 @@ Branches.allow({
 
 
 Branches.before.insert(function (userId, doc) {
-  doc.createdAt = Date.now();
-  doc.users = [{userid:userId,role:'Admin'}];
+  var kioskId = null;
+  var sequence = null;
+  while(!kioskId) {
+    sequence = sequences.findAndModify({
+      query: {name: 'kioskSequence' },
+      update: { $inc: { sequence: 1}},
+      upsert:true,
+      new: true
+    }).sequence;
+    kioskId  = Accounts.createUser({username:'iticket'+sequence,password:doc.password,profile:{branchId:doc._id}});
+  }
+  var u = Meteor.users.findOne({_id:userId});
+  doc.creationTime = Date.now();
+  doc.users = [{userId:userId,role:'Admin',email:u.emails[0].address,name:u.profile.name}];
+  doc.kioskUsername = 'iticket'+sequence;
 });
 
 
 GetAllowBranches = function(userId,branchId,roles)
 {
-    if(Branches.findOne({_id:branchId,users:{$elemMatch:{userid:userId,role:{$in:roles}}}}))
+    if(Branches.findOne({_id:branchId,users:{$elemMatch:{userId:userId,role:{$in:roles}}}}))
       {
       return true;
       }
@@ -31,27 +47,34 @@ GetAllowBranches = function(userId,branchId,roles)
 }
 
 
-Meteor.publish("boUsersInBranch", function (branchid) {		
-  var branch = Branches.findOne({users:{$elemMatch:{userid:this.userId}},_id:branchid});
+Meteor.publish("boUsersInBranch", function (branchId) {	
+  var branch = Branches.findOne({users:{$elemMatch:{userId:this.userId}},_id:branchId});
   if(branch){
     var self = this;
-    var branchUsers = Meteor.users.find({_id:{$in:branch.users.map(function(u) {return u.userid;})}}).fetch();
+    
+    var users = {};
+    _.each(branch.users,function(u){users[u.userId] = u.role;});
+
+    var branchUsers = Meteor.users.find({_id:{$in:branch.users.map(function(u) {return u.userId;})}}).fetch();
         _.each(branchUsers,function(u) {
-         self.added('boUsersInBranch', u._id, {_id:u._id,email:u.emails[0].address});
+         if(u.emails)
+         {
+            self.added('boUsersInBranch', u._id, {_id:u._id,email:u.emails[0].address,name:u.profile.name,role:users[u._id]});
+         } 
       });
     self.ready();
   }
 });
 
-Meteor.publish("boUsersByEmail", function (email,branchid) {   
-    var branch = Branches.findOne({users:{$elemMatch:{userid:this.userId}},_id:branchid});
+Meteor.publish("boUsersByEmail", function (email,branchId) {   
+    var branch = Branches.findOne({users:{$elemMatch:{userId:this.userId}},_id:branchId});
     if(branch){
       var options = {};
       options.limit = 5;
       var self = this;
-      var allusers = Meteor.users.find({emails:{$elemMatch:{address:new RegExp(email)}},_id:{$nin:branch.users.map(function(u) {return u.userid;})}},options).fetch();
+      var allusers = Meteor.users.find({emails:{$elemMatch:{address:new RegExp(email)}},_id:{$nin:branch.users.map(function(u) {return u.userId;})}},options).fetch();
           _.each(allusers,function(u) {
-           self.added('boUsersByEmail', u._id, {_id:u._id,email:u.emails[0].address});
+           self.added('boUsersByEmail', u._id, {_id:u._id,email:u.emails[0].address,name:u.profile.name});
         });
       self.ready();
     }

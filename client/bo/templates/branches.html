@@ -54,11 +54,12 @@
 
 <template name="boBranchItem">
     <div class="container-fluid branchItem well well-lg innerbg" data-name="{{name}}" data-id="{{_id}}">
-        <div class="col-md-10 branchItem text-item" data-id="{{_id}}">{{name}}</div>
+        <div class="col-md-5 branchItem text-item" data-id="{{_id}}">{{name}}</div>
+        <div class="col-md-3 branchItem green-icon" data-id="{{_id}}">{{userRole _id}}</div>
         {{#if branch.active}}
-          <div class="col-md-1 text-center branchItem" data-id="{{_id}}"><span class="glyphicon glyphicon-ok green-icon" aria-hidden="true"></span></div>
+          <div class="col-md-1 text-center branchItem" data-id="{{_id}}"><span class="glyphicon glyphicon-ok-sign green-icon" aria-hidden="true"></span></div>
         {{else}}
-          <div class="col-md-1 text-center branchItem" data-id="{{_id}}"><span class="glyphicon glyphicon-remove red-icon" aria-hidden="true"></span></div>
+          <div class="col-md-1 text-center branchItem" data-id="{{_id}}"><span class="glyphicon glyphicon-remove-sign red-icon" aria-hidden="true"></span></div>
         {{/if}} 
   </div>
 
@@ -70,8 +71,10 @@
 <template name="boBranchDetails">
   <div class = "row well well-lg outerbg">
       <div class="row">
-        <div class="col-md-5 col-md-offset-1  branch-name-title"><span>{{branch.name}}</span></div>
-        <div class="col-md-5 text-center text-item branch-address"><span>{{branch.address}}</span></div>
+        <div class="col-md-10 col-md-offset-1 text-center branch-name-title"><span>{{branch.name}}</span></div>
+        </div>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1 text-center text-item branch-address"><span>{{branch.address}}</span></div>
       </div>
       {{#if userIsAdmin}}
       <div class="row">

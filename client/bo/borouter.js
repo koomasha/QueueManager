@@ -5,13 +5,13 @@
 			path:'/',
 			layoutTemplate: 'boLayout'
 		});
-		this.route('boLogin',{
+	/*	this.route('boLogin',{
 			path:'/login',
 			layoutTemplate: 'boLayout',
-		});
-		this.route('boSignup',{
+		});*/
+/*		this.route('boSignup',{
 			path:'/signup',
 			layoutTemplate: 'boLayout',
-		});	  
+		});*/	  
 	});
 }

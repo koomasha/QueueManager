@@ -6,90 +6,38 @@
       <div class="col-md-2">
          <button type="button" class="btn btn-warning add-user">Add new user to branch</button>
       </div>
-      <div class="col-md-2">
-         <button type="button" class="btn btn-warning add-kiosk">Add new kiosk to branch</button>
-      </div>
   </div>
 
-   {{#if showBoAddUser}}
-      {{>boAddUser}}
-    {{else}}
-      {{#if showBoAddKiosk}}
-        {{>boAddKiosk}}
-      {{/if}}
-  {{/if}}
-      {{>boUserList}}
-
-</template>
-
-<template name="boUserList">
-  {{#each userList}}
+    {{#each userList}}
       {{>boUserItem}}
-  {{/each}}
+    {{/each}}
+
 </template>
+
 
 <template name="boUserItem">
-    <div class="col-md-10 well well-lg innerbg userItem" data-id="{{_id}}">
-     <span class="text-item userItem" data-id="{{_id}}"> {{email}}</span>
-    </div>
+  <div class="col-md-10 well well-lg innerbg userItem" data-id="{{_id}}">
+    <div class="row container-fluid">
+      <div class="col-md-3 text-item">
+        {{name}}
+      </div>
+      <div class="col-md-3 text-item">
+        {{email}}
+      </div>
+      <div class="col-md-1 col-md-offset-3 red-icon">
+        {{role}}
+      </div>
+      <div class="col-md-1">
+        <span class="glyphicon glyphicon-sort icon red-icon user-change-role" data-id="{{userId}}" title="Change status" aria-hidden="true"></span>
+      </div>
+      <div class="col-md-1">
+          <span class="glyphicon glyphicon-remove icon red-icon user-remove" data-id="{{userId}}" title="Remove user" aria-hidden="true"></span>
+      </div>
+    </div>  
+  </div>
 </template>
 
 
-<template name="boAddUser">
-    <div class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close cancel" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Add new user</h4>
-        </div>
-        <div class="modal-body">
-         <input type="search" class="form-control search-new-user" placeholder="Search Email"/>
-          <table class="table table-hover">
-        <tbody>
-          {{#each newUserList}}
-              {{>boUserItem}}
-          {{/each}}
-        </tbody>
-      </table>
-        </div>
-        <div class="modal-footer">
-          <a href="/" class="btn btn-success save">Add</a>
-          <a href="#" class="btn cancel" data-dismiss="modal">Cancel</a>
-        </div>
-      </div><!-- /.modal-content -->
-  </div><!-- /.modal -->
-</template>
 
-<template name="boAddKiosk">
-    <div class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close cancel" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Add new kiosk</h4>
-        </div>
-        <div class="modal-body">
-          <form>
-            <div class="form-group">
-              <input class="form-control kiosk-name" placeholder="Kiosk Name">
-            </div>
-            <div class="form-group">
-              <input class="form-control kiosk-email" type="email" placeholder="E-mail" name="email" autofocus=""/>
-            </div>
-            <div class="form-group">
-              <input  class="form-control kiosk-password" type="password" placeholder="Password" name="password" value=""/>
-            </div>
-            <div class="form-group">
-              <select class="form-control kiosk-active">
-                <option value="Active">Active</option>
-                <option value="Not active">Not Active</option>
-              </select>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <a href="/" class="btn btn-success save-kiosk">Add</a>
-          <a href="#" class="btn cancel" data-dismiss="modal">Cancel</a>
-        </div>
-      </div><!-- /.modal-content -->
-  </div><!-- /.modal -->
-</template>
+
+

@@ -12,13 +12,18 @@ if(!Meteor.isCordova)
 	Session.setDefault('showBoModal',false);
 	Session.setDefault('showBoQueueList',true);
 	Session.setDefault('showBoAdditionalDetails',false);
-	Session.setDefault('showWorkStation',false);
+	Session.setDefault('showBoWorkStation',false);
 	Session.setDefault("showBoAddQueue",false);
-	Session.setDefault("showBoAddKiosk",false);
 	Session.setDefault('showBoAddBranch',false);
 	Session.setDefault('showBoAddUser',false);
-
-
+	Session.setDefault('showBoQueueStatistics',false);
+	Session.setDefault('showBoQueuePrefix',false);
+	Session.setDefault('showBoLoginForm',true);
+	Session.setDefault('showBoSignUpForm',false);
+	Session.setDefault('showBoAlert',false);
+	Session.setDefault('showBoChangeUserRole',false);
+	Session.setDefault("showBoMyProfile",false);
+	
 	Session.setDefault('branchId',null);
 	Session.setDefault('userId',null);
 	Session.setDefault('queueId',null);
@@ -29,22 +34,73 @@ if(!Meteor.isCordova)
 	Session.setDefault("ticket",null);
 	Session.setDefault('clientsInLine',null)
 
-
 	Session.setDefault('boModalTitle','');
 	Session.setDefault('boModalContent','');
 	Session.setDefault('boModalButton','');
 	Session.setDefault('boModalButtonColor','');
 	Session.setDefault('boModalAction','');
+	Session.setDefault('boAlertText',null);
 
 	Session.setDefault('boGeoAddress',"Rabenu Yeruham Street, Tel Aviv-Yafo, Israel");
 	Session.setDefault('boGeoCoordinates',null);
-
+/*//////////////////////////////
+     LOCAL FUNCTIONS
+/////////////////////////////*/
 	var setModalData = function(title,content,button,color,action){
+		Session.set('showBoModal',true);
 		Session.set('boModalTitle',title);
 		Session.set('boModalContent',content);
 		Session.set('boModalButton',button);
 		Session.set('boModalButtonColor',color);
 		Session.set('boModalAction',action);
+	}
+
+	var setAlertData = function(text){
+		Session.set('showBoAlert',true);
+		Session.set('boAlertText',text);
+	}
+
+	var deleteBranch = function(branchId){
+		var queues = Queues.find({branchId:branchId}).fetch();
+		for(var i = 0; i < queues.length; i++)
+			deleteQueue(queues[i]._id);
+		Branches.remove({_id:Session.get('branchId')});
+	}
+	var deleteQueue = function(queueId){
+		var tickets = Tickets.find({queueId:queueId}).fetch();
+		for(var i = 0; i < tickets.length; i++)
+			Tickets.remove({_id:tickets[i]._id});
+		Queues.remove({_id:queueId});
+	}
+
+	var addOrEditBranch = function(tmpl,action){
+		var name = tmpl.find('.branch-name').value;
+		var active = (tmpl.find('.branch-active').value == "true");
+		var password = tmpl.find('.branch-password').value;
+		if(name && password){
+			if(action == 'add')
+			{
+				Branches.insert({name:name,password:password,address:Session.get("boGeoAddress"),location:Session.get("boGeoCoordinates"),active:active});
+			}
+			if(action == 'edit')
+				Branches.update({ _id:Session.get('branchId') },{$set:{name:name,password:password,address:Session.get("boGeoAddress"),location:Session.get("boGeoCoordinates"),active:active}});
+			return true;	
+		}
+		else if(!name)
+		{
+			$('.branch-name').addClass('data-missing');
+			setAlertData('Please give branch a name');
+		}
+		else{
+			$('.branch-password').addClass('data-missing');
+			setAlertData('Please set a password that will be used for kiosk and for realtime screen');
+		}
+		return false;
+	}
+
+	var validateEmail = function(email) {
+    	var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+    	return re.test(email);
 	}
 /*//////////////////////////////
      STARTUP
@@ -57,7 +113,7 @@ if(!Meteor.isCordova)
 	  });
 	});
 
-	Template.map.rendered = function () {
+	Template.boMap.rendered = function () {
 		Tracker.autorun(function () {
 			if (GoogleMaps.loaded()) {
 				$('#geoInput').geocomplete({map: $("#geoMap"),location:Session.get('boGeoAddress')}).bind("geocode:result", function(event, result){
@@ -68,18 +124,23 @@ if(!Meteor.isCordova)
 		});
 	}
 
+
 /*//////////////////////////////
      GLOBAL HELPERS
 /////////////////////////////*/
 	Template.registerHelper("userIsManager", function () {
-		var user = Branches.find({_id:Session.get('branchId'),
-									users:{$elemMatch:{userid:Meteor.user()._id,role:{$in:['Admin','Manager']}}}}).fetch();
+		if(Session.get('branchId') && Meteor.user()){
+			var user = Branches.find({_id:Session.get('branchId'),
+										users:{$elemMatch:{userId:Meteor.user()._id,role:{$in:['Admin','Manager']}}}}).fetch();
 			if(user.length > 0) return true;
-			return false;
+		}
+		return false;
 	});
 	Template.registerHelper("userIsAdmin", function () {
-		var user = Branches.find({_id:Session.get('branchId'),users:{$elemMatch:{userid:Meteor.user()._id,role:{$in:['Admin']}}}}).fetch();
-		if(user.length > 0) return true;
+		if(Session.get('branchId') && Meteor.user()){
+			var user = Branches.find({_id:Session.get('branchId'),users:{$elemMatch:{userId:Meteor.user()._id,role:{$in:['Admin']}}}}).fetch();
+			if(user.length > 0) return true;
+		}	
 		return false;
 	});
 	Template.registerHelper("queueName", function () {
@@ -91,6 +152,16 @@ if(!Meteor.isCordova)
 	Template.registerHelper('showBoModal',function(){
 			return Session.get('showBoModal');
 	});
+	Template.registerHelper('isKiosk',function(){
+		if(Meteor.user().profile.branchId)	
+			return true;
+		return false;
+	});
+
+	Template.registerHelper('showBoAlert',function(){
+			return Session.get('showBoAlert');
+	});
+
 	Template.registerHelper('branch',function(){
 		if(this._id){
 			var branch = Branches.findOne({_id:this._id});
@@ -99,8 +170,20 @@ if(!Meteor.isCordova)
 		}	
 		else if(Session.get('branchId'))
 			return  Branches.findOne({_id:Session.get('branchId')});
-		return {};
 
+		return {};
+	});
+
+	Template.registerHelper('queue',function(){
+		if(Session.get('queueId'))
+			return  Queues.findOne({_id:Session.get('queueId')});
+		return {};
+	});
+
+	Template.registerHelper('user',function(){
+		if(Session.get('userId'))
+			return  boUsersInBranch.findOne({_id:Session.get('queueId')});
+		return {};
 	});
 
 	Template.registerHelper('selected',function(type,value){
@@ -119,18 +202,23 @@ if(!Meteor.isCordova)
 			Session.set('showBoModal',false);
 			Session.set('showBoAddBranch',false);
 			Session.set('showBoAddQueue',false);
+			Session.set("showBoAddUser",false);
+			Session.set("showBoChangeUserRole",false);
+			Session.set("showBoQueuePrefix",false);
+			Session.set("userSearchString",null);
+			Session.set("showBoMyProfile",false);
 		},
-		'click .save-remove':function(evt,tmpl){
-			Session.set('showBoModal',false);
-			Queues.remove({_id:Session.get('queueId')});
+		'click .save-remove-queue':function(evt,tmpl){
+			Session.set('showBoModal',false);			
+			deleteQueue(Session.get('queueId'));
 		},
 		'click .save-unpublic':function(evt,tmpl){
 			Session.set('showBoModal',false);
-			Queues.update({ _id:Session.get('queueId') },{ $set: {showtoclerk:false}});
+			Queues.update({ _id:Session.get('queueId') },{ $set: {showToClerk:false}});
 		},
 		'click .save-public':function(evt,tmpl){
 			Session.set('showBoModal',false);
-			Queues.update({ _id:Session.get('queueId') },{ $set: {showtoclerk:true}});
+			Queues.update({ _id:Session.get('queueId') },{ $set: {showToClerk:true}});
 		},
 		'click .save-active':function(evt,tmpl){
 			Session.set('showBoModal',false);
@@ -141,58 +229,105 @@ if(!Meteor.isCordova)
 			Queues.update({ _id:Session.get('queueId')},{ $set: {active:false}});
 		},
 		'click .save-add-branch':function(evt,tmpl){
-			var name = tmpl.find('.branch-name').value;
-			var active = (tmpl.find('.branch-active').value == "true");
-			var password = tmpl.find('.branch-password').value;
-			if(name && password){
-				Branches.insert({name:name,password:password,address:Session.get("boGeoAddress"),location:Session.get("boGeoCoordinates"),active:active});
+		
+			if(addOrEditBranch(tmpl,'add'))
+			{
 				Session.set('showBoAddBranch',false);
 				Session.set('showBoModal',false);
-			}
-			else if(name)
-				$('.branch-name').addClass('data-missing');
-			else
-				$('.branch-password').addClass('data-missing');
+				Session.set('showBoAlert',false);
+			}		
 		},
 		'click .save-edit-branch':function(evt,tmpl){
-			var name = tmpl.find('.branch-name').value;
-			var active = (tmpl.find('.branch-active').value == "true");
-			var password = tmpl.find('.branch-password').value;
-			if(name && password){
-				Branches.update({ _id:Session.get('branchId') },{$set:{name:name,password:password,address:Session.get("boGeoAddress"),location:Session.get("boGeoCoordinates"),active:active}});
+			if(addOrEditBranch(tmpl,'edit'))
+			{
 				Session.set('showBoAddBranch',false);
 				Session.set('showBoModal',false);
+				Session.set('showBoAlert',false);
 			}
-			else if(name)
-				$('.branch-name').addClass('data-missing');
-			else
-				$('.branch-password').addClass('data-missing');
 		},
 		'click .save-delete-branch':function(evt,tmpl){
 			Session.set('showBoModal',false);
-			var queues = Queues.find({branchid:Session.get('branchId')}).fetch();
-			var tickets = Tickets.find({queueId:{$in:queues.map(function(q){return q._id;})}}).fetch();
-			for(var i = 0; i < tickets.length; i++)
-				Tickets.remove({_id:tickets[i]._id});
-			for(var i = 0; i < queues.length; i++)
-				Queues.remove({_id:queues[i]._id});
-			Branches.remove({_id:Session.get('branchId')});
+			deleteBranch(Session.get('branchId'))
 		},
 		'click .save-add-queue':function(evt,tmpl){
-			Session.set('showBoModal',false);
 			var name = tmpl.find('.queue-name').value;
 			var active = (tmpl.find('.queue-active').value == 'true');
-			var showtoclerk = !(tmpl.find('.queue-permission').checked);
+			var showToClerk = !(tmpl.find('.queue-permission').checked);
 			var prefix = tmpl.find('.queue-prefix').value;
 			if(name){
-				Queues.insert({name:name,showtoclerk:showtoclerk,active:active,prefix:prefix,branchid:Session.get('branchId')});
+				console.log(name);
+				if(!prefix) prefix = '';
+				Queues.insert({name:name,showToClerk:showToClerk,active:active,prefix:prefix,branchId:Session.get('branchId')});
 				Session.set('showBoAddQueue',false);
+				Session.set('showBoModal',false)
+				Session.set('showBoAlert',false);;
 			}
 			else
+			{
 				$('.queue-name').addClass('data-missing');
+				setAlertData('Please give queue a name');
+			}
+		},
+
+		'click .save-reset-tickets':function(evt,tmpl){
+			Session.set('showBoModal',false);
+			Queues.update({ _id:Session.get('queueId')},{ $set: {last:0}});
+		},
+		'click .save-change-prefix':function(evt,tmpl){
+			Session.set('showBoModal',false);
+			Session.set('showBoQueuePrefix',false);
+			Queues.update({ _id:Session.get('queueId')},{ $set: {prefix:tmpl.find('.queue-prefix-input').value}});
+		},
+		'click .save-change-role':function(evt,tmpl){
+			Session.set('showBoModal',false);
+			Session.set('showBoChangeUserRole',false);
+			var role = tmpl.find('.user-role-input').value
+			var branch = Branches.findOne({_id:Session.get('branchId')});
+			for(var i = 0; i < branch.users.length; i++){
+				if(branch.users[i].userId == Session.get('userId')) {
+					branch.users[i].role = role;
+					Branches.update({_id:Session.get('branchId')},{$set: {users:branch.users } });
+					i = branch.users.length;
+				}
+			}
+		},
+		'click .save-user-remove':function(){
+			Session.set('showBoModal',false);
+			var users = Branches.findOne({_id:Session.get('branchId')}).users;
+			var newUsers = [];
+			for(var i =0; i < users.length; i++){
+				if(users[i].userId != Session.get('userId'))
+					newUsers.push(users[i]);				
+			}
+			Branches.update({_id:Session.get('branchId')},{$set:{users:newUsers}});		
+		},
+		'click .save-my-user-profile':function(evt,tmpl){
+	
+			var name = tmpl.find('.my-user-name').value;
+			var oldPassword = tmpl.find('.my-user-old-password').value;
+			var newPassword = tmpl.find('.my-user-new-password').value;
+			if(newPassword){
+				Accounts.changePassword(oldPassword, newPassword, function(err, result) {
+					if (err)
+						setAlertData('Old password not match');
+					else{
+						Meteor.users.update({_id: Meteor.user()._id}, {$set:{profile:{name:name}}});
+	      				Session.set("showBoMyProfile",false);
+						Session.set('showBoModal',false);
+					}
+			 	});
+			}
+			 else{
+				Meteor.users.update({_id: Meteor.user()._id}, {$set:{profile:{name:name}}});
+	      		Session.set("showBoMyProfile",false);
+				Session.set('showBoModal',false);
+				Session.set('showBoAlert',false);
+			 }	
+			
 		},
 		'click input':function(){
 			$('input').removeClass('data-missing');
+			Session.set('showBoAlert',false);
 		},
 
 	});
@@ -218,11 +353,40 @@ if(!Meteor.isCordova)
 		},
 		showBoAddQueue:function(){
 			return Session.get('showBoAddQueue');
+		},
+		showBoQueuePrefix:function(){
+			return Session.get('showBoQueuePrefix');
+		},
+		showBoAddUser:function(){
+			return Session.get('showBoAddUser');
+		},
+		showBoChangeUserRole:function(){
+			return Session.get('showBoChangeUserRole');
+		},
+		showBoMyProfile:function(){
+			return Session.get('showBoMyProfile');
+		},
+		submitButton:function(action){
+			console.log(action);
+			return (action != 'none');
 		}
-
 
 	});
 
+/*//////////////////////////////
+     ALERT
+/////////////////////////////*/
+	Template.boAlert.helpers({
+		boAlertText:function(){
+			return Session.get('boAlertText');
+		},
+	});
+
+	Template.boAlert.events({
+		'click .close-alert':function(){
+			Session.set('showBoAlert',false)
+		}
+	});
 
 /*//////////////////////////////
      BRANCH
@@ -236,7 +400,6 @@ if(!Meteor.isCordova)
 	Template.boBranchList.events({
 		'click .add-branch':function(evt,tmpl){
 			Session.set('showBoAddBranch',true);
-			Session.set('showBoModal',true);
 			Session.set('branchId',null)
 			setModalData(
 				'Create new branch',
@@ -247,15 +410,28 @@ if(!Meteor.isCordova)
 		'click .branchItem':function(evt,tmpl){
 			Session.set('branchId',$(evt.target).closest('div').data('id'));
 			Session.set('queueId',null);
-			Session.set('showWorkStation',false);
+			Session.set('showBoWorkStation',false);
 			Session.set('showBoAdditionalDetails',false);
 			Session.set('showBoQueueList',true);
-
+			$('.nav-tabs a[href="#queues"]').tab('show');
 			Meteor.subscribe("Queues",Session.get("branchId"));
 		},
 		'keyup input.search-branch': function (evt) {
 	        Session.set("branchSearchString", evt.currentTarget.value);
 	    }, 
+	});
+
+	Template.boBranchItem.helpers({
+		userRole:function(branchId){
+			var users = Branches.findOne({_id:branchId}).users;
+			if(users){
+				for(var i=0; i < users.length; i++){
+					if(users[i].userId == Meteor.user()._id)
+						return users[i].role;
+				}
+			}
+
+		}
 	});
 
 	Template.boBranchList.helpers({
@@ -271,15 +447,12 @@ if(!Meteor.isCordova)
 	Template.boBranchDetails.events({
 		'click .edit-branch':function(){
 			Session.set('showBoAddBranch',true);
-			Session.set('showBoModal',true);
-
 			setModalData(
 				'Edit branch',
 				'',
 				'Save','warning','edit-branch');
 		},
 		'click .delete-branch':function(){
-			Session.set('showBoModal',true);
 			var branchName = Branches.findOne({_id:Session.get('branchId')}).name;
 			setModalData(
 				'Delete branch',
@@ -293,8 +466,8 @@ if(!Meteor.isCordova)
      QUEUES
 /////////////////////////////*/
 	Template.boBranchQueues.helpers({
-		showWorkStation : function(){
-			return Session.get('showWorkStation');
+		showBoWorkStation : function(){
+			return Session.get('showBoWorkStation');
 		},
 		showBoAdditionalDetails: function(){
 			return Session.get('showBoAdditionalDetails');
@@ -302,12 +475,15 @@ if(!Meteor.isCordova)
 		showBoQueueList:function(){
 			return Session.get('showBoQueueList');
 		},
+		showBoQueueStatistics: function(){
+			return Session.get('showBoQueueStatistics');
+		},
 		queueList: function(){
 			var searchString = Session.get("queueSearchString");
 	    	if(searchString)
-				return Queues.find({name:new RegExp(searchString),branchid:Session.get('branchId')}).fetch();
+				return Queues.find({name:new RegExp(searchString),branchId:Session.get('branchId')}).fetch();
 	    	else
-				return Queues.find({branchid:Session.get('branchId')}).fetch();
+				return Queues.find({branchId:Session.get('branchId')}).fetch();
 	    	
 		},
 	});
@@ -315,7 +491,7 @@ if(!Meteor.isCordova)
 	Template.boBranchQueues.events({
 		'click .add-queue' : function(evt,tmpl){
 	    	Session.set("showBoAddQueue",true);
-	    	Session.set("showBoModal",true);
+	    	Session.set('queueId',null);
 	    	setModalData(
 				'Add new queue',
 				'',
@@ -330,18 +506,19 @@ if(!Meteor.isCordova)
 	Template.boQueueHeader.events({
 		'click .close-queue' : function(evt,tmpl){
 	    	Session.set('queueId',null);
-			Session.set('showWorkStation',false);
+			Session.set('showBoWorkStation',false);
 			Session.set('showBoAdditionalDetails',false);
+			Session.set('showBoQueueStatistics',false);
 			Session.set('showBoQueueList',true);
 	    }, 
 	});
 
 	Template.boQueueItem.events({
 		'click .open-workstation':function(evt,tmpl){
-			Session.set('queueId',$(evt.target).closest('div').data('id'));
-			Session.set('showWorkStation',true);
+			Session.set('queueId',this._id);
+			Session.set('showBoWorkStation',true);
 			Session.set('showBoQueueList',false);
-			var currTicket = Tickets.findOne({queueId:Session.get('queueId'), userid:Meteor.user()._id, status:"Getting Service"});
+			var currTicket = Tickets.findOne({queueId:this._id, userId:Meteor.user()._id, status:"Getting Service"});
 			if(currTicket){
 				Session.set('ticket',currTicket);
 			}
@@ -350,10 +527,8 @@ if(!Meteor.isCordova)
 					Session.set('ticket',null);
 		},
 		'click .active-queue':function(evt,tmpl){
-			Session.set('queueId',$(evt.target).closest('div').data('id'));				
-			var queueName = Queues.findOne({_id:Session.get("queueId")}).name;
-			Session.set('showBoModal',true);
-
+			Session.set('queueId',this._id);				
+			var queueName = Queues.findOne({_id:this._id}).name;
 			setModalData(
 				'Close '+queueName,
 				'Set '+ queueName+' to closed',
@@ -361,35 +536,26 @@ if(!Meteor.isCordova)
 		},
 
 		'click .unactive-queue':function(evt,tmpl){
-			Session.set('queueId',$(evt.target).closest('div').data('id'));
+			Session.set('queueId',this._id);
 			Session.set('showBoModal',true);
 
-			var queueName = Queues.findOne({_id:Session.get("queueId")}).name;
-			Session.set('showBoModal',true);
-
+			var queueName = Queues.findOne({_id:this._id}).name;
 			setModalData(
 				'Open '+queueName,
 				'Set '+ queueName+' to open',
 				'Save','warning','active');
 		},				
 		'click .public-queue':function(evt,tmpl){
-			console.log($(evt.target));
-			Session.set('queueId',$(evt.target).closest('div').data('id'));
-			Session.set('showBoModal',true);
-
-			var queueName = Queues.findOne({_id:Session.get("queueId")}).name;
-			Session.set('showBoModal',true);
-
+			Session.set('queueId',this._id);
+			var queueName = Queues.findOne({_id:this._id}).name;
 			setModalData(
 				'Change '+queueName+' access privileges',
 				'Set '+ queueName+' be visible only by managers',
 				'Save','warning','unpublic');
 		},		
 		'click .unpublic-queue':function(evt,tmpl){
-			Session.set('queueId',$(evt.target).closest('div').data('id'));
-			Session.set('showBoModal',true);
-			var queueName = Queues.findOne({_id:Session.get("queueId")}).name;
-			Session.set('showBoModal',true);
+			Session.set('queueId',this._id);
+			var queueName = Queues.findOne({_id:this._id}).name;
 			setModalData(
 				'Change '+queueName+' access privileges',
 				'Set '+ queueName+' be visible to all',
@@ -397,17 +563,39 @@ if(!Meteor.isCordova)
 		},				
 		'click .add-details-to-queue':function(evt,tmpl){
 			Session.set('showBoAdditionalDetails',true);
-			Session.set('queueId',$(evt.target).closest('div').data('id'));
+			Session.set('queueId',this._id);
 			Session.set('showBoQueueList',false);
 		},
 		'click .remove-queue':function(evt,tmpl){
-			Session.set('queueId',$(evt.target).closest('div').data('id'));
-			var queueName = Queues.findOne({_id:Session.get("queueId")}).name;
-			Session.set('showBoModal',true);
+			Session.set('queueId',this._id);
+			var queueName = Queues.findOne({_id:this._id}).name;
 			setModalData(
 				'Delete queue '+queueName,
 				'Please confirm deletion of '+ queueName,
-				'Delete','danger','remove');
+				'Delete','danger','remove-queue');
+		},
+		'click .queue-statistics':function(evt,tmpl){
+			Session.set('queueId',this._id);
+			Session.set('showBoQueueStatistics',true);
+			Session.set('showBoQueueList',false);
+		},
+
+		'click .queue-reset-ticket-count' :function(evt,tmpl){
+			Session.set('queueId',this._id);
+			var queueName = Queues.findOne({_id:this._id}).name;
+			setModalData(
+				'Reset tickets count',
+				'Reset tickets count for queue '+queueName,
+				'Reset','warning','reset-tickets');
+		},
+		'click .queue-prefix' :function(evt,tmpl){
+			Session.set('queueId',this._id);
+			var queueName = Queues.findOne({_id:this._id}).name;
+			Session.set('showBoQueuePrefix',true);
+			setModalData(
+				'Change queue pefix',
+				'',
+				'Change','warning','change-prefix');
 		},
 	});
 
@@ -421,16 +609,16 @@ if(!Meteor.isCordova)
 		queueIsPublic:function(queueId){
 			var queue = Queues.findOne({_id:queueId});
 			if(queue)
-				return queue.showtoclerk;
+				return queue.showToClerk;
 			return false;
 		},
 
 		showClientsInLine:function(queueId){
 			var clients = Queues.findOne({_id:queueId});
 			if(clients){
-				if(clients.opentickets > 0)
+				if(clients.openTickets > 0)
 				{
-					Session.set('clientsInLine',clients.opentickets);
+					Session.set('clientsInLine',clients.openTickets);
 					return true;
 				}
 				Session.set('clientsInLine',null);
@@ -440,6 +628,19 @@ if(!Meteor.isCordova)
 		clientsInLine:function(){
 			return Session.get('clientsInLine');
 		},
+		managerOrPublic:function(queueId){
+			var queue = Queues.findOne({_id:queueId});
+			if(queue)
+				if(queue.showToClerk)
+					return true;
+				else{
+					var user = Branches.findOne({_id:Session.get('branchId'),users:{$elemMatch:{userId:Meteor.user()._id,role:{$in:['Admin','Manager']}}}});
+					if(user)
+						return true;
+				}	
+			return false;
+		}
+
 	});
 
 /*//////////////////////////////
@@ -451,20 +652,20 @@ if(!Meteor.isCordova)
 		},
 		nextTicket: function(){
 			if(Session.get('queueId'))
-				if(Queues.findOne({_id:Session.get('queueId')}).opentickets > 0)
-					return Queues.findOne({_id:Session.get('queueId')}).currentSec+1;
+				if(Queues.findOne({_id:Session.get('queueId')}).openTickets > 0)
+					return Queues.findOne({_id:Session.get('queueId')}).currentSeq+1;
 				else return '--';
 		},
 		openTickets: function(){
 			if(Session.get('queueId'))
-				return Queues.findOne({_id:Session.get('queueId')}).opentickets;
+				return Queues.findOne({_id:Session.get('queueId')}).openTickets;
 		},
 	});
 
 	Template.boQueueWorkStation.events({
 		'click .next-ticket':function(evt,tmpl){
 			var queue = Queues.findOne({_id:Session.get('queueId')});
-			if(queue.opentickets > 0){
+			if(queue.openTickets > 0){
 				Meteor.call('boNextTicket',Session.get('queueId'),function(err, data) {Session.set('ticket', data)});
 			}
 		},
@@ -587,36 +788,30 @@ if(!Meteor.isCordova)
 /*//////////////////////////////
      USERS
 /////////////////////////////*/	
+
 	Template.boBranchUsers.helpers({
-		showBoAddUser:function(){
-			return Session.get('showBoAddUser');
+		userList: function () {
+			var searchString = Session.get("userSearchString");
+			if(searchString)
+				return Branches.findOne({_id:Session.get('branchId')})
+						.users.filter(function(u){return u.email.toLowerCase().indexOf(searchString.toLowerCase()) != -1; });
+			else
+				return Branches.findOne({_id:Session.get('branchId')}).users;
 		},
-		showBoAddKiosk:function(){
-			return Session.get('showBoAddKiosk');
-		},
-	});
+	});	
 
 	Template.boBranchUsers.events({
 		'keyup input.search-user': function (evt) {
-	        Session.set("userSearchString", evt.currentTarget.value);
+	        Session.set("userSearchString", (evt.currentTarget.value));
 	    }, 
 	    'click .add-user' : function(evt,tmpl){
 	    	Session.set("showBoAddUser",true);
-	    },  
-	    'click .add-kiosk' : function(evt,tmpl){
-	    	Session.set("showBoAddKiosk",true);
-	    },
-	});
-
-	Template.boUserList.helpers({
-	    userList: function () {
-	    	var searchString = Session.get("userSearchString");
-	    	if(searchString)
-				return boUsersInBranch.find({email:new RegExp(searchString)});
-	    	else
-				return boUsersInBranch.find();
+	    	setModalData(
+				'Add new user',
+				'',
+				'','','none');
 		},
-	 	
+
 	});
 
 	Template.boAddUser.helpers({
@@ -631,69 +826,72 @@ if(!Meteor.isCordova)
 	});
 
 	Template.boAddUser.events({
-		'click .cancel': function(evt,tmpl){
-			Session.set("showBoAddUser",false);
-			Session.set("userSearchString",null);
-		},
-
-		'click .userItem' :function(evt,tmpl){
-			$('.userItem').removeClass('selected-user','');
-			$('.userItem').addClass('icon');
-			Session.set('userId', $(evt.target).closest('div').data('id'));
-			$(evt.target).closest('div').addClass('selected-user');
-			$(evt.target).closest('div').removeClass('icon');
+		'click .user-add' :function(evt,tmpl){
+			var u = Meteor.users.findOne({_id:this._id});
+	    	if(u){
+		    	Branches.update({ _id:Session.get('branchId') },{ $push: {users: { userId:u._id, role:'Clerk', email:u.emails[0].address, name:u.profile.name }}});
+				Session.set('userId',null);
+				Session.set("showBoAddUser",false);
+				Session.set("showBoModal",false);
+				Session.set("userSearchString",null);
+				Tracker.autorun(function () {
+				  	Meteor.subscribe("boUsersByEmail", Session.get("userSearchString"),Session.get("branchId"));
+				});
+			}
 		},
 		'keyup input.search-new-user': function (evt) {
-	        Session.set("userSearchString", evt.currentTarget.value);
+	        Session.set("userSearchString", (evt.currentTarget.value));
 	    }, 
-	    'click .save':function(evt,tmpl){
-	    	Branches.update({ _id:Session.get('branchId') },{ $push: {users: { userid:Session.get('userId'), role:'Clerk' }}});
-			Session.set('userId',null);
-			Session.set("showBoAddUser",false);
-				Session.set("userSearchString",null);
-				$('.userItem').removeClass('icon');
-				Tracker.autorun(function () {
-			  	Meteor.subscribe("boUsersInBranch", Session.get("branchId"));
-			  	Meteor.subscribe("boUsersByEmail", Session.get("userSearchString"),Session.get("branchId"));
-			});
-			
-		},
-		});
-
-	Template.boAddKiosk.events({
-		'click .cancel': function(evt,tmpl){
-				Session.set("showBoAddKiosk",false);
-				Session.set("userSearchString",null);
-			},
-			'click .save-kiosk':function(evt,tmpl){
-			event.preventDefault();
-			var email = tmpl.find('.kiosk-name').value;
-			var password = tmpl.find('.kiosk-password').value;
-			var kioskName = tmpl.find('.kiosk-name').value;
-			var active = tmpl.find('.kiosk-active').value;
-			Meteor.users.insert({
-				email:email,
-				password:password,
-				profile:{
-					name:kioskName,
-					branchid:Session.get('branchId'),
-					active:active,
-					queues:[],
-				}
-								
-			});
-			Session.set("showBoAddKiosk",false);
-		}
 	});
+
+	Template.boUserItem.events({
+		'click .user-change-role':function(evt,tmpl){
+			Session.set('userId',this.userId);
+			Session.set('showBoModal',true);
+			Session.set('showBoChangeUserRole',true);
+			var userName = Meteor.users.findOne({_id:this.userId}).profile.name;
+			setModalData(
+				'Change role of '+userName,
+				'',
+				'Change','warning','change-role');
+		},
+		'click .user-remove': function(){
+			Session.set('userId',this.userId);
+			Session.set('showBoModal',false);
+			var branchUsers = Branches.findOne({_id:Session.get('branchId')}).users;
+			var userName = Meteor.users.findOne({_id:this.userId}).profile.name;
+			if(users.length > 0){
+				setModalData(
+					'Remove user '+userName,
+					'Confirm removing '+userName,
+					'Remove','danger','user-remove');
+			}
+			else{
+				setModalData(
+					'Remove user '+userName,
+					'Last user in branch can not be deleted',
+					'','','none');
+			}	
+		},
+	});
+
 
 /*//////////////////////////////
      LAYOUT
 /////////////////////////////*/
 	Template.boLayout.events({
-		'click .logout':function(event){	
+		'click .logout':function(evt,tmpl){	
 			event.preventDefault();
 			Meteor.logout();
-		}
+		},
+
+		'click .my-user-profile':function(evt,tmpl){
+			Session.set("showBoMyProfile",true);
+	    	setModalData(
+				'My details',
+				'',
+				'Save','warning','my-user-profile');
+		},
 	});
 
 	Template.boLayout.helpers({
@@ -705,35 +903,107 @@ if(!Meteor.isCordova)
 /*//////////////////////////////
      LOGIN
 /////////////////////////////*/	
-	Template.boLogin.events({
-		'submit form':function(event,template){
+	Template.boLogin.helpers({
+		showBoLoginForm: function(){
+			return Session.get('showBoLoginForm');
+		},
+		showBoSignUpForm: function(){
+			return Session.get('showBoSignUpForm');
+		},
+	});
+
+
+	Template.boLoginForm.events({
+		'click .user-bo-login':function(event,tmpl){
 			event.preventDefault();
-			var emailVar = template.find('#login-email').value;
-			var passwordVar = template.find('#login-password').value
-			Meteor.loginWithPassword(emailVar, passwordVar, function(error) {
-	        	if (Meteor.user()) 
-	        	{
-	            	Router.go('/')
-	        	} 
-	        	else 
-	        	{
-	           		var message = "There was an error logging in: <strong>" + error.reason + "</strong>";
-	       		}
-	       		return;
-        	});
+			var email = tmpl.find('.login-email').value;
+			var password = tmpl.find('.login-password').value;
+
+
+			if(!email){
+				 $('.login-email').addClass('data-missing');
+				 if(!email)
+				 	setAlertData('Please fill in your E-mail address');
+			}
+			else if(!password){
+				$('.login-password').addClass('data-missing');
+				setAlertData('Please fill in your password');
+			} 
+			else{
+				Meteor.loginWithPassword(email, password, function(error) {
+	        		if (Meteor.user()){
+	        			Session.set('branchId',null); 
+	        			Session.set('queueId',null); 
+	            	//	Router.go('/');
+	            	}
+		        	else 
+		        		setAlertData("There was an error logging in: " + error.reason);
+		       		return;
+		       	});
+			}
+
+		},
+
+		'click .user-open-signup':function(event,tmpl){
+			Session.set('showBoLoginForm',false);
+			Session.set('showBoSignUpForm',true);
+		},
+
+		'click input':function(evt,tmpl){
+			$('input').removeClass('data-missing');
+			Session.set('showBoAlert',false);
 		}
 	});
 
-	Template.boSignup.events({
-		'submit form':function(event,template){
+	Template.boSignupForm.events({
+		'click .user-open-login':function(event,tmpl){
+			Session.set('showBoLoginForm',true);
+			Session.set('showBoSignUpForm',false);
+		},
+		'click input':function(evt,tmpl){
+			$('input').removeClass('data-missing');
+			Session.set('showBoAlert',false);
+		},
+
+		'click .user-bo-signup':function(event,tmpl){
 			event.preventDefault();
-			var emailVar = template.find('#sign-up-email').value;
-			var passwordVar = template.find('#sign-up-password').value;
-			Accounts.createUser({
-				email:emailVar,
-				password:passwordVar					
-			});
-			Router.go('/')
+			var email = tmpl.find('.signup-email').value;
+			var password = tmpl.find('.signup-password').value;
+			var name = tmpl.find('.signup-name').value;
+			if(!email || !validateEmail(email)){
+				 $('.signup-email').addClass('data-missing');
+				 if(!email)
+				 	setAlertData('Please fill in your E-mail address');
+				 else if(!validateEmail(email))
+				 	setAlertData('E-mail you have entered not valid email address');
+			}
+			else if(!password){
+				$('.signup-password').addClass('data-missing');
+				setAlertData('Please fill in your password');
+			}
+			else if(!name){
+				$('.signup-name').addClass('data-missing');
+				setAlertData('Please fill in your name');
+			}
+			else{
+				
+				var userData = {
+					email:email,
+					password:password,
+					profile: {name:name},
+				};
+
+				Accounts.createUser(userData, function(error) {
+	        		if (Meteor.user()) {
+	            		Session.set('showBoLoginForm',true);
+						Session.set('showBoSignUpForm',false);
+			//			Router.go('/');
+					}
+		        	else 
+		        		setAlertData("There was an error logging in: " + error.reason);
+		       		return;
+		       	});
+			}	
 		}
 	});
 
