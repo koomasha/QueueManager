@@ -1,6 +1,8 @@
 if(Meteor.isCordova)
 {
-	Meteor.subscribe("Branches");
-	Meteor.subscribe("Queues");
-	Meteor.subscribe("Tickets");
+	//TODO 
+	if(phoneId){
+		BeforeTicket = new Meteor.Collection("BeforeTicket");
+		Meteor.subscribe('appTickets',phoneId);
+	}
 }

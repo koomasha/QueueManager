@@ -14,11 +14,8 @@ Meteor.methods({
 	},
 	getQueuesByBranch: function (branchId) {
 		console.log('getQueuesByBranch: server and parameters are (' + branchId + ')');
-<<<<<<< HEAD
+
 		return Queues.find({branchid: branchId, active: true}).fetch();
-=======
-		return Queues.find({branchId: branchId}).fetch();
->>>>>>> master
 	},
 	getQueueAdditionalDetails: function (queueId) {
 		console.log('getQueueAdditionalDetails: server and parameters are (' + queueId + ')');
