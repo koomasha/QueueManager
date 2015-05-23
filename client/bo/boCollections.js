@@ -1,5 +1,6 @@
 if(!Meteor.isCordova)
 {
+
 	Meteor.subscribe('Users');
 
  	Tracker.autorun(function () {
