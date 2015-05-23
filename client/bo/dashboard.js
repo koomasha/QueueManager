@@ -271,7 +271,7 @@ if(!Meteor.isCordova)
 
 		'click .save-reset-tickets':function(evt,tmpl){
 			Session.set('showBoModal',false);
-			Queues.update({ _id:Session.get('queueId')},{ $set: {last:0, currentSeq:0}});
+			Meteor.call('boResetTicketsCount',Session.get('queueId'));
 		},
 		'click .save-change-prefix':function(evt,tmpl){
 			Session.set('showBoModal',false);
@@ -582,7 +582,7 @@ if(!Meteor.isCordova)
 		'click .queue-reset-ticket-count' :function(evt,tmpl){
 			Session.set('queueId',this._id);
 			var queue = Queues.findOne({_id:this._id});
-			if(queue.openTickets == 0){
+			if(queue.openTickets == 0 && !queue.active){
 			setModalData(
 				'Reset tickets count',
 				'Reset tickets count for queue '+queue.name,
@@ -591,7 +591,7 @@ if(!Meteor.isCordova)
 			else{
 			setModalData(
 				'Reset tickets count',
-				'You can not reset counter while waiting tickets exists',
+				'You can not reset counter while waiting tickets exists or queue is open',
 				'','','none');
 			}
 		},
