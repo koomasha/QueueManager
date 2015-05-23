@@ -1,12 +1,29 @@
 sequences = new Meteor.Collection("sequences");
 
-Meteor.publish("Branches", function () {
-  if(this.userId) { 
-      if(Meteor.users.find({_id:this.userId, "profile.branchId": { $exists: true }}).count() > 0)
-        return  Branches.find({kioskId:this.userId});
-    return Branches.find({users:{$elemMatch:{userId:this.userId}}});
-  }
-});
+Meteor.publishComposite("Branches", function(userId) {
+    var _this = this;
+    return {
+        find: function() {
+                return Branches.find({$or:[{users:{$elemMatch:{userId:this.userId}}},{kioskId:this.userId}]});
+            },
+            children: [
+                {
+                    find: function(branch) {
+                        return Tickets.find({ branchId: branch._id,status:{$in: ['Waiting','Getting Service']}});
+                    }
+                },
+                {
+                    find: function(branch) {
+                      
+                      if(branch.users.filter(function(u){return this.userId ===u.userId}).length > 0)
+                        return Meteor.users.find({_id:branch.users.map(function(u){return u.userId})},
+                                                 {fields : {'profile' : 1,'emails':1,_id:1}});
+                      return Meteor.users.find({_id:this.userId});
+                    }
+                }
+            ]
+        }
+  });
 
 
 

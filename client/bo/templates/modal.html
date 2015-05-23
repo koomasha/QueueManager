@@ -1,43 +1,48 @@
 <template name="boModal">
-	 <div id= 'modal' class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close cancel" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title text-item">{{modalTitle}}</h4>
-        </div>
-        <div class="modal-body text-center outerbg text-item">
-            {{#if showBoAlert}}
-     			 {{> boAlert}}
-    		{{/if}}
-			{{modalContent}}
-			
-			{{#if showBoAddBranch}}
-				{{>boAddBranch}}
-			{{/if}} 
-			{{#if showBoAddQueue}}
-				{{>boAddQueue}}
-			{{/if}}
-			{{#if showBoQueuePrefix}}
-				{{>boChangePrefix}}
-			{{/if}}
-			{{#if showBoAddUser}}
-				{{>boAddUser}}
-			{{/if}}
-			{{#if showBoChangeUserRole}}
-				{{>boChangeUserRole}}
-			{{/if}}
-			{{#if showBoMyProfile}}
-				{{>boMyProfile}}
-			{{/if}}
+	<div id="overlay" class="overlay">
+		 <div class="modal">
+	      <div class="modal-content">
+	        <div class="modal-header">
+	          <button type="button" class="close cancel" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	          <h4 class="modal-title text-item">{{modalTitle}}</h4>
+	        </div>
+	        <div class="modal-body text-center outerbg text-item">
+	            {{#if showBoAlert}}
+	     			 {{> boAlert}}
+	    		{{/if}}
+				{{modalContent}}
+				
+				{{#if showBoAddBranch}}
+					{{>boAddBranch}}
+				{{/if}} 
+				{{#if showBoAddQueue}}
+					{{>boAddQueue}}
+				{{/if}}
+				{{#if showBoQueuePrefix}}
+					{{>boChangePrefix}}
+				{{/if}}
+				{{#if showBoAddUser}}
+					{{>boAddUser}}
+				{{/if}}
+				{{#if showBoChangeUserRole}}
+					{{>boChangeUserRole}}
+				{{/if}}
+				{{#if showBoMyProfile}}
+					{{>boMyProfile}}
+				{{/if}}
+				{{#if showBoChangeClerkStation}}
+					{{>boChangeClerkStation}}
+				{{/if}}
 
-        </div>
-        <div class="modal-footer">
-        {{#if submitButton modalAction}}
-          <a href="/" class="btn btn-{{modalButtonColor}} save-{{modalAction}}">{{modalButton}}</a>
-        {{/if}}  
-          <a href="#" class="btn btn-success cancel" data-dismiss="modal">Cancel</a>
-        </div>
-      </div>
+	        </div>
+	        <div class="modal-footer">
+	        {{#if submitButton modalAction}}
+	          <a href="/" class="btn btn-{{modalButtonColor}} save-{{modalAction}}">{{modalButton}}</a>
+	        {{/if}}  
+	          <a href="#" class="btn btn-success cancel" data-dismiss="modal">Cancel</a>
+	        </div>
+	      </div>
+	  </div>
   </div>
 </template>
 
@@ -138,4 +143,8 @@
 	<div class="form-group col-md-10 col-md-offset-1">
 		<input class="form-control my-user-new-password" type = "password" placeholder="New password"/>
 	</div>
+</template>
+
+<template name="boChangeClerkStation">
+	<input class="form-control clerk-station-input" value="{{clerkStationNumber}}"/>
 </template>
