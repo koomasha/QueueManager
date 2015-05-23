@@ -11,17 +11,7 @@ if(Meteor.isCordova) {
 
 // --------------Startup---------------------
 
-	Meteor.startup(function () {
-		window.plugins.uniqueDeviceID.get(
-			function (result) {
-				console.log("phone id is: " + result);
-				Session.set('phoneid', result);
-			},
-			function () {
-				alert("Operation failed. Please restart the application.");
-			}
-		);
-	});
+
 
 
 // --------------Main-----------------------
@@ -280,7 +270,7 @@ if(Meteor.isCordova) {
 	});
 
 	Handlebars.registerHelper('getBranchName', function() {
-		var branchName = Branches.findOne({_id:this.branchid}, { name: 1, _id: 0});
+		var branchName = Branches.findOne({_id:this.branchId}, { name: 1, _id: 0});
 
 		if (branchName === undefined) {
 			return '-1';
@@ -292,11 +282,11 @@ if(Meteor.isCordova) {
 	Handlebars.registerHelper('turnStatus', function(sequence) {
 
 		if (sequence !== '-1') {
-			if (sequence === this.currentSec) {
+			if (sequence === this.currentSeq) {
 				console.log('same');
 				return 'panel panel-success';
 			} else {
-				if (sequence < this.currentSec) {
+				if (sequence < this.currentSeq) {
 					return 'panel panel-danger';
 				} else {
 					return 'panel panel-default';

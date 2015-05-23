@@ -8,15 +8,15 @@
 				<div class="{{turnStatus getSequence}}">
 					<div class="panel-heading">
 						<h4 class="panel-title">
-							<a data-toggle="collapse" data-parent="#accordion" href="#{{name}}">{{getBranchName}}: {{name}}</a>
+							<a data-toggle="collapse" data-parent="#accordion" href="#{{_id}}">{{getBranchName}}: {{name}}</a>
 						</h4>
 					</div>
-					<div id="{{name}}" class="panel-collapse collapse">
+					<div id="{{_id}}" class="panel-collapse collapse">
 						<div class="panel-body">
 					 		<h3>Your Location</h3>
 					  		<p>{{prefix}}{{getSequence}}</p>
 					  		<h3>Current Location</h3>
-					  		<p>{{prefix}}{{currentSec}}</p>
+					  		<p>{{prefix}}{{currentSeq}}</p>
 
 				  			{{#if station}}
 		  						<p>It's your turn! please come to station {{station}}</p>
