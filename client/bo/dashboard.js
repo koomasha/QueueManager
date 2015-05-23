@@ -30,9 +30,9 @@ if(!Meteor.isCordova)
 	Session.setDefault('branchSearchString',null);
 	Session.setDefault('userSearchString',null);
 	Session.setDefault("queueSearchString",null);
-
+	Session.setDefault('clerkStationNumber',0)
 	Session.setDefault("ticket",null);
-	Session.setDefault('clientsInLine',null)
+
 
 	Session.setDefault('boModalTitle','');
 	Session.setDefault('boModalContent','');
@@ -144,8 +144,9 @@ if(!Meteor.isCordova)
 		return false;
 	});
 	Template.registerHelper("queueName", function () {
-		if(Session.get('queueId'))
-			return Queues.findOne({_id:Session.get('queueId')}).name;
+		var queue = Queues.findOne({_id:Session.get('queueId')});
+		if(queue)
+			return queue.name;
 		return '';
 	});
 
@@ -255,7 +256,6 @@ if(!Meteor.isCordova)
 			var showToClerk = !(tmpl.find('.queue-permission').checked);
 			var prefix = tmpl.find('.queue-prefix').value;
 			if(name){
-				console.log(name);
 				if(!prefix) prefix = '';
 				Queues.insert({name:name,showToClerk:showToClerk,active:active,prefix:prefix,branchId:Session.get('branchId')});
 				Session.set('showBoAddQueue',false);
@@ -271,7 +271,7 @@ if(!Meteor.isCordova)
 
 		'click .save-reset-tickets':function(evt,tmpl){
 			Session.set('showBoModal',false);
-			Queues.update({ _id:Session.get('queueId')},{ $set: {last:0}});
+			Queues.update({ _id:Session.get('queueId')},{ $set: {last:0, currentSeq:0}});
 		},
 		'click .save-change-prefix':function(evt,tmpl){
 			Session.set('showBoModal',false);
@@ -367,7 +367,6 @@ if(!Meteor.isCordova)
 			return Session.get('showBoMyProfile');
 		},
 		submitButton:function(action){
-			console.log(action);
 			return (action != 'none');
 		}
 
@@ -582,11 +581,19 @@ if(!Meteor.isCordova)
 
 		'click .queue-reset-ticket-count' :function(evt,tmpl){
 			Session.set('queueId',this._id);
-			var queueName = Queues.findOne({_id:this._id}).name;
+			var queue = Queues.findOne({_id:this._id});
+			if(queue.openTickets == 0){
 			setModalData(
 				'Reset tickets count',
-				'Reset tickets count for queue '+queueName,
+				'Reset tickets count for queue '+queue.name,
 				'Reset','warning','reset-tickets');
+			}
+			else{
+			setModalData(
+				'Reset tickets count',
+				'You can not reset counter while waiting tickets exists',
+				'','','none');
+			}
 		},
 		'click .queue-prefix' :function(evt,tmpl){
 			Session.set('queueId',this._id);
@@ -601,43 +608,25 @@ if(!Meteor.isCordova)
 
 	Template.boQueueItem.helpers({
 		queueIsActive:function(queueId){
-			var queue = Queues.findOne({_id:queueId});
-			if(queue && queue.active)
-				return true;
-			return false;
+			return this.active;
 		},
 		queueIsPublic:function(queueId){
-			var queue = Queues.findOne({_id:queueId});
-			if(queue)
-				return queue.showToClerk;
-			return false;
+			return this.showToClerk;
 		},
-
 		showClientsInLine:function(queueId){
-			var clients = Queues.findOne({_id:queueId});
-			if(clients){
-				if(clients.openTickets > 0)
-				{
-					Session.set('clientsInLine',clients.openTickets);
-					return true;
-				}
-				Session.set('clientsInLine',null);
-			}	
-			return false;
+			return (this.openTickets > 0);
 		},
-		clientsInLine:function(){
-			return Session.get('clientsInLine');
+		clientsInLine:function(queueId){
+			return this.openTickets;
 		},
 		managerOrPublic:function(queueId){
-			var queue = Queues.findOne({_id:queueId});
-			if(queue)
-				if(queue.showToClerk)
+			if(this.showToClerk)
+				return true;
+			else{
+				var user = Branches.findOne({_id:Session.get('branchId'),users:{$elemMatch:{userId:Meteor.user()._id,role:{$in:['Admin','Manager']}}}});
+				if(user)
 					return true;
-				else{
-					var user = Branches.findOne({_id:Session.get('branchId'),users:{$elemMatch:{userId:Meteor.user()._id,role:{$in:['Admin','Manager']}}}});
-					if(user)
-						return true;
-				}	
+			}	
 			return false;
 		}
 
@@ -660,6 +649,17 @@ if(!Meteor.isCordova)
 			if(Session.get('queueId'))
 				return Queues.findOne({_id:Session.get('queueId')}).openTickets;
 		},
+		clerkStationNumber: function(){
+			if(!Session.get('clerkStationNumber')){
+				var branchUsers = Branches.findOne({_id:Session.get('queueId')}).users;
+				for(var i = 0; i < users.length; i++){
+					if(user[i].userId == Meteor.user()._id){
+						Session.set('clerkStationNumber',user[i].station);
+					}
+				}
+			}
+			return Session.get('clerkStationNumber');
+		}
 	});
 
 	Template.boQueueWorkStation.events({
@@ -829,7 +829,7 @@ if(!Meteor.isCordova)
 		'click .user-add' :function(evt,tmpl){
 			var u = Meteor.users.findOne({_id:this._id});
 	    	if(u){
-		    	Branches.update({ _id:Session.get('branchId') },{ $push: {users: { userId:u._id, role:'Clerk', email:u.emails[0].address, name:u.profile.name }}});
+		    	Branches.update({ _id:Session.get('branchId') },{ $push: {users: { userId:u._id, role:'Clerk', email:u.emails[0].address, name:u.profile.name, station:0}}});
 				Session.set('userId',null);
 				Session.set("showBoAddUser",false);
 				Session.set("showBoModal",false);

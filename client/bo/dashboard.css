@@ -71,6 +71,8 @@ textarea {
 	-webkit-box-shadow:none;
 	box-shadow:none;
 	background:transparent;
+  position:absolute;
+  bottom:auto;
 }
 
 .modal-content{

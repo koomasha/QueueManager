@@ -31,7 +31,7 @@ Branches.before.insert(function (userId, doc) {
   }
   var u = Meteor.users.findOne({_id:userId});
   doc.creationTime = Date.now();
-  doc.users = [{userId:userId,role:'Admin',email:u.emails[0].address,name:u.profile.name}];
+  doc.users = [{userId:userId,role:'Admin',email:u.emails[0].address,name:u.profile.name, station:0}];
   doc.kioskUsername = 'iticket'+sequence;
 });
 

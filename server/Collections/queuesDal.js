@@ -34,6 +34,15 @@ Meteor.methods({
       new: true
     }); 
     var ticket = Tickets.findOne({queueId:queueId,sequence:queue.currentSeq,status:'Waiting'});
+    while(!ticket){
+      queue = Queues.findAndModify({
+          query: { _id: queueId },
+          update: { $inc: { currentSeq: 1}},
+          new: true
+      }); 
+      ticket = Tickets.findOne({queueId:queueId,sequence:queue.currentSeq,status:'Waiting'});
+    }
     return boChangeTicketStatus(ticket,"Getting Service",this.userId,'');
   },
+
 });
