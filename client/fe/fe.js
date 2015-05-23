@@ -10,8 +10,8 @@ if(!Meteor.isCordova)
 	//----------- FE ONLY CODE ------------
 	
 	//$( "#feNext" ).toggle( "pulsate" );
-	var subTickets = null;
 	var feNextTicketArr = [];
+	var dingdong = new Audio('bell.mp3')
 
 	Session.setDefault('feShow','feMaster'); //feMaster feDash
 	Session.setDefault('feCurQueueId',null);
@@ -41,19 +41,19 @@ if(!Meteor.isCordova)
 		{
 			var branchId = Meteor.user().profile.branchId;
 			Session.set('branchId',branchId);
-			var getNewTickets = false; 
-			subTickets = Meteor.subscribe("Tickets",{branchId:branchId,status:{$in: ['Waiting','Getting Service']}},
-				function(){ getNewTickets = true;});
+			var getNewTickets = true; 
 
 			Meteor.setInterval(ShowNextTicket, 1000);
 			Tickets.find({status:'Getting Service'}).observeChanges({
 			    added: function(id, doc) {
 			      if (getNewTickets) {
 			      	var q = Queues.findOne(doc.queueId);
-			      	var queueName = q.name;
-			      	if(q.prefix) queueName = q.prefix + ' - ' + q.name;
+			      	if(q){
+				      	var queueName = q.name;
+				      	if(q.prefix) queueName = q.prefix + ' - ' + q.name;
 
-			      	feNextTicketArr.push({sequence : doc.sequence,name: queueName});
+				      	feNextTicketArr.push({sequence : doc.sequence,name: queueName});
+				      }
 			      }
 			    }
 			  });
@@ -69,6 +69,21 @@ if(!Meteor.isCordova)
     				dots:false
     			});
 	};
+	
+    Template.feQueuesStatus.helpers({
+    	CurQueues:function(){
+    		 var qs = Queues.find().map(function(q){
+    					q.tickets = Tickets.find({queueId:q._id}).fetch();
+    					q.tService = q.tickets.filter(function(t){return t.status === 'Getting Service'; }).sort(sortTickets);
+    					q.tServiceNum = q.tService.length;
+    					q.tWaiting = q.tickets.filter(function(t){return t.status === 'Waiting'; }).sort(sortTickets);
+    					q.tWaitingNum = q.tWaiting.length;
+    					return q;
+    				});
+    		 return qs;
+    	}
+    });
+
 
     Template.feMaster.events({
     	'click #feBtnDash': function (event) {Session.set('feShow','feDash'); },
@@ -136,20 +151,6 @@ if(!Meteor.isCordova)
     	},
     	queueID : function(){return this._id;}
     });
-    Template.feQueuesStatus.helpers({
-    	CurQueues:function(){
-    		 var qs = Queues.find().map(function(q){
-    					q.tickets = Tickets.find({queueId:q._id}).fetch();
-    					q.tService = q.tickets.filter(function(t){return t.status === 'Getting Service'; }).sort(sortTickets);
-    					q.tServiceNum = q.tService.length;
-    					q.tWaiting = q.tickets.filter(function(t){return t.status === 'Waiting'; }).sort(sortTickets);
-    					q.tWaitingNum = q.tWaiting.length;
-    					return q;
-    				});
-    		 return qs;
-    	}
-    });
-
 	
 
     Template.feNextTicket.helpers({
@@ -164,7 +165,7 @@ if(!Meteor.isCordova)
       				function(err,res)
       				{
       					if(!err)
-      						alert("Your ticket Namber is: " + res);
+      						alert("Your ticket Number is: " + res);
       				});
 	}
 
@@ -174,9 +175,10 @@ if(!Meteor.isCordova)
 		if(!a  && feNextTicketArr.length > 0){
 			Session.set('feNextTicket',feNextTicketArr.pop());
 			setTimeout(function(){
+				if(Session.get('feShow') === 'feDash') dingdong.play();
 				for(i=0;i<3;i++) $("#feNext").fadeTo('slow', 0.5).fadeTo('slow', 1.0);
 				setTimeout(function(){Session.set('feNextTicket',null);}, 5000);
-			}, 1000);
+			}, 200);
 		}
 	}
 };

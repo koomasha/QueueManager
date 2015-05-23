@@ -73,10 +73,12 @@ textarea {
 	background:transparent;
   position:absolute;
   bottom:auto;
+  pointer-events:none;
 }
 
 .modal-content{
     background-image: url('bubbles.jpg') !important;
+    pointer-events:all;
 }
 
 .modal-footer{
@@ -195,4 +197,14 @@ textarea {
 
 .alert-box{
   font-size:14px;
+}
+
+.overlay{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  background-color: rgba(0,0,0,0.5); /*dim the background*/
 }

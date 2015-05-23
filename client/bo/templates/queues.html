@@ -16,11 +16,11 @@
 
 	{{#if showBoQueueList}}	
 		<div class="col-md-12">  
-			<div class="col-md-5">
+			<div class="col-md-5 col-sm-5">
 				<input type="search" class="form-control search-queue" placeholder="Search Queue"/>
 			</div>
 			{{#if userIsManager}}	
-				<div class="col-md-2">
+				<div class="col-md-2 col-sm-2">
 					<button type="button" class="btn btn-warning add-queue">Add new queue to branch</button>
 				</div>
 			{{/if}}	
@@ -44,59 +44,66 @@
 
 <template name="boQueueItem">
 {{#if managerOrPublic ./_id}}
-	<div class="col-md-10 well well-lg innerbg">
+	<div class="col-md-10 col-sm-12 well well-lg innerbg">
 		<div class="row container-fluid">
-			<div class="col-md-3 text-item">
+			<div class="col-md-12 text-item">
 				{{name}}
 			</div>
-			<div class="col-md-1 open-workstation" data-id="{{_id}}">
-				<span class="glyphicon glyphicon-play icon blue-icon" title="Open Workstation" aria-hidden="true"></span>
-			</div>	
-			<div class="col-md-1 add-details-to-queue" data-id="{{_id}}">
-					<span class="glyphicon glyphicon-th-list icon blue-icon" title="Aditional data" aria-hidden="true"></span>
-			</div>	
-			{{#if userIsManager}}
-				{{#if queueIsActive ./_id}}
-					<div class="col-md-1 col-md-offset-1 active-queue" data-id="{{_id}}">
-						<span class="glyphicon glyphicon-eye-open icon green-icon" title="Close queue" aria-hidden="true"></span>
+			<div class="col-sm-12">
+				<div class="col-md-1  col-sm-1 open-workstation" data-id="{{_id}}">
+					<span class="glyphicon glyphicon-play icon blue-icon" title="Open Workstation" aria-hidden="true"></span>
+				</div>	
+				<div class="col-md-1 col-sm-1 add-details-to-queue" data-id="{{_id}}">
+						<span class="glyphicon glyphicon-th-list icon blue-icon" title="Aditional data" aria-hidden="true"></span>
+				</div>	
+				{{#if userIsManager}}
+					{{#if queueIsActive ./_id}}
+						<div class="col-md-1 col-md-offset-1 col-sm-1 active-queue" data-id="{{_id}}">
+							<span class="glyphicon glyphicon-eye-open icon green-icon" title="Close queue" aria-hidden="true"></span>
+						</div>
+					{{else}}
+						<div class="col-md-1 col-md-offset-1 col-sm-1 unactive-queue" data-id="{{_id}}">
+							<span class="glyphicon glyphicon-eye-close icon red-icon"  title="Open queue" aria-hidden="true"></span>
+						</div>
+					{{/if}}
+					<div class="col-md-1 col-sm-1 queue-reset-ticket-count" data-id="{{_id}}">
+						<span class="glyphicon glyphicon-refresh icon red-icon"  title="Reset tickets count" aria-hidden="true"></span>
 					</div>
-				{{else}}
-					<div class="col-md-1 col-md-offset-1 unactive-queue" data-id="{{_id}}">
-						<span class="glyphicon glyphicon-eye-close icon red-icon"  title="Open queue" aria-hidden="true"></span>
+
+					<div class="col-md-1 col-sm-1 queue-prefix" data-id="{{_id}}">
+						<span class="glyphicon glyphicon-font icon blue-icon" title="Change prefix" aria-hidden="true"></span>
+					</div>
+
+					{{#if queueIsPublic ./_id}}
+						<div class="col-md-1 col-sm-1 public-queue" data-id="{{_id}}">
+							<span class="glyphicon glyphicon-user icon green-icon" title="Public" aria-hidden="true"></span>
+						</div>
+					{{else}}
+						<div class="col-md-1 col-sm-1 unpublic-queue" data-id="{{_id}}">
+							<span class="glyphicon glyphicon-user icon red-icon" title="Managers" aria-hidden="true"></span>
+						</div>
+					{{/if}}	
+					<div class="col-md-1 col-sm-1 queue-statistics" data-id="{{_id}}" title="Statistics">
+						<span class="glyphicon icon blue-icon glyphicon-stats" title="Statistics" aria-hidden="true"></span>
+					</div>
+					<div class="col-md-1 col-sm-1 remove-queue" data-id="{{_id}}">
+						<span class="glyphicon glyphicon-remove icon red-icon" title="Delete Queue" aria-hidden="true"></span>
 					</div>
 				{{/if}}
-				<div class="col-md-1 queue-reset-ticket-count" data-id="{{_id}}">
-					<span class="glyphicon glyphicon-refresh icon red-icon"  title="Reset tickets count" aria-hidden="true"></span>
-				</div>
-
-				<div class="col-md-1 queue-prefix" data-id="{{_id}}">
-					<span class="glyphicon glyphicon-font icon blue-icon" title="Change prefix" aria-hidden="true"></span>
-				</div>
-
-				{{#if queueIsPublic ./_id}}
-					<div class="col-md-1 public-queue" data-id="{{_id}}">
-						<span class="glyphicon glyphicon-user icon green-icon" title="Public" aria-hidden="true"></span>
-					</div>
-				{{else}}
-					<div class="col-md-1 unpublic-queue" data-id="{{_id}}">
-						<span class="glyphicon glyphicon-user icon red-icon" title="Managers" aria-hidden="true"></span>
-					</div>
-				{{/if}}	
-				<div class="col-md-1 queue-statistics" data-id="{{_id}}" title="Statistics">
-					<span class="glyphicon icon blue-icon glyphicon-stats" title="Statistics" aria-hidden="true"></span>
-				</div>
-				<div class="col-md-1 remove-queue" data-id="{{_id}}">
-					<span class="glyphicon glyphicon-remove icon red-icon" title="Delete Queue" aria-hidden="true"></span>
-				</div>
-			{{/if}}
-		</div>
-		{{#if showClientsInLine ./_id}}
-		<div class="row container-fluid">					
-			<div class="col-md-2 red-icon">
-				Waiting in line: {{clientsInLine}}
 			</div>
 		</div>
+		<div class="row container-fluid">
+		{{#if showClientsInLine ./_id}}				
+			<div class="col-md-3 red-icon">
+				Waiting in line: {{clientsInLine}}
+			</div>
 		{{/if}}	
+		{{#if showClientsInService ./_id}}	
+			<div class="col-md-3 green-icon">
+				Getting service: {{clientsInService}}
+			</div>
+		{{/if}}
+		</div>	
 	</div>
 {{/if}}	
 </template>
