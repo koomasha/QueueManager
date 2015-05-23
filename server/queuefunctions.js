@@ -5,7 +5,7 @@ Meteor.methods({
 		var result = [];
 
 		Branches.find().forEach( function(branch) {
-		 	if (distance(branch.location.lng, branch.location.lat, currentLocation.coords.longitude, currentLocation.coords.latitude) <= 2000) {
+		 	if (distance(branch.location.lng, branch.location.lat, currentLocation.coords.longitude, currentLocation.coords.latitude) <= 3000) {
 		 		result.push(branch);
 		 	}
 		} );
@@ -14,7 +14,11 @@ Meteor.methods({
 	},
 	getQueuesByBranch: function (branchId) {
 		console.log('getQueuesByBranch: server and parameters are (' + branchId + ')');
+<<<<<<< HEAD
+		return Queues.find({branchid: branchId, active: true}).fetch();
+=======
 		return Queues.find({branchId: branchId}).fetch();
+>>>>>>> master
 	},
 	getQueueAdditionalDetails: function (queueId) {
 		console.log('getQueueAdditionalDetails: server and parameters are (' + queueId + ')');
@@ -41,9 +45,26 @@ Meteor.methods({
 		if (ticket === undefined || ticket === null) {
 			console.log('no such ticket');
 		} else {
+			// TODO: add old ticket to history
+			// TODO: change sequence in tickets and last in queues
 			removeUser(phone, queueId, "Postponed");
 			addUser(phone, queueId, ticket.additionalDetails);
 		}
+	},
+	isUserInQueue: function(phone, queues) {
+		console.log('isUserInQueue');
+		var inQueues = [];
+		queues.forEach(function(queue) {
+			var inQueue = new Object();
+		    var ticket = Tickets.findOne({phone: phone, queueId: queue._id});
+		    inQueue.queueId = queue._id;
+		    inQueue.isInQueue = (!(ticket === undefined || ticket === null));
+		    console.log('queueId = ' + inQueue.queueId + ' isUsrIn = ' + inQueue.isInQueue);
+
+		    inQueues.push(inQueue);
+		});
+		
+		return inQueues;
 	}
 });
 
@@ -60,6 +81,13 @@ function removeUser(phone, queueId, status) {
 		console.log('no such ticket');
 	} else {
 		console.log('removeUserFromQueue: found');
+
+		var queue = Queues.findAndModify({
+			query: { _id: queueId },
+			update: { $inc: { opentickets: -1 }},
+			new: true
+		});
+
 		Tickets.remove({phone: phone, queueId: queueId});
 	}
 }
@@ -79,8 +107,8 @@ function addUser(phone, queueId, additionalDetails) {
 		Tickets.insert({phone: phone,
 			sequence: queue.last,
 			queueId: queueId,
-			creationTime: Date.now(),
-			status: "Waiting",
+			//creationTime: Date.now(),
+			//status: "Waiting",
 			additionalDetails: additionalDetails || []
 		});
 	}

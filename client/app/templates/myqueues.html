@@ -8,7 +8,7 @@
 				<div class="{{turnStatus getSequence}}">
 					<div class="panel-heading">
 						<h4 class="panel-title">
-							<a data-toggle="collapse" data-parent="#accordion" href="#{{name}}">{{name}}</a>
+							<a data-toggle="collapse" data-parent="#accordion" href="#{{name}}">{{getBranchName}}: {{name}}</a>
 						</h4>
 					</div>
 					<div id="{{name}}" class="panel-collapse collapse">
@@ -17,8 +17,18 @@
 					  		<p>{{prefix}}{{getSequence}}</p>
 					  		<h3>Current Location</h3>
 					  		<p>{{prefix}}{{currentSec}}</p>
-					  		<button type="button" class="btn btn-default postpone">דחה תור</button>
-					  		<button type="button" class="btn btn-default leave">עזוב תור</button>
+
+				  			{{#if station}}
+		  						<p>It's your turn! please come to station {{station}}</p>
+				  			{{/if}}
+
+					  		{{#if isUserLast getSequence}}
+					  			<button type="button" class="btn btn-default postpone" disabled="true">Postpone turn</button>
+				  			{{else}}
+				  				<button type="button" class="btn btn-default postpone">Postpone turn</button>
+				  			{{/if}}
+				  			
+					  		<button type="button" class="btn btn-default leave">Leave queue</button>
 						</div>
 					</div>
 				</div>

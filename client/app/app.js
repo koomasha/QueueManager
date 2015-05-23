@@ -7,6 +7,7 @@ if(Meteor.isCordova) {
 	Session.setDefault('additionalDetails', undefined);
 	Session.setDefault('branchid', undefined);
 	Session.setDefault('phoneid', undefined);
+	Session.setDefault('isInQueues', undefined);
 
 // --------------Startup---------------------
 
@@ -17,7 +18,7 @@ if(Meteor.isCordova) {
 				Session.set('phoneid', result);
 			},
 			function () {
-				alert("getting phone id failed ");
+				alert("Operation failed. Please restart the application.");
 			}
 		);
 	});
@@ -49,13 +50,15 @@ if(Meteor.isCordova) {
 	});
 
 	Template.appChooseQueue.events = {
-		'click #queuesgroup a': function() {
+		'click #queuesgroup button': function() {
 			addUserToQueue(this);
 			$('#appChooseQueueModal').addClass('notvisible');
 			Session.set('optionalQueues', undefined);
+			Session.set('isInQueues', undefined);	
 		},
 		'click .cancel': function() {
 			Session.set('optionalQueues', undefined);
+			Session.set('isInQueues', undefined);
 			$('#appChooseQueueModal').addClass('notvisible');
 		}
 	}
@@ -63,6 +66,18 @@ if(Meteor.isCordova) {
 	Template.appChooseQueue.helpers({
 		queueItem: function() {
 			return Session.get('optionalQueues');
+		},
+		'isInQueue': function() {
+			var isInQueues = Session.get('isInQueues');
+			if (isInQueues !== undefined) {
+				var thisid = this._id;
+
+				var queue = $.grep(isInQueues, function(e) { 
+					return e.queueId === thisid; 
+				});
+
+				return queue[0].isInQueue;
+			}
 		}
 	});
 
@@ -70,9 +85,7 @@ if(Meteor.isCordova) {
 		'click .save':function(evt,tmpl){
 			console.log('save additionalDetails');
 
-			// TODO: validate fields - in validator.js - not perfect
 			if (isValid()) {
-
 				var additionalDetailsFromUser = [];
 
 				$('.input-group').each(function() {
@@ -89,9 +102,13 @@ if(Meteor.isCordova) {
 				});
 
 				Meteor.call('addUserToQueue', Session.get('phoneid'), Session.get('additionalDetails')._id, additionalDetailsFromUser, function(err, response) {
-					Session.set('additionalDetails', undefined);
-					$('#appAdditionalDetailsModal').addClass('notvisible');
-					move();
+					if (err) {
+						alert('Operation failed. Please try again.');
+					} else {
+						Session.set('additionalDetails', undefined);
+						$('#appAdditionalDetailsModal').addClass('notvisible');
+						move();
+					}
 				});
 			}
 		},
@@ -117,7 +134,6 @@ if(Meteor.isCordova) {
 	});
 
 	function scangps() {
-		//navigator.geolocation.getCurrentPosition(findnearbranches);
 		console.log('searching..');
 		$('#erroralert').addClass('notvisible');
 		GPSLocation.getCurrentPosition(findnearbranches, onGpsError, { timeout: 30000 });
@@ -131,12 +147,16 @@ if(Meteor.isCordova) {
 
 	function findnearbranches(location) {
 		Meteor.call('getNearBranchesByLocation', location, function(err, response) {
-			if (response.length === 0) {
-				$('#errorLabel').text('Nothing was found in your area');
-				$('#erroralert').removeClass('notvisible');
+			if (err) {
+				alert('Operation failed. Please try again.');
 			} else {
-				$('#erroralert').addClass('notvisible');
-				showAvailableBranches(response);
+				if (response.length === 0) {
+					$('#errorLabel').text('Nothing was found in your area');
+					$('#erroralert').removeClass('notvisible');
+				} else {
+					$('#erroralert').addClass('notvisible');
+					showAvailableBranches(response);
+				}
 			}
 		});
 	}
@@ -156,15 +176,17 @@ if(Meteor.isCordova) {
 	function getQueuesByBranch(branchId) {
 		Meteor.call('getQueuesByBranch', branchId, function(err, response) {
 			console.log('response');
-			if (response.length === 0) {
-				$('#errorLabel').text('Branch not found');
-				$('#erroralert').removeClass('notvisible');
-			} else if (response.length === 1) {
-				$('#erroralert').addClass('notvisible');
-				addUserToQueue(response[0]);
+
+			if (err) {
+				alert('Operation failed. Please try again.');
 			} else {
-				$('#erroralert').addClass('notvisible');
-				showAvailableQueues(response);
+				if (response.length === 0) {
+					$('#errorLabel').text('There are no active queues in this branch.');
+					$('#erroralert').removeClass('notvisible');
+				} else {
+					$('#erroralert').addClass('notvisible');
+					showAvailableQueues(response);
+				}
 			}
 		});
 	}
@@ -173,7 +195,11 @@ if(Meteor.isCordova) {
 		if (queue.additionalDetails === undefined || queue.additionalDetails === null || queue.additionalDetails.length === 0) {
 
 			Meteor.call('addUserToQueue', Session.get('phoneid'), queue._id, null, function(err, response) {
-				move();
+				if (err) {
+					alert('Operation failed. Please try again.');
+				} else {
+					move();
+				}
 			});
 
 		} else {
@@ -188,7 +214,15 @@ if(Meteor.isCordova) {
 
 	function showAvailableQueues(queues) {
 		Session.set('optionalQueues', queues);
-		$('#appChooseQueueModal').removeClass('notvisible');
+
+		Meteor.call('isUserInQueue', Session.get('phoneid'), queues, function(err, response) {
+			if (err) {
+				alert('Operation failed. Please try again.');
+			} else {
+				Session.set('isInQueues', response);
+				$('#appChooseQueueModal').removeClass('notvisible');
+			}
+		});
 	}
 
 	function showAvailableBranches(branches) {
@@ -203,6 +237,9 @@ if(Meteor.isCordova) {
 			 var converted = relevantQueueIds.map(function(item) { return item.queueId; });
 
 			return Queues.find({_id: { $in: converted }});
+		},
+		isUserLast: function(userSec) {
+			return (userSec === this.last);
 		}
 	});
 
@@ -242,14 +279,24 @@ if(Meteor.isCordova) {
 		return tick.sequence;
 	});
 
+	Handlebars.registerHelper('getBranchName', function() {
+		var branchName = Branches.findOne({_id:this.branchid}, { name: 1, _id: 0});
+
+		if (branchName === undefined) {
+			return '-1';
+		}
+
+		return branchName.name; 
+	});
+
 	Handlebars.registerHelper('turnStatus', function(sequence) {
 
 		if (sequence !== '-1') {
-			if (sequence === this.current) {
+			if (sequence === this.currentSec) {
 				console.log('same');
 				return 'panel panel-success';
 			} else {
-				if (sequence < this.current) {
+				if (sequence < this.currentSec) {
 					return 'panel panel-danger';
 				} else {
 					return 'panel panel-default';
@@ -263,8 +310,12 @@ if(Meteor.isCordova) {
 	Template.appLeaveQueueConfirm.events({
 		'click .save':function(evt,tmpl){
 			Meteor.call('removeUserFromQueue', Session.get('phoneid'), Session.get('lastClickedQueue')._id, function(err, response) {
-				Session.set('lastClickedQueue', undefined);
-				$('#appLeaveQueueModal').addClass('notvisible');
+				if (err) {
+					alert('Operation failed. Please try again.');
+				} else {
+					Session.set('lastClickedQueue', undefined);
+					$('#appLeaveQueueModal').addClass('notvisible');
+				}
 			});
 		},
 
@@ -277,8 +328,12 @@ if(Meteor.isCordova) {
 	Template.appPostponeQueueConfirm.events({
 		'click .save':function(evt,tmpl){
 			Meteor.call('postponeTurn', Session.get('phoneid'), Session.get('lastClickedQueue')._id, function(err, response) {
-				Session.set('lastClickedQueue', undefined);
-				$('#appPostponeQueueModal').addClass('notvisible');
+				if (err) {
+					alert('Operation failed. Please try again.');
+				} else {
+					Session.set('lastClickedQueue', undefined);
+					$('#appPostponeQueueModal').addClass('notvisible');
+				}
 			});
 		},
 
@@ -338,4 +393,3 @@ if(Meteor.isCordova) {
 	}
 
 }
-

@@ -54,7 +54,11 @@
         <div class="modal-body">
         	<div id="queuesgroup" class="list-group">
         		{{#each queueItem}}
-			  		<a href="#" id="{name}}" class="list-group-item">{{name}}</a>
+			  		 {{#if isInQueue}}
+                <button id="{{name}}" class="list-group-item disabledQueue" disabled="true">{{name}} - You already have a turn</button>
+              {{else}}
+                <button id="{{name}}" class="list-group-item">{{name}}</button>
+              {{/if}}
 			  	{{/each}}
 			</div>
 
@@ -85,8 +89,8 @@
         <div class="modal-footer">
         	<center>
             <p id="message" style="color: red;"></p>
-        	  <button class="btn cancel" data-dismiss="modal">בטל</button>
-	          <button class="btn btn-success save">אשר</button>
+        	  <button class="btn cancel" data-dismiss="modal">Cancel</button>
+	          <button class="btn btn-success save">Submit</button>
             </center>
         </div>
       </div>
