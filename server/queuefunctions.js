@@ -109,9 +109,10 @@ function addUser(phone, queueId, additionalDetails) {
 			queueId: queueId,
 			additionalDetails: additionalDetails || []
 		});
+		return queue.last;
 	}
-
-}
+	return null;
+}	
 
 function distance(lon1, lat1, lon2, lat2) {
 	var R = 6371; // Radius of the earth in km

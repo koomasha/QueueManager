@@ -1,11 +1,11 @@
 <template name="boBranches">
     <div class="row ">
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-5">
             {{>boBranchList}}
         </div>
-        <div class="col-md-9">
+        <div class="col-md-9 col-sm-7">
            <div class="row">
-              <div class="col-md-12">
+              <div class="col-md-12 col-sm-12">
                 <div class="container-fluid">
                   {{#if showBranchDetails}}
                     {{>boBranchDetails}}
@@ -14,7 +14,7 @@
               </div>
            </div>
            <div class="row">
-              <div class="col-md-12">
+              <div class="col-md-12 col-sm-12">
                 <div class="container-fluid">
                     {{#if showBranchDetails}}
                       {{>boBranchDashboard}}
@@ -35,12 +35,12 @@
       <div class="col-sm-12 text-center well well-lg outerbg">              
           <h4 class="name-header">Branches</h4>
        </div> 
-      <div class="col-sm-12 well well-lg outerbg">  
-        <div class="col-sm-6">
-          <button type="button" class="btn btn-warning add-branch">Create Branch</button>
-        </div>
-        <div class="col-sm-6 ">
+      <div class="col-sm-12 well well-lg outerbg"> 
+         <div class="col-md-6 col-sm-12">
           <input type="search" class="form-control search-branch" placeholder="Search branch"/>
+        </div> 
+        <div class="col-md-6 col-sm-12">
+          <button type="button" class="btn btn-warning add-branch">Create Branch</button>
         </div>
       </div>  
       <div class="col-sm-12 well well-lg outerbg">
@@ -54,13 +54,13 @@
 
 <template name="boBranchItem">
     <div class="container-fluid branchItem well well-lg innerbg" data-name="{{name}}" data-id="{{_id}}">
-        <div class="col-md-5 branchItem text-item" data-id="{{_id}}">{{name}}</div>
-        <div class="col-md-3 branchItem green-icon" data-id="{{_id}}">{{userRole _id}}</div>
         {{#if branch.active}}
-          <div class="col-md-1 text-center branchItem" data-id="{{_id}}"><span class="glyphicon glyphicon-ok-sign green-icon" aria-hidden="true"></span></div>
+          <div class="col-md-1 col-sm-1 text-center branchItem" data-id="{{_id}}"><span class="glyphicon glyphicon-ok-sign green-icon" aria-hidden="true"></span></div>
         {{else}}
-          <div class="col-md-1 text-center branchItem" data-id="{{_id}}"><span class="glyphicon glyphicon-remove-sign red-icon" aria-hidden="true"></span></div>
-        {{/if}} 
+          <div class="col-md-1 col-sm-1 text-center branchItem" data-id="{{_id}}"><span class="glyphicon glyphicon-remove-sign red-icon" aria-hidden="true"></span></div>
+        {{/if}}
+        <div class="col-md-5 col-sm-5  branchItem text-item" data-id="{{_id}}">{{name}}</div>
+        <div class="col-md-5 col-sm-4 branchItem green-icon" data-id="{{_id}}">{{userRole _id}}</div> 
   </div>
 
 </template>
@@ -78,8 +78,8 @@
       </div>
       {{#if userIsAdmin}}
       <div class="row">
-         <div class="col-md-2 col-md-offset-10">
-           <div class="col-md-1 col-md-2 col-md-offset-7 edit-branch"><span class="glyphicon glyphicon-edit icon blue-icon" title="Edit Branch" aria-hidden="true"></span></div>
+         <div class="col-md-2 col-md-offset-10 col-sm-12">
+           <div class="col-md-1 edit-branch"><span class="glyphicon glyphicon-edit icon blue-icon" title="Edit Branch" aria-hidden="true"></span></div>
             <div class="col-md-1 text-center col-md-offset-1 branchItem delete-branch" data-id="{{_id}}"><span class="glyphicon glyphicon-remove icon red-icon" aria-hidden="true"></span></div>
         </div>
       </div>

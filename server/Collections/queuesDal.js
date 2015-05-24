@@ -1,6 +1,6 @@
-Meteor.publish("Queues", function (branchid) {
+Meteor.publish("Queues", function (branchId) {
   if(this.userId) { 
-    return Queues.find();
+    return Queues.find({branchId:branchId});
   }
 });
 

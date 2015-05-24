@@ -1,3 +1,86 @@
 <template name="feMain">
-Hello
+<center id="feMain">
+	<H1 id="feBtnMain">{{Branch.name}}</H1>
+	{{#if feEquals feShow 'feMaster'}}
+		{{>feMaster}}
+	{{/if}}
+	{{#if feEquals feShow 'feDash'}}
+		{{>feDash}}
+	{{/if}}
+	{{#if feEquals feShow 'feTickets'}}
+		{{>feTickets}}
+	{{/if}}
+</center>
 </template>
+
+<template name="feMaster">
+<button id="feBtnDash" type="button" class="btn  btn-primary btn-lg">Dashboard</button>
+<button id="feBtnTicket" type="button" class="btn  btn-primary btn-lg">Get Ticket</button>
+</template>
+
+
+<template name="feTickets">
+{{#each Queues}}
+	{{>feQueue}}
+{{/each}}
+</template>
+
+<template name="feQueue">
+	<button id="feBtnQueue" type="button" class="btn  btn-primary btn-lg" data-id="{{_id}}">
+		{{prefix}} {{#if prefix}} - {{/if}} {{name}} 
+
+	</button>
+	{{#if feEquals feCurQueueId queueID}}
+	 <div class="modal">
+	      <div class="modal-content">
+	        <div class="modal-header">
+	          <button type="button" class="close cancel" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	          <h4 class="modal-title text-item">{{name}}</h4>
+	        </div>
+	        <div class="modal-body text-center outerbg text-item">   
+	        	{{> quickForm id="feTicketsForm" schema=QueueSchema buttonContent="Get Ticket" type="normal" validation="blur"}}
+	        </div>
+	      </div>
+	  </div>
+  {{/if}}
+</template>
+
+
+<template name="feDash">
+{{>feQueuesStatus}}
+{{#if feNextTicket}}
+	{{>feNextTicket}}
+{{/if}}
+</template>
+
+<template name="feQueuesStatus">
+
+<div id="owl-demo" class="owl-carousel">
+ {{#each  CurQueues}}
+   <div >
+	 		<h1>
+	 		  <div>{{name}}</div>
+	 		  <div>In Service ({{tServiceNum}}): {{#each tService}} {{sequence}} {{/each}} </div>
+	 		  <div>Waiting ({{tWaitingNum}}): {{#each tWaiting}} {{sequence}} {{/each}} </div>
+	 		</h1>
+ 	</div>
+ {{/each}}
+</div>
+</template>
+
+
+<template name="feNextTicket">
+	<center>
+		<div id="feNext" class="modal-content">
+			<div class="modal-header">
+	          <h1 class="modal-title text-item">
+	          Queue : {{ticket.name}} </h1>
+	        </div>
+			<div class="modal-body text-center outerbg text-item">  
+			<h2>Next ticket is: {{ticket.sequence}}</h2>
+			</div>
+		</div>
+	</center>
+</template>
+
+

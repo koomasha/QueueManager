@@ -38,8 +38,9 @@
 
 	Tickets.before.insert(function (userId, doc) {
 	  doc.creationTime = Date.now();
-	  doc.status = "Waiting",
+	  doc.status = "Waiting";
 	  doc.branchId = Queues.findOne({_id:doc.queueId}).branchId;
+	  doc.isValid = true;
 	});
 
 
@@ -50,6 +51,10 @@
 
 		boSkipTicket:function(ticket,comment){
 			boChangeTicketStatus(ticket,"Skiped",this.userId, comment);
+		},
+		boResetTicketsCount:function(queueId){
+			Queues.update({ _id:queueId},{ $set: {last:0, currentSeq:0}});
+			Tickets.update({queueId:queueId, isValid:true},{ $set: {isValid:false}});
 		}
 
 
