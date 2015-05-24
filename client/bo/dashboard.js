@@ -30,10 +30,8 @@ if(!Meteor.isCordova)
 	Session.setDefault('branchSearchString',null);
 	Session.setDefault('userSearchString',null);
 	Session.setDefault("queueSearchString",null);
-	Session.setDefault('clerkStationNumber',0)
+	Session.setDefault('clerkStationNumber',0);
 	Session.setDefault("ticket",null);
-
-
 	Session.setDefault('boModalTitle','');
 	Session.setDefault('boModalContent','');
 	Session.setDefault('boModalButton','');
