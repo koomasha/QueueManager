@@ -10,6 +10,9 @@ Template.boQueueStatisticsItem.onRendered(function(){
 	var from = this.find('.from-time').value;
 	var to = this.find('.to-time').value;
 	console.log("from is " + from + " and to is " + to);
+	Meteor.call("statisticsAverageTicketTime", function(error, result){
+		$(".stat-result").text(result);
+	});
 });
 
 Template.boQueueStatistics.helpers({
