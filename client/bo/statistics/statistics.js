@@ -9,10 +9,21 @@
 Template.boQueueStatisticsItem.onRendered(function(){
 	var from = this.find('.from-time').value;
 	var to = this.find('.to-time').value;
+	var queueId = Session.get('queueId');
+	var stattype = this.find('.stat-type').value;
 	console.log("from is " + from + " and to is " + to);
-	Meteor.call("statisticsAverageTicketTime", function(error, result){
-		$(".stat-result").text(result);
-	});
+	var templateInstance=this;
+	if(stattype==='average') {
+		Meteor.call("statisticsQueueAverageTicketTime", from, to, queueId, function (error, result) {
+			templateInstance.$(".stat-result").text(result);
+		});
+	} else if(stattype==='topClerk'){
+		Meteor.call("statisticsQueueTopClerk", from, to, queueId, function (error, result) {
+			templateInstance.$(".stat-result").text(result);
+		});
+	} else {
+		console.log("ERROR - boQueueStatisticsItem has type " + stattype);
+	}
 });
 
 Template.boQueueStatistics.helpers({

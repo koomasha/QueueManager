@@ -1,5 +1,5 @@
 Meteor.methods({
-    statisticsAverageTicketTime : function(from, to, queueId){
+    statisticsQueueAverageTicketTime : function(from, to, queueId){
         var sumTimes = 0;
         var count = 0;
         Tickets.find({
@@ -16,5 +16,8 @@ Meteor.methods({
             return "--";
         }
         return sumTimes/count;
+    },
+    statisticsQueueTopClerk : function(from, to, queueId, template){
+        return "bla bla top clerk";
     }
-})
+});
