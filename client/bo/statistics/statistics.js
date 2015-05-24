@@ -7,7 +7,6 @@
 */
 
 Template.boQueueStatisticsItem.onRendered(function(){
-	console.log("rendered boQueueStatisticsItem");
 	var from = this.find('.from-time').value;
 	var to = this.find('.to-time').value;
 	console.log("from is " + from + " and to is " + to);
@@ -32,14 +31,15 @@ Template.boQueueStatistics.helpers({
 		return new Date();
 	},
 	today : function(){
-		console.log("start of day is " + moment().startOf('day').calendar());
+		console.log("start of day is " + moment().startOf('day'));
 		return moment().startOf('day');
 	},
 	month : function(){
-		var dd  = moment([1954, 5, 8]).fromNow(true); // 4 years
-		console.log (dd);
-		console.log("month moment is " + moment().subtract(1, 'months').calendar());
-		return moment().subtract(1, 'months').calendar();
+		console.log("month moment is " + moment().subtract(1, 'months'));
+		return moment().subtract(1, 'months');
+	},
+	never: function(){
+		return moment("19700101", "YYYYMMDD");
 	},
 	average : function(type){
 		if (type === "day") {

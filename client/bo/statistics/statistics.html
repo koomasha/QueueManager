@@ -1,20 +1,8 @@
 <template name="boQueueStatistics"> <!-- DON'T CHANGE THE NAME -->
-    <!--<hr>
-        <h2>Average Ticket Times</h2>-->
-    {{>boQueueStatisticsItem stattitle="Average Ticket Times Today" from=today to=now}}
-    {{>boQueueStatisticsItem stattitle="Average Ticket Times This Month" from=month to=now}}
-    {{>boQueueStatisticsItem stattitle="Average Ticket Times Overall" from=never to=now}}
-
-    <div class="col-md-10 well well-lg innerbg">
-        <div class="row container-fluid">
-            <div class="col-md-6 text-item">
-                Top Clerk Today
-            </div>
-            <div class="col-md-3 text-item" data-id="{{_id}}">
-                {{topClerk}}
-            </div>
-        </div>
-    </div>
+    {{>boQueueStatisticsItem stattitle="Average Ticket Times Today" from=today to=now type="average"}}
+    {{>boQueueStatisticsItem stattitle="Average Ticket Times This Month" from=month to=now type="average"}}
+    {{>boQueueStatisticsItem stattitle="Average Ticket Times Overall" from=never to=now type="average"}}
+    {{>boQueueStatisticsItem stattitle="Top Clerk Today" from=today to=now type="topClerk"}}
 </template>
 
 <template name="boQueueStatisticsItem">
