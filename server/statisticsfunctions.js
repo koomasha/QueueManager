@@ -1,15 +1,16 @@
 Meteor.methods({
-    statisticsQueueAverageTicketTime : function(from, to, queueId){
-        console.log("trying to get average with from=" + from + " and to=" + to + " and queueId=" + queueId);
+    statisticsAverageTicketTime : function(from, to, queueOrBranch, queueOrBranchId){
         var sumTimes = 0;
         var count = 0;
-        Tickets.find({
+        var match = {
             creationTime:{
                 $gte:Number(from),
                 $lt:Number(to)},
-            queueId:queueId,
+        //    queueId:queueOrBranchId,
             status:"Done"
-        }).forEach(function(ticket){
+        };
+        match[queueOrBranch+"Id"]=queueOrBranchId;
+        Tickets.find(match).forEach(function(ticket){
             console.log("in foreach with ticket " + JSON.stringify(ticket));
             sumTimes += ticket.serviceEndTime - ticket.creationTime;
             count += 1;
@@ -31,22 +32,17 @@ Meteor.methods({
         formattedDuration += moment.duration(averageDuration).minutes() + " minutes";
         return formattedDuration;
     },
-    statisticsQueueTopClerk : function(from, to, queueId){
-        var doneTickets=Tickets.find({
+    statisticsTopClerk : function(from, to, queueOrBranch, queueOrBranchId){
+        var match = {
             creationTime:{
                 $gte:Number(from),
                 $lt:Number(to)},
-            queueId:queueId,
-            status:"Done"
-        });
+            //queueId:queueOrBranchId,
+            status:"Done"};
+        match[queueOrBranch+"Id"]=queueOrBranchId;
+
         var result = Tickets.aggregate([
-            {$match:{
-                creationTime:{
-                    $gte:Number(from),
-                    $lt:Number(to)},
-                queueId:queueId,
-                status:"Done"}
-            },
+            {$match:match},
             {$group: {
                 _id:"$clerk", count: {$sum: 1}}
             },
