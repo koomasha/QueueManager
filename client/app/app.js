@@ -8,15 +8,20 @@ if(Meteor.isCordova) {
 	Session.setDefault('branchid', undefined);
 	Session.setDefault('phoneid', undefined);
 	Session.setDefault('isInQueues', undefined);
+	Session.setDefault('estimatedWaitTime', undefined);
 
-// --------------Startup---------------------
+// --------------Home---------------------
 
-
+	Template.appHome.helpers({
+		ismain: function(){
+			return Session.get("ismain");
+		}
+	});
 
 
 // --------------Main-----------------------
 
-	Template.appMaincontent.events = {
+	Template.appMainContent.events = {
 		'click #scangps': scangps,
 		'click #scanqr': scanqueueqr
 	}
@@ -103,7 +108,7 @@ if(Meteor.isCordova) {
 			}
 		},
 
-		'click .cancel':function(evt,tmpl){
+		'click .cancel':function(){
 			console.log('cancel additionalDetails');
 
 			Session.set('additionalDetails', undefined);
@@ -221,79 +226,87 @@ if(Meteor.isCordova) {
 	}
 // --------------Queues---------------------
 
-	Template.appQueuecontent.helpers({
+	Template.appQueueContent.helpers({
 		queueitem: function() {
 			 var relevantQueueIds = Tickets.find({phone: Session.get('phoneid')}, { queueId: 1, _id:0}).fetch();
 			 var converted = relevantQueueIds.map(function(item) { return item.queueId; });
 
 			return Queues.find({_id: { $in: converted }});
 		},
-		isUserLast: function(userSec) {
-			return (userSec === this.last);
+		isUserLast: function(last) {
+			return (this.sequence === last);
+		},
+		ticketItem: function() {
+			return Tickets.findOne({phone: Session.get('phoneid'), queueId:this._id});
+		},
+		turnStatus: function(currentSeq) {
+
+			if (this.sequence !== '-1') {
+				if (this.sequence === currentSeq) {
+					console.log('same');
+					return 'panel panel-success';
+				} else {
+					if (this.sequence < currentSeq) {
+						return 'panel panel-danger';
+					} else {
+						return 'panel panel-default';
+					}
+				}
+			}
+		},
+		branchName: function() {
+			var branchName = Branches.findOne({_id:this.branchId}, { name: 1, _id: 0});
+
+			if (branchName === undefined) {
+				return '-1';
+			}
+
+			return branchName.name;
+		},
+		ahead: function() {
+			return BeforeTicket.find({queueId: this.queueId}).count();
+		},
+		estimatedWaitTime: function() {
+
+			Meteor.call('getEstimatedTime', this.queueId, function(err, response) {
+				if (err) {
+					alert('Operation failed. Please try again.');
+				} else {
+					Session.set('estimatedWaitTime', response.toFixed(2));
+				}
+			});
+
+			return Session.get('estimatedWaitTime');
 		}
 	});
 
-	Template.appQueuecontent.events({
+	Template.appQueueContent.events({
 		'click .leave' : leaveQueue,
 		'click .postpone' : postponeTurn
 	});
 
 	function leaveQueue() {
 		if (this !== undefined){
-			console.log(this);
-			Session.set('lastClickedQueue', this);
+			Session.set('lastClickedQueue', Queues.findOne({_id: this.queueId}));
 			$('#appLeaveQueueModal').removeClass('notvisible');
 		}
 	}
 
 	function postponeTurn() {
 		if (this !== undefined){
-			Session.set('lastClickedQueue', this);
-			$('#appPostponeQueueModal').removeClass('notvisible');
+			var queue = Queues.findOne({_id: this.queueId});
+
+			Meteor.call('getEstimatedTime', queue._id, function(err, response) {
+				if (err) {
+					alert('Operation failed. Please try again.');
+				} else {
+					Session.set('lastClickedQueue', queue);
+					Session.set('estimatedWaitTime', response);
+					$('#appPostponeQueueModal').removeClass('notvisible');
+				}
+			});
 		}
 	}
-
-	Template.appHome.helpers({
-		ismain: function(){
-			return Session.get("ismain");
-		}
-	});
-
-	Handlebars.registerHelper('getSequence', function() {
-		var tick = Tickets.findOne({phone: Session.get('phoneid'), queueId:this._id}, { sequence: 1, _id: 0});
-
-		if (tick === undefined) {
-			return '-1';
-		}
-
-		return tick.sequence;
-	});
-
-	Handlebars.registerHelper('getBranchName', function() {
-		var branchName = Branches.findOne({_id:this.branchId}, { name: 1, _id: 0});
-
-		if (branchName === undefined) {
-			return '-1';
-		}
-
-		return branchName.name; 
-	});
-
-	Handlebars.registerHelper('turnStatus', function(sequence) {
-
-		if (sequence !== '-1') {
-			if (sequence === this.currentSeq) {
-				console.log('same');
-				return 'panel panel-success';
-			} else {
-				if (sequence < this.currentSeq) {
-					return 'panel panel-danger';
-				} else {
-					return 'panel panel-default';
-				}
-			}
-		}
-	});
 
 // --------------Queues - Confirm modals---------------------
 
@@ -327,7 +340,7 @@ if(Meteor.isCordova) {
 			});
 		},
 
-		'click .cancel':function(evt,tmpl){
+		'click .cancel':function(){
 			Session.set('lastClickedQueue', undefined);
 			$('#appPostponeQueueModal').addClass('notvisible');
 		}
@@ -338,17 +351,13 @@ if(Meteor.isCordova) {
 			var lastClickedQueue = Session.get('lastClickedQueue');
 
 			if (lastClickedQueue === undefined) {
-				return '0';
+				return 'A0';
 			}
-
-			return lastClickedQueue.prefix + (lastClickedQueue.last + 1);
+			console.log('last = ' + lastClickedQueue.sequence + ' prefix = ' + lastClickedQueue.prefix);
+			return lastClickedQueue.prefix + (lastClickedQueue.last + 1).toString();
 		},
 		'newEstimatedTime': function() {
-			if (Session.get('lastClickedQueue') === undefined) {
-				return 0;
-			}
-
-			return 1;
+			return Session.get('estimatedWaitTime');
 		}
 	});
 

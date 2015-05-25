@@ -30,21 +30,33 @@ Meteor.methods({
 	},
 	addUserToQueue: addUser,
 	removeUserFromQueue: function (phone, queueId) {
-		removeUser(phone, queueId, "Left");
-	},
-	postponeTurn: function (phone, queueId) {
-		console.log('postponeTurn: server and parameters are (' + phone + ') and (' + queueId + ')');
-		// leave queue
-		// join again	
+		console.log('removeUserFromQueue: server and parameters are (' + phone + ') and (' + queueId + ')');
 
-		var ticket = Tickets.findOne({phone: phone, queueId: queueId});
+		var ticket = Tickets.findOne({phone: phone, queueId: queueId, status: 'Waiting'});
 
 		if (ticket === undefined || ticket === null) {
 			console.log('no such ticket');
 		} else {
-			// TODO: add old ticket to history
-			// TODO: change sequence in tickets and last in queues
-			removeUser(phone, queueId, "Postponed");
+			console.log('removeUserFromQueue: found');
+
+			Queues.findAndModify({
+				query: { _id: queueId },
+				update: { $inc: { opentickets: -1 }},
+				new: true
+			});
+
+			Tickets.update({phone: phone, queueId: queueId}, { $set: { status: "Cancelled", finishedTime: Date.now() } });
+		}
+	},
+	postponeTurn: function (phone, queueId) {
+		console.log('postponeTurn: server and parameters are (' + phone + ') and (' + queueId + ')');
+
+		var ticket = Tickets.findOne({phone: phone, queueId: queueId, status: "Waiting"});
+
+		if (ticket === undefined || ticket === null) {
+			console.log('no such ticket');
+		} else {
+			Tickets.update({phone: phone, queueId: queueId}, { $set: { status: "Postponed", finishedTime: Date.now() } } );
 			addUser(phone, queueId, ticket.additionalDetails);
 		}
 	},
@@ -62,32 +74,23 @@ Meteor.methods({
 		});
 		
 		return inQueues;
+	},
+	getEstimatedTime: function (queueId) {
+		console.log('getEstimatedTime: server and parameters are (' + queueId + ')');
+
+		lastFinished = Tickets.find({status: "Done", queueId: queueId}, { sort: {serviceEndTime: -1}, limit: 3}).fetch();
+
+		var sum = 0;
+
+		for(var i = 0; i < lastFinished.length; i++ ){
+			console.log(i + ': serviceStartTime is: ' + lastFinished[i].serviceStartTime + ' and creationTime is: ' + lastFinished[i].creationTime);
+		    sum += (lastFinished[i].serviceStartTime - lastFinished[i].creationTime);
+		}
+
+		var avgInMillis = sum / lastFinished.length;
+		return (avgInMillis / 1000) / 60;
 	}
 });
-
-function removeUser(phone, queueId, status) {
-	// 1. TODO:Remove from tickets
-	// 2. Add to statistics
-	// 3. TODO:when the pakid clicks 'next', it should give the next AVAILABLE (not just ++)
-
-	console.log('removeUserFromQueue: server and parameters are (' + phone + ') and (' + queueId + ')');
-
-	var ticket = Tickets.findOne({phone: phone, queueId: queueId});
-
-	if (ticket === undefined || ticket === null) {
-		console.log('no such ticket');
-	} else {
-		console.log('removeUserFromQueue: found');
-
-		var queue = Queues.findAndModify({
-			query: { _id: queueId },
-			update: { $inc: { opentickets: -1 }},
-			new: true
-		});
-
-		Tickets.remove({phone: phone, queueId: queueId});
-	}
-}
 
 function addUser(phone, queueId, additionalDetails) {
 	console.log('addUserToQueue: server and parameters are (' + phone + ') and (' + queueId + ')');
