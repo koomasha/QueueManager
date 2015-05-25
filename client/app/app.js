@@ -267,22 +267,20 @@ if(Meteor.isCordova) {
 			return BeforeTicket.find({queueId: this.queueId}).count();
 		},
 		estimatedWaitTime: function() {
-
-			Meteor.call('getEstimatedTime', this.queueId, function(err, response) {
-				if (err) {
-					alert('Operation failed. Please try again.');
-				} else {
-					Session.set('estimatedWaitTime', response.toFixed(2));
-				}
-			});
-
 			return Session.get('estimatedWaitTime');
 		}
 	});
 
 	Template.appQueueContent.events({
 		'click .leave' : leaveQueue,
-		'click .postpone' : postponeTurn
+		'click .postpone' : postponeTurn,
+		'click .panel-heading': function (){
+			Meteor.call('getEstimatedTime', this.queueId, function (err, response) {
+				if (!err) {
+					Session.set('estimatedWaitTime', response.toFixed(2));
+				}
+			});
+		}
 	});
 
 	function leaveQueue() {

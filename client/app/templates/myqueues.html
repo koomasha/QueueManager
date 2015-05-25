@@ -6,6 +6,11 @@
 		<div class="panel-group" id="accordion">
 			{{#each queueitem}}
 				{{#with ticketItem}}
+                    <ul class="nav nav-tabs">
+                        <li role="presentation" class="active"><a href="#">Queue Details</a></li>
+                        <li role="presentation"><a href="#">Branch Details</a></li>
+                    </ul>
+
 					<div class="{{turnStatus ../currentSeq}}">
 						<div class="panel-heading">
 							<h4 class="panel-title">
@@ -42,6 +47,17 @@
 			{{/each}}
 		</div>
 	</div>
+</template>
+
+<template name="appShowBranchInfo">
+	Hello, I am branch.
+	Phone: 12355
+	Fax: 12346567
+	details: we like to give service
+	opening hours: sundays 1-6
+				   asdad. sada. d
+				   das
+				   dfgdfg
 </template>
 
 <template name="appLeaveQueueConfirm">

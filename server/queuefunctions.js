@@ -80,15 +80,19 @@ Meteor.methods({
 
 		lastFinished = Tickets.find({status: "Done", queueId: queueId}, { sort: {serviceEndTime: -1}, limit: 3}).fetch();
 
-		var sum = 0;
+		if (lastFinished.length === 0) {
+			return 0;
+		} else {
+			var sum = 0;
 
-		for(var i = 0; i < lastFinished.length; i++ ){
-			console.log(i + ': serviceStartTime is: ' + lastFinished[i].serviceStartTime + ' and creationTime is: ' + lastFinished[i].creationTime);
-		    sum += (lastFinished[i].serviceStartTime - lastFinished[i].creationTime);
+			for (var i = 0; i < lastFinished.length; i++) {
+				console.log(i + ': serviceStartTime is: ' + lastFinished[i].serviceStartTime + ' and creationTime is: ' + lastFinished[i].creationTime);
+				sum += (lastFinished[i].serviceStartTime - lastFinished[i].creationTime);
+			}
+
+			var avgInMillis = sum / lastFinished.length;
+			return (avgInMillis / 1000) / 60;
 		}
-
-		var avgInMillis = sum / lastFinished.length;
-		return (avgInMillis / 1000) / 60;
 	}
 });
 
