@@ -1,5 +1,21 @@
 <template name="boQueueStatistics"> <!-- DON'T CHANGE THE NAME -->
-<hr>
+    {{>boQueueStatisticsItem stattitle="Average Ticket Times Today" from=today to=now type="average"}}
+    {{>boQueueStatisticsItem stattitle="Average Ticket Times This Month" from=month to=now type="average"}}
+    {{>boQueueStatisticsItem stattitle="Average Ticket Times Overall" from=never to=now type="average"}}
+    {{>boQueueStatisticsItem stattitle="Top Clerk Today" from=today to=now type="topClerk"}}
+    <div class="test-add-tickets">TEST add tickets</div>
+</template>
+
+<template name="boQueueStatisticsItem">
+    <div class="col-md-10 well well-lg innerbg">
+        <div class="row container-fluid">
+            <div class="col-md-6 text-item">{{stattitle}}</div>
+            <input value={{from}} class="from-time" hidden="hidden">
+            <input value={{to}} class="to-time" hidden="hidden">
+            <input value={{type}} class="stat-type" hidden="hidden">
+            <div class="col-md-3 text-item stat-result" data-id="{{_id}}"></div>
+        </div>
+    </div>
 </template>
 
 <template name="boBranchStatistics"> <!-- DON'T CHANGE THE NAME -->
