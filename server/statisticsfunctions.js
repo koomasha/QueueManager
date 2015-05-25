@@ -31,8 +31,31 @@ Meteor.methods({
         formattedDuration += moment.duration(averageDuration).minutes() + " minutes";
         return formattedDuration;
     },
-    statisticsQueueTopClerk : function(from, to, queueId, template){
-        return "bla bla top clerk";
+    statisticsQueueTopClerk : function(from, to, queueId){
+        var doneTickets=Tickets.find({
+            creationTime:{
+                $gte:Number(from),
+                $lt:Number(to)},
+            queueId:queueId,
+            status:"Done"
+        });
+        var result = Tickets.aggregate([
+            {$match:{
+                creationTime:{
+                    $gte:Number(from),
+                    $lt:Number(to)},
+                queueId:queueId,
+                status:"Done"}
+            },
+            {$group: {
+                _id:"$clerk", count: {$sum: 1}}
+            },
+            {$sort:{count:-1}}]);
+        console.log("aggregation result is " + JSON.stringify(result));
+        if (result[0].count === 0) {
+            return "--";
+        }
+        return result[0]._id + " - " + result[0].count + " tickets";
     },
     testAddTicketToQueue : function(ticket, update){
         var id=Tickets.insert(ticket);
