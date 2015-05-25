@@ -37,33 +37,46 @@ Template.boQueueStatistics.helpers({
 			$gte:startRange,
 			$lt:endRange},
 			queue:queue,
-			status:"DONE"
+			status:"Done"
 		});
 		return 3.6;
 	},
 	now : function(){
-		return new Date();
+		return moment().valueOf();
 	},
 	today : function(){
 		console.log("start of day is " + moment().startOf('day'));
-		return moment().startOf('day');
+		return moment().startOf('day').valueOf();
 	},
 	month : function(){
 		console.log("month moment is " + moment().subtract(1, 'months'));
-		return moment().subtract(1, 'months');
+		return moment().subtract(1, 'months').valueOf();
 	},
 	never: function(){
-		return moment("19700101", "YYYYMMDD");
-	},
-	average : function(type){
-		if (type === "day") {
-			return boQueueStatistics.averageTicketTimes(now(), new Date());
-		}
+		return moment("19700101", "YYYYMMDD").valueOf();
 	}
-})
+});
 
 Template.boQueueStatistics.events({
-	'click .average-add' : function(evt, tmpl){
-
+	'click .test-add-tickets' : function(evt, tmpl){
+		console.log("TEST - adding ticket to queue");
+		for(var i=0; i<10; i++){
+			var creationTime=moment().subtract(i, 'hours').valueOf();
+			var serviceEndTime=moment().valueOf();
+			var clerk;
+			if(i%2===0){
+				 clerk="Sarah";
+			}else if(i%3===0){
+				 clerk="Stas";
+			}else{
+				 clerk="Olga";
+			}
+			var ticket={phone:234, sequence:1, queueId:Session.get('queueId'),
+				creationTime:creationTime,status:"Done",serviceEndTime:serviceEndTime,clerk:clerk};
+			var update={creationTime:creationTime,serviceEndTime:serviceEndTime,status:"Done"};
+			Meteor.call("testAddTicketToQueue", ticket, update, function(error,result){
+				console.log("added ticket " + result + " to queue");
+			});
+		}
 	}
-})
+});
