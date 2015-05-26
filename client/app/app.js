@@ -18,13 +18,23 @@ if(Meteor.isCordova) {
 		}
 	});
 
-
 // --------------Main-----------------------
 
 	Template.appMainContent.events = {
 		'click #scangps': scangps,
 		'click #scanqr': scanqueueqr
 	}
+
+	Template.appMainContent.helpers({
+		phoneIdLastDigits: function() {
+			var phoneId = Session.get('phoneid');
+			if (phoneId === undefined){
+				return 0;
+			}
+
+			return phoneId.substr(phoneId.length - 5);
+		}
+	});
 
 	Template.appChooseBranch.events = {
 		'click #branchesgroup a': function() {
@@ -233,9 +243,6 @@ if(Meteor.isCordova) {
 
 			return Queues.find({_id: { $in: converted }});
 		},
-		isUserLast: function(last) {
-			return (this.sequence === last);
-		},
 		ticketItem: function() {
 			return Tickets.findOne({phone: Session.get('phoneid'), queueId:this._id});
 		},
@@ -262,28 +269,54 @@ if(Meteor.isCordova) {
 			}
 
 			return branchName.name;
-		},
-		ahead: function() {
-			return BeforeTicket.find({queueId: this.queueId}).count();
-		},
-		estimatedWaitTime: function() {
-
-			Meteor.call('getEstimatedTime', this.queueId, function(err, response) {
-				if (err) {
-					alert('Operation failed. Please try again.');
-				} else {
-					Session.set('estimatedWaitTime', response.toFixed(2));
-				}
-			});
-
-			return Session.get('estimatedWaitTime');
 		}
 	});
 
 	Template.appQueueContent.events({
 		'click .leave' : leaveQueue,
-		'click .postpone' : postponeTurn
+		'click .postpone' : postponeTurn,
+		'click .panel-heading': function (){
+			Meteor.call('getEstimatedTime', this.queueId, function (err, response) {
+				if (!err) {
+					Session.set('estimatedWaitTime', response.toFixed(2));
+				}
+			});
+		}
 	});
+
+	Template.appQueueContent.rendered = function() {
+		var _this = this;
+		this.autorun(function(c) {
+			if (QueuesSub.ready()) {
+				var owl = _this.$(".owl-carousel");
+				owl.owlCarousel({
+					navigation : true,
+					slideSpeed : 300,
+					paginationSpeed : 400,
+					items : 1,
+					itemsDesktop : false,
+					itemsDesktopSmall : false,
+					itemsTablet : false,
+					itemsMobile : true,
+					responsiveClass: true
+				});
+				c.stop();
+			}
+		});
+	}
+
+	Template.appShowQueueInfo.helpers({
+		isUserLast: function(last) {
+			return (this.sequence === last);
+		},
+		ahead: function() {
+			return BeforeTicket.find({queueId: this.queueId}).count();
+		},
+		estimatedWaitTime: function() {
+			return Session.get('estimatedWaitTime');
+		}
+	});
+
 
 	function leaveQueue() {
 		if (this !== undefined){
@@ -358,6 +391,14 @@ if(Meteor.isCordova) {
 		},
 		'newEstimatedTime': function() {
 			return Session.get('estimatedWaitTime');
+		}
+	});
+
+// --------------Branch Info---------------------
+
+	Template.appShowBranchInfo.helpers({
+		branchItem: function () {
+			return Branches.findOne({_id: this.branchId});
 		}
 	});
 
