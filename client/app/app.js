@@ -18,7 +18,6 @@ if(Meteor.isCordova) {
 		}
 	});
 
-
 // --------------Main-----------------------
 
 	Template.appMainContent.events = {
@@ -233,9 +232,6 @@ if(Meteor.isCordova) {
 
 			return Queues.find({_id: { $in: converted }});
 		},
-		isUserLast: function(last) {
-			return (this.sequence === last);
-		},
 		ticketItem: function() {
 			return Tickets.findOne({phone: Session.get('phoneid'), queueId:this._id});
 		},
@@ -262,12 +258,6 @@ if(Meteor.isCordova) {
 			}
 
 			return branchName.name;
-		},
-		ahead: function() {
-			return BeforeTicket.find({queueId: this.queueId}).count();
-		},
-		estimatedWaitTime: function() {
-			return Session.get('estimatedWaitTime');
 		}
 	});
 
@@ -282,6 +272,40 @@ if(Meteor.isCordova) {
 			});
 		}
 	});
+
+	Template.appQueueContent.rendered = function() {
+		var _this = this;
+		this.autorun(function(c) {
+			if (QueuesSub.ready()) {
+				var owl = _this.$(".owl-carousel");
+				owl.owlCarousel({
+					navigation : true,
+					slideSpeed : 300,
+					paginationSpeed : 400,
+					items : 1,
+					itemsDesktop : false,
+					itemsDesktopSmall : false,
+					itemsTablet : false,
+					itemsMobile : true,
+					responsiveClass: true
+				});
+				c.stop();
+			}
+		});
+	}
+
+	Template.appShowQueueInfo.helpers({
+		isUserLast: function(last) {
+			return (this.sequence === last);
+		},
+		ahead: function() {
+			return BeforeTicket.find({queueId: this.queueId}).count();
+		},
+		estimatedWaitTime: function() {
+			return Session.get('estimatedWaitTime');
+		}
+	});
+
 
 	function leaveQueue() {
 		if (this !== undefined){
@@ -356,6 +380,14 @@ if(Meteor.isCordova) {
 		},
 		'newEstimatedTime': function() {
 			return Session.get('estimatedWaitTime');
+		}
+	});
+
+// --------------Branch Info---------------------
+
+	Template.appShowBranchInfo.helpers({
+		branchItem: function () {
+			return Branches.findOne({_id: this.branchId});
 		}
 	});
 

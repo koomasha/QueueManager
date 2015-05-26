@@ -86,7 +86,6 @@ Meteor.methods({
 			var sum = 0;
 
 			for (var i = 0; i < lastFinished.length; i++) {
-				console.log(i + ': serviceStartTime is: ' + lastFinished[i].serviceStartTime + ' and creationTime is: ' + lastFinished[i].creationTime);
 				sum += (lastFinished[i].serviceStartTime - lastFinished[i].creationTime);
 			}
 
