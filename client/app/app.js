@@ -25,6 +25,17 @@ if(Meteor.isCordova) {
 		'click #scanqr': scanqueueqr
 	}
 
+	Template.appMainContent.helpers({
+		phoneIdLastDigits: function() {
+			var phoneId = Session.get('phoneid');
+			if (phoneId === undefined){
+				return 0;
+			}
+
+			return phoneId.substr(phoneId.length - 5);
+		}
+	});
+
 	Template.appChooseBranch.events = {
 		'click #branchesgroup a': function() {
 			getQueuesByBranch(this._id);
