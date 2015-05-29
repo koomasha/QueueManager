@@ -50,7 +50,7 @@
 		},
 
 		boSkipTicket:function(ticket,comment){
-			boChangeTicketStatus(ticket,"Skiped",this.userId, comment);
+			boChangeTicketStatus(ticket,"Skipped",this.userId, comment);
 		},
 		boResetTicketsCount:function(queueId){
 			Queues.update({ _id:queueId},{ $set: {last:0, currentSeq:0}});
@@ -63,9 +63,13 @@
 
 
 	boChangeTicketStatus = function (ticket,status,userId,comment){
+		var update = {status: status, userId:userId, comment:comment};
+		if (status === 'Done' || status === 'Skipped') {
+			update["serviceEndTime"] = moment().valueOf();
+		}
 		return Tickets.findAndModify({
 			query: { _id: ticket._id },
-			update: { $set: {status: status, userId:userId, comment:comment}},
+			update: { $set: update},
 			new: true
 		});
 	}
