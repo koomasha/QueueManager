@@ -1,4 +1,4 @@
-<template name="appMaincontent">
+<template name="appMainContent">
 	<div id="maincontent">
     {{> appChooseBranch}}
 		{{> appChooseQueue}}
@@ -14,6 +14,10 @@
 		  <span class="sr-only">Error:</span>
 		  <p id="errorLabel"></p>
 		</div>
+
+    <footer class="footer">
+        <p>Username: {{phoneIdLastDigits}}</p>
+    </footer>
 
 	</div>
 </template>

@@ -23,3 +23,9 @@
     border-width: 1px;
     background-color: #FFCECE;
 }
+
+.footer {
+    width: 80%;
+    bottom: 0;
+    position: fixed;
+}

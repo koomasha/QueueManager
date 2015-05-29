@@ -8,7 +8,7 @@ if(Meteor.isCordova)
 
 				if(result){
 					BeforeTicket = new Meteor.Collection("BeforeTicket");
-					Meteor.subscribe('appTickets',result);
+					QueuesSub = Meteor.subscribe('appTickets',result);
 				}
 
 			},
@@ -17,7 +17,4 @@ if(Meteor.isCordova)
 			}
 		);
 	});
-
-	//TODO 
-
 }
