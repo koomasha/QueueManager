@@ -72,6 +72,8 @@ textarea {
 	box-shadow:none;
 	background:transparent;
   position:absolute;
+    top:10%;
+    left: 50%;
   bottom:auto;
   pointer-events:none;
 }
