@@ -45,7 +45,7 @@ Meteor.methods({
             },
             {$sort:{count:-1}}]);
         console.log("aggregation result is " + JSON.stringify(result));
-        if (result[0].count === 0) {
+        if (result[0] == undefined || result[0].count === 0) {
             return "--";
         }
         var clerkName = Meteor.users.findOne({_id:result[0]._id}).profile.name;
