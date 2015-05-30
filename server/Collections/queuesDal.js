@@ -32,17 +32,20 @@ Meteor.methods({
   boNextTicket:function(queueId){
     var queue = Queues.findAndModify({
       query: { _id: queueId },
-      update: { $inc: { currentSeq: 1,openTickets: -1 }},
+      update: { $inc: { currentSeq: 1}},
       new: true
     }); 
     var ticket = Tickets.findOne({queueId:queueId,sequence:queue.currentSeq,status:'Waiting'});
-    while(!ticket){
+    while(!ticket && queue.currentSeq <= queue.last){
       queue = Queues.findAndModify({
           query: { _id: queueId },
           update: { $inc: { currentSeq: 1}},
           new: true
       }); 
       ticket = Tickets.findOne({queueId:queueId,sequence:queue.currentSeq,status:'Waiting'});
+    }
+    if (!ticket) {
+      return;
     }
     return boChangeTicketStatus(ticket,"Getting Service",this.userId,'');
   },

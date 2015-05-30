@@ -691,6 +691,12 @@ if(!Meteor.isCordova)
 			//	return Queues.findOne({_id: Session.get('queueId')}).openTickets;
 			}
 		},
+		disableNextTicket: function(){
+			if(Session.get('queueId')) {
+				var count = Tickets.find({queueId:Session.get('queueId'), status:'Waiting'}).count();
+				return count<=0;
+			}
+		}
 	});
 
 	Template.boQueueWorkStation.events({
