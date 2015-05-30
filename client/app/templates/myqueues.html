@@ -29,44 +29,55 @@
 	</div>
 </template>
 
-<template name="someStuffCarousel">
-
-    <div class="owl-carousel">
-
-    </div>
-
-</template>
-
 <template name="appShowQueueInfo">
     <h3>Your Location</h3>
     <p>{{../prefix}}{{sequence}}</p>
     <h3>Current Location</h3>
     <p>{{../prefix}}{{../currentSeq}}</p>
-    <h3>Estimated waiting time</h3>
-    <p>{{estimatedWaitTime}} mins</p>
-    <p>There are <b> {{ahead}} </b> people ahead</p>
+    {{#if isMissed status}}
+        <p>You have missed your turn.</p>
+        {{#if ../active}}
+            <p>Would you like to join this queue again?</p>
+            <button type="button" class="btn btn-default rejoin">Yes</button>
+            <button type="button" class="btn btn-default nojoin">No</button>
+        {{else}}
+            <p>The queue is closed. You cannot join it again.</p>
+        {{/if}}
+    {{else}}
+        {{#if station}}
+            <p>It's your turn! please come to station {{station}}</p>
+        {{else}}
+            <h3>Estimated waiting time</h3>
+            <p>{{estimatedWaitTime}} mins</p>
+            <p>There are <b> {{ahead}} </b> people ahead</p>
 
-	{{#if station}}
-        <p>It's your turn! please come to station {{../station}}</p>
-	{{/if}}
+            {{#if isPostponeInvalid ..}}
+                <button type="button" class="btn btn-default postpone" disabled="true">Postpone turn</button>
+            {{else}}
+                <button type="button" class="btn btn-default postpone">Postpone turn</button>
+            {{/if}}
 
-	{{#if isUserLast ../last}}
-        <button type="button" class="btn btn-default postpone" disabled="true">Postpone turn</button>
-	{{else}}
-        <button type="button" class="btn btn-default postpone">Postpone turn</button>
-	{{/if}}
-
-    <button type="button" class="btn btn-default leave">Leave queue</button>
+            <button type="button" class="btn btn-default leave">Leave queue</button>
+        {{/if}}
+    {{/if}}
 </template>
 
 <template name="appShowBranchInfo">
 	{{#with branchItem}}
-        <h3>Opening Hours</h3>
-        <p>{{openingHours}}</p>
-        <h3>Address</h3>
-        <p>{{address}}</p>
-        <h3>Information</h3>
-        <p>{{branchInfo}}</p>
+        {{#if openingHours}}
+            <h3>Opening Hours</h3>
+            <p>{{openingHours}}</p>
+        {{/if}}
+
+        {{#if address}}
+            <h3>Address</h3>
+            <p>{{address}}</p>
+        {{/if}}
+
+        {{#if branchInfo}}
+            <h3>Information</h3>
+            <p>{{branchInfo}}</p>
+        {{/if}}
 	{{/with}}
 </template>
 

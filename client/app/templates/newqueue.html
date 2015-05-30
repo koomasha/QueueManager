@@ -6,19 +6,22 @@
 
 		<h1>Find Your Queue</h1>
 		<br><br>
-		<button type="button" class="btn btn-default navbar-btn" id="scangps">Using GPS</button>
-		<button type="button" class="btn btn-default navbar-btn" id="scanqr">Using QR Code</button>
+
+    <button type="button" class="btn btn-default" aria-label="Left Align" id="scangps">
+    Via GPS
+      <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+    </button>
+
+    <button type="button" class="btn btn-default" aria-label="Left Align" id="scanqr">
+    Via QR code
+      <span class="glyphicon glyphicon-qrcode" aria-hidden="true"></span>
+    </button>
 
 		<div id="erroralert" class="alert alert-danger notvisible errorlabel" role="alert">
 		  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
 		  <span class="sr-only">Error:</span>
 		  <p id="errorLabel"></p>
 		</div>
-
-    <footer class="footer">
-        <p>Username: {{phoneIdLastDigits}}</p>
-    </footer>
-
 	</div>
 </template>
 
