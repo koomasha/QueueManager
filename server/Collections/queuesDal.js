@@ -24,7 +24,7 @@ Queues.before.insert(function (userId, doc) {
   doc.creationTime = Date.now();
   doc.last = 0;
   doc.currentSeq = 0;
-  doc.openTickets = 0;
+ // doc.openTickets = 0;
   doc.additionalDetails = [];
 });
 

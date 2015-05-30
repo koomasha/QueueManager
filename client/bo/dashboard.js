@@ -603,9 +603,10 @@ if(!Meteor.isCordova)
 
 		'click .queue-reset-ticket-count' :function(evt,tmpl){
 			Session.set('queueId',this._id);
+			var openTickets = Tickets.find({queueId:this.id, status:'Waiting'}).count();
 			var queue = Queues.findOne({_id:this._id});
 			var ticketsInService = Tickets.find({queueId:this.id,status:'Getting Service',isValid:true}).fetch();
-			if(queue.openTickets == 0 && !queue.active && !ticketsInService){
+			if(openTickets == 0 && !queue.active && !ticketsInService){
 			setModalData(
 				'Reset tickets count',
 				'Reset tickets count for queue '+queue.name,
@@ -614,7 +615,7 @@ if(!Meteor.isCordova)
 			else{
 			setModalData(
 				'Reset tickets count',
-				'You can not reset counter while clients in line or getting service. Or queue is open',
+				'You cannot reset counter while clients in line or getting service, or when the queue is open',
 				'','','none');
 			}
 		},
@@ -671,21 +672,29 @@ if(!Meteor.isCordova)
 			return Session.get("ticket");
 		},
 		nextTicket: function(){
-			if(Session.get('queueId'))
-				if(Queues.findOne({_id:Session.get('queueId')}).openTickets > 0)
-					return Queues.findOne({_id:Session.get('queueId')}).currentSeq+1;
-				else return '--';
+			if(Session.get('queueId')) {
+				var openTickets = Tickets.find({queueId:Session.get('queueId'), status:'Waiting'}).count();
+				if (openTickets > 0) {
+					return Queues.findOne({_id: Session.get('queueId')}).currentSeq + 1;
+				}
+			}
+			return '--';
 		},
 		openTickets: function(){
-			if(Session.get('queueId'))
-				return Queues.findOne({_id:Session.get('queueId')}).openTickets;
+			if(Session.get('queueId')) {
+				var count = Tickets.find({queueId:Session.get('queueId'), status:'Waiting'}).count();
+				console.log('count is ' + count);
+				return count;
+			//	return Queues.findOne({_id: Session.get('queueId')}).openTickets;
+			}
 		},
 	});
 
 	Template.boQueueWorkStation.events({
 		'click .next-ticket':function(evt,tmpl){
-			var queue = Queues.findOne({_id:Session.get('queueId')});
-			if(queue.openTickets > 0){
+			var openTickets = Tickets.find({queueId:Session.get('queueId'), status:'Waiting'}).count();
+			//var queue = Queues.findOne({_id:Session.get('queueId')});
+			if(openTickets > 0){
 				Meteor.call('boNextTicket',Session.get('queueId'),function(err, data) {Session.set('ticket', data)});
 			}
 		},
