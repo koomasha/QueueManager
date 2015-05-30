@@ -1,16 +1,15 @@
 Meteor.methods({
-    statisticsQueueAverageTicketTime : function(from, to, queueId){
-        console.log("trying to get average with from=" + from + " and to=" + to + " and queueId=" + queueId);
+    statisticsAverageTicketTime : function(from, to, queueOrBranch, queueOrBranchId){
         var sumTimes = 0;
         var count = 0;
-        Tickets.find({
+        var match = {
             creationTime:{
                 $gte:Number(from),
                 $lt:Number(to)},
-            queueId:queueId,
             status:"Done"
-        }).forEach(function(ticket){
-            console.log("in foreach with ticket " + JSON.stringify(ticket));
+        };
+        match[queueOrBranch+"Id"]=queueOrBranchId;
+        Tickets.find(match).forEach(function(ticket){
             sumTimes += ticket.serviceEndTime - ticket.creationTime;
             count += 1;
         });
@@ -31,31 +30,26 @@ Meteor.methods({
         formattedDuration += moment.duration(averageDuration).minutes() + " minutes";
         return formattedDuration;
     },
-    statisticsQueueTopClerk : function(from, to, queueId){
-        var doneTickets=Tickets.find({
+    statisticsTopClerk : function(from, to, queueOrBranch, queueOrBranchId){
+        var match = {
             creationTime:{
                 $gte:Number(from),
                 $lt:Number(to)},
-            queueId:queueId,
-            status:"Done"
-        });
+            status:"Done"};
+        match[queueOrBranch+"Id"]=queueOrBranchId;
+
         var result = Tickets.aggregate([
-            {$match:{
-                creationTime:{
-                    $gte:Number(from),
-                    $lt:Number(to)},
-                queueId:queueId,
-                status:"Done"}
-            },
+            {$match:match},
             {$group: {
-                _id:"$clerk", count: {$sum: 1}}
+                _id:"$userId", count: {$sum: 1}}
             },
             {$sort:{count:-1}}]);
         console.log("aggregation result is " + JSON.stringify(result));
-        if (result[0].count === 0) {
+        if (result[0] == undefined || result[0].count === 0) {
             return "--";
         }
-        return result[0]._id + " - " + result[0].count + " tickets";
+        var clerkName = Meteor.users.findOne({_id:result[0]._id}).profile.name;
+        return clerkName + " - " + result[0].count + " tickets";
     },
     testAddTicketToQueue : function(ticket, update){
         var id=Tickets.insert(ticket);

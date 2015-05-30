@@ -19,5 +19,20 @@
 </template>
 
 <template name="boBranchStatistics"> <!-- DON'T CHANGE THE NAME -->
+    {{>boBranchStatisticsItem stattitle="Average Ticket Times Today" from=today to=now type="average"}}
+    {{>boBranchStatisticsItem stattitle="Average Ticket Times This Month" from=month to=now type="average"}}
+    {{>boBranchStatisticsItem stattitle="Average Ticket Times Overall" from=never to=now type="average"}}
+    {{>boBranchStatisticsItem stattitle="Top Clerk Today" from=today to=now type="topClerk"}}
+</template>
 
+<template name="boBranchStatisticsItem">
+    <div class="col-md-10 well well-lg innerbg">
+        <div class="row container-fluid">
+            <div class="col-md-6 text-item">{{stattitle}}</div>
+            <input value={{from}} class="from-time" hidden="hidden">
+            <input value={{to}} class="to-time" hidden="hidden">
+            <input value={{type}} class="stat-type" hidden="hidden">
+            <div class="col-md-3 text-item stat-result" data-id="{{_id}}"></div>
+        </div>
+    </div>
 </template>

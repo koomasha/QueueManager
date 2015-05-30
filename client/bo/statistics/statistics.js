@@ -14,11 +14,11 @@ Template.boQueueStatisticsItem.onRendered(function(){
 	console.log("from is " + from + " and to is " + to);
 	var templateInstance=this;
 	if(stattype==='average') {
-		Meteor.call("statisticsQueueAverageTicketTime", from, to, queueId, function (error, result) {
+		Meteor.call("statisticsAverageTicketTime", from, to, "queue", queueId, function (error, result) {
 			templateInstance.$(".stat-result").text(result);
 		});
 	} else if(stattype==='topClerk'){
-		Meteor.call("statisticsQueueTopClerk", from, to, queueId, function (error, result) {
+		Meteor.call("statisticsTopClerk", from, to, "queue", queueId, function (error, result) {
 			templateInstance.$(".stat-result").text(result);
 		});
 	} else {
@@ -27,29 +27,13 @@ Template.boQueueStatisticsItem.onRendered(function(){
 });
 
 Template.boQueueStatistics.helpers({
-	averageTicketTimes : function(from, to){
-		var queue = Session.get('queueId');
-		var startRange = from.getDay();
-		var endRange = to;
-		console.log("range from " + from + " to " + to);
-		Tickets.findAll({
-			createdAt:{
-			$gte:startRange,
-			$lt:endRange},
-			queue:queue,
-			status:"Done"
-		});
-		return 3.6;
-	},
 	now : function(){
 		return moment().valueOf();
 	},
 	today : function(){
-		console.log("start of day is " + moment().startOf('day'));
 		return moment().startOf('day').valueOf();
 	},
 	month : function(){
-		console.log("month moment is " + moment().subtract(1, 'months'));
 		return moment().subtract(1, 'months').valueOf();
 	},
 	never: function(){
@@ -78,5 +62,40 @@ Template.boQueueStatistics.events({
 				console.log("added ticket " + result + " to queue");
 			});
 		}
+	}
+});
+
+Template.boBranchStatisticsItem.onRendered(function(){
+	var from = this.find('.from-time').value;
+	var to = this.find('.to-time').value;
+	var branchId = Session.get('branchId');
+	var stattype = this.find('.stat-type').value;
+	console.log("from is " + from + " and to is " + to);
+	var templateInstance=this;
+	if(stattype==='average') {
+		Meteor.call("statisticsAverageTicketTime", from, to, "branch", branchId, function (error, result) {
+			templateInstance.$(".stat-result").text(result);
+		});
+	} else if(stattype==='topClerk'){
+		Meteor.call("statisticsTopClerk", from, to, "branch", branchId, function (error, result) {
+			templateInstance.$(".stat-result").text(result);
+		});
+	} else {
+		console.log("ERROR - boBranchStatisticsItem has type " + stattype);
+	}
+});
+
+Template.boBranchStatistics.helpers({
+	now : function(){
+		return moment().valueOf();
+	},
+	today : function(){
+		return moment().startOf('day').valueOf();
+	},
+	month : function(){
+		return moment().subtract(1, 'months').valueOf();
+	},
+	never: function(){
+		return moment("19700101", "YYYYMMDD").valueOf();
 	}
 });

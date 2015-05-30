@@ -1,4 +1,4 @@
-body{
+.desktop-body{
 	background-image: url('bubbles.jpg');
 	background-size:cover;
 }
@@ -72,6 +72,8 @@ textarea {
 	box-shadow:none;
 	background:transparent;
   position:absolute;
+    top:10%;
+    left: 50%;
   bottom:auto;
   pointer-events:none;
 }
@@ -96,7 +98,8 @@ textarea {
 
 }
 .modal-body{
-  max-height:600px !important;
+  /**max-height:600px !important;*/
+    overflow-y: auto;
 }
 .modal-footer{
     -moz-box-shadow:none;

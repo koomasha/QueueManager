@@ -92,7 +92,13 @@ Meteor.methods({
 			var avgInMillis = sum / lastFinished.length;
 			return (avgInMillis / 1000) / 60;
 		}
-	}
+	},
+	//getOpenTickets: function(queueId){
+	//	console.log('getOpenTickets: queueId is ' + queueId);
+	//	var result = Tickets.count({queueId:queueId, status:'Waiting'});
+	//	console.log("aggregation result is " + JSON.stringify(result));
+	//	return result;
+	//}
 });
 
 function addUser(phone, queueId, additionalDetails) {
