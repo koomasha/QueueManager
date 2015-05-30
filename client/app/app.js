@@ -1,7 +1,7 @@
 if(Meteor.isCordova) {
 
 	Session.setDefault('ismain', true);
-	Session.setDefault('lastClickedQueue', undefined);
+	Session.setDefault('lastClickedTicket', undefined);
 	Session.setDefault('optionalQueues', undefined);
 	Session.setDefault('optionalBranches', undefined);
 	Session.setDefault('additionalDetails', undefined);
@@ -24,17 +24,6 @@ if(Meteor.isCordova) {
 		'click #scangps': scangps,
 		'click #scanqr': scanqueueqr
 	}
-
-	Template.appMainContent.helpers({
-		phoneIdLastDigits: function() {
-			var phoneId = Session.get('phoneid');
-			if (phoneId === undefined){
-				return 0;
-			}
-
-			return phoneId.substr(phoneId.length - 5);
-		}
-	});
 
 	Template.appChooseBranch.events = {
 		'click #branchesgroup a': function() {
@@ -249,11 +238,10 @@ if(Meteor.isCordova) {
 		turnStatus: function(currentSeq) {
 
 			if (this.sequence !== '-1') {
-				if (this.sequence === currentSeq) {
-					console.log('same');
+				if (this.sequence === currentSeq && this.status === 'Getting Service') {
 					return 'panel panel-success';
 				} else {
-					if (this.sequence < currentSeq) {
+					if (this.sequence < currentSeq || this.status === 'Skipped') {
 						return 'panel panel-danger';
 					} else {
 						return 'panel panel-default';
@@ -275,6 +263,8 @@ if(Meteor.isCordova) {
 	Template.appQueueContent.events({
 		'click .leave' : leaveQueue,
 		'click .postpone' : postponeTurn,
+		'click .rejoin' : rejoinQueue,
+		'click .nojoin' : invalidateTurn,
 		'click .panel-heading': function (){
 			Meteor.call('getEstimatedTime', this.queueId, function (err, response) {
 				if (!err) {
@@ -306,8 +296,11 @@ if(Meteor.isCordova) {
 	}
 
 	Template.appShowQueueInfo.helpers({
-		isUserLast: function(last) {
-			return (this.sequence === last);
+		isMissed: function(status) {
+			return (status === "Skipped");
+		},
+		isPostponeInvalid: function(queue) {
+			return (this.sequence === queue.last || !queue.active);
 		},
 		ahead: function() {
 			return BeforeTicket.find({queueId: this.queueId}).count();
@@ -320,20 +313,20 @@ if(Meteor.isCordova) {
 
 	function leaveQueue() {
 		if (this !== undefined){
-			Session.set('lastClickedQueue', Queues.findOne({_id: this.queueId}));
+			Session.set('lastClickedTicket', this);
 			$('#appLeaveQueueModal').removeClass('notvisible');
 		}
 	}
 
 	function postponeTurn() {
 		if (this !== undefined){
-			var queue = Queues.findOne({_id: this.queueId});
+			var thisTicket = this;
 
-			Meteor.call('getEstimatedTime', queue._id, function(err, response) {
+			Meteor.call('getEstimatedTime', this.queueId, function(err, response) {
 				if (err) {
 					alert('Operation failed. Please try again.');
 				} else {
-					Session.set('lastClickedQueue', queue);
+					Session.set('lastClickedTicket', thisTicket);
 					Session.set('estimatedWaitTime', response);
 					$('#appPostponeQueueModal').removeClass('notvisible');
 				}
@@ -341,52 +334,61 @@ if(Meteor.isCordova) {
 		}
 	}
 
+	function rejoinQueue() {
+		Meteor.call('rejoinQueue', this);
+	}
+
+	function invalidateTurn() {
+		Meteor.call('invalidateTurn', this._id);
+	}
+
 // --------------Queues - Confirm modals---------------------
 
 	Template.appLeaveQueueConfirm.events({
 		'click .save':function(evt,tmpl){
-			Meteor.call('removeUserFromQueue', Session.get('phoneid'), Session.get('lastClickedQueue')._id, function(err, response) {
+			Meteor.call('removeUserFromQueue', Session.get('lastClickedTicket')._id, function(err, response) {
 				if (err) {
 					alert('Operation failed. Please try again.');
 				} else {
-					Session.set('lastClickedQueue', undefined);
+					Session.set('lastClickedTicket', undefined);
 					$('#appLeaveQueueModal').addClass('notvisible');
 				}
 			});
 		},
 
 		'click .cancel':function(evt,tmpl){
-			Session.set('lastClickedQueue', undefined);
+			Session.set('lastClickedTicket', undefined);
 			$('#appLeaveQueueModal').addClass('notvisible');
 		}
 	});
 
 	Template.appPostponeQueueConfirm.events({
 		'click .save':function(evt,tmpl){
-			Meteor.call('postponeTurn', Session.get('phoneid'), Session.get('lastClickedQueue')._id, function(err, response) {
+			Meteor.call('postponeTurn',Session.get('lastClickedTicket')._id, function(err, response) {
 				if (err) {
 					alert('Operation failed. Please try again.');
 				} else {
-					Session.set('lastClickedQueue', undefined);
+					Session.set('lastClickedTicket', undefined);
 					$('#appPostponeQueueModal').addClass('notvisible');
 				}
 			});
 		},
 
 		'click .cancel':function(){
-			Session.set('lastClickedQueue', undefined);
+			Session.set('lastClickedTicket', undefined);
 			$('#appPostponeQueueModal').addClass('notvisible');
 		}
 	});
 
 	Template.appPostponeQueueConfirm.helpers({
 		'newLocation': function() {
-			var lastClickedQueue = Session.get('lastClickedQueue');
+			var lastClickedTicket = Session.get('lastClickedTicket');
 
-			if (lastClickedQueue === undefined) {
+			if (lastClickedTicket === undefined) {
 				return 'A0';
 			}
-			console.log('last = ' + lastClickedQueue.sequence + ' prefix = ' + lastClickedQueue.prefix);
+
+			var lastClickedQueue = Queues.findOne({_id: lastClickedTicket.queueId});
 			return lastClickedQueue.prefix + (lastClickedQueue.last + 1).toString();
 		},
 		'newEstimatedTime': function() {
@@ -409,11 +411,25 @@ if(Meteor.isCordova) {
 		'click #myqueues': move
 	}
 
+	Template.appLayout.helpers({
+		phoneIdLastDigits: function() {
+			var phoneId = Session.get('phoneid');
+			if (phoneId === undefined){
+				return 0;
+			}
+
+			return phoneId.substr(phoneId.length - 5);
+		}
+	});
+
 // ---------------------------------------------
 
 	function move() {
 		if (checkismain()) {
 			$("#maincontent").fadeOut('slow', function() {
+				$('#newqueueli').toggleClass('active');
+				$('#myqueuesli').toggleClass('active');
+
 				Session.set("ismain", false);
 				Session.set("phoneid", Session.get("phoneid"));
 			});
@@ -423,6 +439,9 @@ if(Meteor.isCordova) {
 	function moveback() {
 		if (!checkismain()) {
 			$("#queuecontent").fadeOut('slow', function() {
+				$('#newqueueli').toggleClass('active');
+				$('#myqueuesli').toggleClass('active');
+
 				Session.set("ismain", true);
 			});
 		}

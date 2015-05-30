@@ -29,10 +29,10 @@ Meteor.methods({
 		}
 	},
 	addUserToQueue: addUser,
-	removeUserFromQueue: function (phone, queueId) {
-		console.log('removeUserFromQueue: server and parameters are (' + phone + ') and (' + queueId + ')');
+	removeUserFromQueue: function (ticketId) {
+		console.log('removeUserFromQueue: server and parameters are (' + ticketId + ')');
 
-		var ticket = Tickets.findOne({phone: phone, queueId: queueId, status: 'Waiting'});
+		var ticket = Tickets.findOne({_id: ticketId});
 
 		if (ticket === undefined || ticket === null) {
 			console.log('no such ticket');
@@ -40,24 +40,24 @@ Meteor.methods({
 			console.log('removeUserFromQueue: found');
 
 			Queues.findAndModify({
-				query: { _id: queueId },
+				query: { _id: ticket.queueId },
 				update: { $inc: { opentickets: -1 }},
 				new: true
 			});
 
-			Tickets.update({phone: phone, queueId: queueId}, { $set: { status: "Cancelled", finishedTime: Date.now() } });
+			Tickets.update({_id: ticketId}, { $set: { status: "Cancelled", finishedTime: Date.now(), isValid: false } });
 		}
 	},
-	postponeTurn: function (phone, queueId) {
-		console.log('postponeTurn: server and parameters are (' + phone + ') and (' + queueId + ')');
+	postponeTurn: function (ticketId) {
+		console.log('postponeTurn: server and parameters are (' + ticketId + ')');
 
-		var ticket = Tickets.findOne({phone: phone, queueId: queueId, status: "Waiting"});
+		var ticket = Tickets.findOne({_id: ticketId});
 
 		if (ticket === undefined || ticket === null) {
 			console.log('no such ticket');
 		} else {
-			Tickets.update({phone: phone, queueId: queueId}, { $set: { status: "Postponed", finishedTime: Date.now() } } );
-			addUser(phone, queueId, ticket.additionalDetails);
+			Tickets.update({_id: ticketId}, { $set: { status: "Postponed", finishedTime: Date.now(), isValid: false  } } );
+			addUser(ticket.phone, ticket.queueId, ticket.additionalDetails);
 		}
 	},
 	isUserInQueue: function(phone, queues) {
@@ -65,7 +65,7 @@ Meteor.methods({
 		var inQueues = [];
 		queues.forEach(function(queue) {
 			var inQueue = new Object();
-		    var ticket = Tickets.findOne({phone: phone, queueId: queue._id});
+		    var ticket = Tickets.findOne({phone: phone, queueId: queue._id, status: 'Waiting'});
 		    inQueue.queueId = queue._id;
 		    inQueue.isInQueue = (!(ticket === undefined || ticket === null));
 		    console.log('queueId = ' + inQueue.queueId + ' isUsrIn = ' + inQueue.isInQueue);
@@ -93,14 +93,18 @@ Meteor.methods({
 			return (avgInMillis / 1000) / 60;
 		}
 	},
-	//getOpenTickets: function(queueId){
-	//	console.log('getOpenTickets: queueId is ' + queueId);
-	//	var result = Tickets.count({queueId:queueId, status:'Waiting'});
-	//	console.log("aggregation result is " + JSON.stringify(result));
-	//	return result;
-	//}
+	invalidateTurn: function (ticketId) {
+		invalidate(ticketId);
+	},
+	rejoinQueue: function (ticket) {
+		invalidate(ticket._id);
+		addUser(ticket.phone, ticket.queueId, ticket.additionalDetails);
+	}
 });
 
+function invalidate(ticketId) {
+	Tickets.update({_id : ticketId}, { $set: { finishedTime: Date.now(), isValid: false } });
+}
 function addUser(phone, queueId, additionalDetails) {
 	console.log('addUserToQueue: server and parameters are (' + phone + ') and (' + queueId + ')');
 

@@ -5,7 +5,7 @@
 	Meteor.publishComposite("appTickets", function(phoneId) {
 		return {
 				find: function() {
-		            return Tickets.find({phone:phoneId, $or: [{status: 'Waiting'}, {status: 'Skipped'}, {status: 'Getting service'}]});
+		            return Tickets.find({phone:phoneId, isValid:true, $or: [{status: 'Waiting'}, {status: 'Skipped'}, {status: 'Getting Service'}]});
 		        },
 		        children: [
 		            {
