@@ -73,20 +73,20 @@ if(!Meteor.isCordova)
 
 	var addOrEditBranch = function(tmpl,action){
 		var name = tmpl.find('.branch-name').value;
-		var hours = tmpl.find('.branch-hours').value;
-		var description = tmpl.find('.branch-description').value;
+		var openingHours = tmpl.find('.branch-hours').value;
+		var branchInfo = tmpl.find('.branch-info').value;
 		var active = (tmpl.find('.branch-active').value == "true");
 		var password = tmpl.find('.branch-password').value;
 		if(name && password){
 			if(action == 'add')
 			{
 				Branches.insert(
-					{name:name,password:password,hours:hours,description:description,
+					{name:name,password:password,openingHours:openingHours,branchInfo:branchInfo,
 						address:Session.get("boGeoAddress"),location:Session.get("boGeoCoordinates"),active:active});
 			}
 			if(action == 'edit')
 				Branches.update({ _id:Session.get('branchId') },
-					{$set:{name:name,password:password,hours:hours,description:description,
+					{$set:{name:name,password:password,openingHours:openingHours,branchInfo:branchInfo,
 						address:Session.get("boGeoAddress"),location:Session.get("boGeoCoordinates"),active:active}});
 			return true;	
 		}
