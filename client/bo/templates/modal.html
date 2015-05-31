@@ -51,10 +51,14 @@
         <input value="{{branch.name}}" class="form-control branch-name" placeholder="Branch Name">
       </div>
     <div class="form-group col-md-10 col-md-offset-1">
-        <input value="{{branch.openingHours}}" class="form-control branch-hours" placeholder="Opening Hours">
+        <textarea class="form-control branch-hours" placeholder="Opening Hours">{{branch.openingHours}}</textarea>
     </div>
     <div class="form-group col-md-10 col-md-offset-1">
-        <input value="{{branch.branchInfo}}" class="form-control branch-info" placeholder="Branch Description">
+      <!--  <input value="{{branch.branchInfo}}" class="form-control branch-info" placeholder="Branch Description">-->
+		<textarea class="form-control branch-info" placeholder="Branch Description">{{branch.branchInfo}}</textarea>
+    </div>
+    <div class="form-group col-md-10 col-md-offset-1">
+        <input value="{{branch.website}}" class="form-control branch-website" placeholder="Website">
     </div>
       <div class="form-group col-md-10 col-md-offset-1">  
         <select class="form-control branch-active ">

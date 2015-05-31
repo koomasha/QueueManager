@@ -51,9 +51,9 @@ Meteor.methods({
         var clerkName = Meteor.users.findOne({_id:result[0]._id}).profile.name;
         return clerkName + " - " + result[0].count + " tickets";
     },
-    testAddTicketToQueue : function(ticket, update){
-        var id=Tickets.insert(ticket);
-        Tickets.update(id,{$set:update});
-        return "inserted ticket " + id;
+    testAddTicketToQueue : function(queueId, update){
+        Meteor.call('addUserToQueue', "123", queueId,function(err,success){});
+    //    var id=Tickets.insert(ticket);
+    //    Tickets.update(id,{$set:update});
     }
 });

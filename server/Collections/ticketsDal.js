@@ -66,6 +66,12 @@
 		var update = {status: status, userId:userId, comment:comment};
 		if (status === 'Done' || status === 'Skipped') {
 			update["serviceEndTime"] = moment().valueOf();
+		} else if (status === 'Getting Service') {
+			var users = Branches.findOne({_id:ticket.branchId}, {users: { $elemMatch:{userId:userId}}}).users;
+			console.log("users is " + JSON.stringify(users));
+			var clerkStation = users[0].station;
+			console.log("clerkStation is " + JSON.stringify(clerkStation));
+			update["station"] = clerkStation;
 		}
 		return Tickets.findAndModify({
 			query: { _id: ticket._id },

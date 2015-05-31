@@ -15,10 +15,10 @@
 	<div class="row container-fluid	">
 	{{#if ticket}}
 		{{>boTicketDetails}}
-	{{else}}	
+	{{else}}
 		<div class="row">
-			<button type="button" class="col-md-3 col-md-offset-4 btn btn-warning next-ticket">Next</button>
-		</div>	
+			<button type="button" class="col-md-3 col-md-offset-4 btn btn-warning next-ticket" disabled="{{disableNextTicket}}">Next</button>
+		</div>
 	{{/if}}	
 	</div>
 </template>

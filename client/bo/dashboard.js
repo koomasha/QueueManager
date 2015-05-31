@@ -77,17 +77,20 @@ if(!Meteor.isCordova)
 		var branchInfo = tmpl.find('.branch-info').value;
 		var active = (tmpl.find('.branch-active').value == "true");
 		var password = tmpl.find('.branch-password').value;
+		var website = tmpl.find('.branch-website').value;
 		if(name && password){
 			if(action == 'add')
 			{
 				Branches.insert(
 					{name:name,password:password,openingHours:openingHours,branchInfo:branchInfo,
-						address:Session.get("boGeoAddress"),location:Session.get("boGeoCoordinates"),active:active});
+						address:Session.get("boGeoAddress"),location:Session.get("boGeoCoordinates"),
+						active:active, website:website});
 			}
 			if(action == 'edit')
 				Branches.update({ _id:Session.get('branchId') },
 					{$set:{name:name,password:password,openingHours:openingHours,branchInfo:branchInfo,
-						address:Session.get("boGeoAddress"),location:Session.get("boGeoCoordinates"),active:active}});
+						address:Session.get("boGeoAddress"),location:Session.get("boGeoCoordinates"),
+						active:active, website:website}});
 			return true;	
 		}
 		else if(!name)
@@ -638,14 +641,14 @@ if(!Meteor.isCordova)
 			return this.showToClerk;
 		},
 		showClientsInLine:function(queueId){
-			return (this.openTickets > 0);
+			return (Tickets.find({queueId:this._id,status:'Waiting'}).count() > 0);
 		},
 		showClientsInService:function(queueId){
 			var ticketsInService = Tickets.find({queueId:this._id,status:'Getting Service',isValid:true}).fetch(); 
 			return (ticketsInService.length > 0);
 		},
 		clientsInLine:function(queueId){
-			return this.openTickets;
+			return Tickets.find({queueId:this._id,status:'Waiting'}).count();
 		},
 		clientsInService:function(queueId){
 			var ticketsInService = Tickets.find({queueId:this._id,status:'Getting Service',isValid:true}).fetch(); 
@@ -688,6 +691,12 @@ if(!Meteor.isCordova)
 			//	return Queues.findOne({_id: Session.get('queueId')}).openTickets;
 			}
 		},
+		disableNextTicket: function(){
+			if(Session.get('queueId')) {
+				var count = Tickets.find({queueId:Session.get('queueId'), status:'Waiting'}).count();
+				return count<=0;
+			}
+		}
 	});
 
 	Template.boQueueWorkStation.events({

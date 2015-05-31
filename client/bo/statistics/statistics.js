@@ -47,19 +47,12 @@ Template.boQueueStatistics.events({
 		for(var i=0; i<10; i++){
 			var creationTime=moment().subtract(i, 'hours').valueOf();
 			var serviceEndTime=moment().valueOf();
-			var clerk;
-			if(i%2===0){
-				 clerk="Sarah";
-			}else if(i%3===0){
-				 clerk="Stas";
-			}else{
-				 clerk="Olga";
-			}
+
 			var ticket={phone:234, sequence:1, queueId:Session.get('queueId'),
-				creationTime:creationTime,status:"Done",serviceEndTime:serviceEndTime,clerk:clerk};
+				creationTime:creationTime,status:"Done",serviceEndTime:serviceEndTime};
 			var update={creationTime:creationTime,serviceEndTime:serviceEndTime,status:"Done"};
-			Meteor.call("testAddTicketToQueue", ticket, update, function(error,result){
-				console.log("added ticket " + result + " to queue");
+			Meteor.call("testAddTicketToQueue", Session.get('queueId'), update, function(error,result){
+				console.log("added ticket to queue");
 			});
 		}
 	}
