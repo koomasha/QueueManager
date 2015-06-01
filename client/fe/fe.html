@@ -58,11 +58,17 @@
 <div id="owl-demo" class="owl-carousel">
  {{#each  CurQueues}}
    <div >
-	 		<h1>
-	 		  <div>{{name}}</div>
+	   <h1>
+		   <div>{{name}}</div>
+	   </h1>
+	   <h2>
+		   {{#if feEquals tServiceNum 0}}
+			   <div>No customers is service</div>
+		   {{else}}
 	 		  <div>In Service ({{tServiceNum}}): {{#each tService}} {{sequence}} {{/each}} </div>
-	 		  <div>Waiting ({{tWaitingNum}}): {{#each tWaiting}} {{sequence}} {{/each}} </div>
-	 		</h1>
+		   {{/if}}
+	 		<!--  <div>Waiting ({{tWaitingNum}}): {{#each tWaiting}} {{sequence}} {{/each}} </div>-->
+	   </h2>
  	</div>
  {{/each}}
 </div>
