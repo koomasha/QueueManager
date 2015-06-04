@@ -12,10 +12,10 @@
 								<a data-toggle="collapse" data-parent="#accordion" href="#{{_id}}">{{branchName}}: {{../name}}</a>
 							</h4>
 						</div>
-						<div id="{{_id}}" class="panel-collapse collapse">
+						<div id="{{_id}}" class="panel-collapse collapse detailsPanel">
 							<div class="panel-body">
                                 <div id="owl-queues" class="owl-carousel owl-theme">
-                                    <div class="item">{{> appShowQueueInfo }}</div>
+                                    <div class="item active">{{> appShowQueueInfo }}</div>
                                     <div class="item">{{> appShowBranchInfo }}</div>
 								</div>
 							</div>
@@ -30,10 +30,10 @@
 </template>
 
 <template name="appShowQueueInfo">
-    <h3>Your Location</h3>
-    <p>{{../prefix}}{{sequence}}</p>
-    <h3>Current Location</h3>
-    <p>{{../prefix}}{{../currentSeq}}</p>
+    <p class="ticketP">Your Location</p>
+    <h3 class="ticketH">{{../prefix}}{{sequence}}</h3>
+    <p class="ticketP">Current Location</p>
+    <h3 class="ticketH">{{../prefix}}{{../currentSeq}}</h3>
     {{#if isMissed status}}
         <p>You have missed your turn.</p>
         {{#if ../active}}
@@ -47,9 +47,8 @@
         {{#if station}}
             <p>It's your turn! please come to station {{station}}</p>
         {{else}}
-            <h3>Estimated waiting time</h3>
-            <p>{{estimatedWaitTime}} mins</p>
-            <p>There are <b> {{ahead}} </b> people ahead</p>
+            <p>Estimated wait time <span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span> {{estimatedWaitTime}} mins</p>
+            <p>People ahead <span class="glyphicon glyphicon-user" aria-hidden="true"></span> <b> {{ahead}} </b></p>
 
             {{#if isPostponeInvalid ..}}
                 <button type="button" class="btn btn-default postpone" disabled="true">Postpone turn</button>
@@ -65,27 +64,27 @@
 <template name="appShowBranchInfo">
 	{{#with branchItem}}
         {{#if openingHours}}
-            <h3>Opening Hours</h3>
+            <h3 class="branchInfoH">Opening Hours</h3>
             <p>{{openingHours}}</p>
         {{/if}}
 
         {{#if address}}
-            <h3>Address</h3>
+            <h3 class="branchInfoH">Address</h3>
             <p>{{address}}</p>
         {{/if}}
 
         {{#if branchInfo}}
-            <h3>Information</h3>
+            <h3 class="branchInfoH">Information</h3>
             <p>{{branchInfo}}</p>
         {{/if}}
 	{{/with}}
 </template>
 
 <template name="appLeaveQueueConfirm">
-  <div id="appLeaveQueueModal" class="modal notvisible">
-      <div class="modal-content">
+  <div id="appLeaveQueueModal" class="notvisible mobileModal">
+      <div class="mobileModalContent">
         <div class="modal-body">
-        	<p>Are you sure that you want to leave the queue?</p>
+        	<p id="leaveP">Are you sure that you want to leave the queue?</p>
         </div>
         <div class="modal-footer">
         	<center>
@@ -98,8 +97,8 @@
 </template>
 
 <template name="appPostponeQueueConfirm">
-  <div id="appPostponeQueueModal" class="modal notvisible">
-      <div class="modal-content">
+  <div id="appPostponeQueueModal" class="notvisible mobileModal">
+      <div class="mobileModalContent">
         <div class="modal-body">
         	<p>Are you sure that you want to postpone your turn?</p>
         	<p>Your new position would be {{newLocation}}</p>

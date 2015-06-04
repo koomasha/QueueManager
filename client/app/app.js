@@ -269,6 +269,7 @@ if(Meteor.isCordova) {
 			Meteor.call('getEstimatedTime', this.queueId, function (err, response) {
 				if (!err) {
 					Session.set('estimatedWaitTime', response.toFixed(2));
+					createCarousel($(".owl-carousel"));
 				}
 			});
 		}
@@ -277,21 +278,23 @@ if(Meteor.isCordova) {
 	Template.appQueueContent.rendered = function() {
 		var _this = this;
 		this.autorun(function(c) {
-			if (QueuesSub.ready()) {
-				var owl = _this.$(".owl-carousel");
-				owl.owlCarousel({
-					navigation : true,
-					slideSpeed : 300,
-					paginationSpeed : 400,
-					items : 1,
-					itemsDesktop : false,
-					itemsDesktopSmall : false,
-					itemsTablet : false,
-					itemsMobile : true,
-					responsiveClass: true
-				});
-				c.stop();
+			if (QueuesSub.ready() && Tickets.find().count > 0) {
+				createCarousel(_this.$(".owl-carousel"));
 			}
+		});
+	}
+
+	function createCarousel (owl) {
+		owl.owlCarousel({
+			navigation : true,
+			slideSpeed : 300,
+			paginationSpeed : 400,
+			items : 1,
+			itemsDesktop : false,
+			itemsDesktopSmall : false,
+			itemsTablet : false,
+			itemsMobile : true,
+			responsiveClass: true
 		});
 	}
 
@@ -426,9 +429,10 @@ if(Meteor.isCordova) {
 
 	function move() {
 		if (checkismain()) {
+			$('#newqueueli').removeClass('active');
+			$('#myqueuesli').addClass('active');
 			$("#maincontent").fadeOut('slow', function() {
-				$('#newqueueli').toggleClass('active');
-				$('#myqueuesli').toggleClass('active');
+
 
 				Session.set("ismain", false);
 				Session.set("phoneid", Session.get("phoneid"));
@@ -438,9 +442,11 @@ if(Meteor.isCordova) {
 
 	function moveback() {
 		if (!checkismain()) {
+			$('#newqueueli').addClass('active');
+			$('#myqueuesli').removeClass('active');
+
 			$("#queuecontent").fadeOut('slow', function() {
-				$('#newqueueli').toggleClass('active');
-				$('#myqueuesli').toggleClass('active');
+
 
 				Session.set("ismain", true);
 			});

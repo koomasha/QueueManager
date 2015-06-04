@@ -13,7 +13,7 @@ isValid = function() {
 			invalids++;
 			$(this).removeClass("isValid");
 			$(this).addClass("isInvalid");
-			$("#message").append("error validating email \n");
+			$("#message").append("Please enter a valid e-mail address. <br>");
 		} else {
 			$(this).removeClass("isInvalid");
 			$(this).addClass("isValid");
@@ -25,7 +25,7 @@ isValid = function() {
 			invalids++;
 			$(this).removeClass("isValid");
 			$(this).addClass("isInvalid");
-			$("#message").append("error validating id \n");
+			$("#message").append("Please enter a valid ID number. <br>");
 		} else {
 			$(this).removeClass("isInvalid");
 			$(this).addClass("isValid");
@@ -37,7 +37,7 @@ isValid = function() {
 			invalids++;
 			$(this).removeClass("isValid");
 			$(this).addClass("isInvalid");
-			$("#message").append("error validating phone number \n");
+			$("#message").append("Please enter a valid mobile phone number. <br>");
 		} else {
 			$(this).removeClass("isInvalid");
 			$(this).addClass("isValid");
@@ -49,7 +49,7 @@ isValid = function() {
 			invalids++;
 			$(this).removeClass("isValid");
 			$(this).addClass("isInvalid");
-			$("#message").append("error validating number \n");
+			$("#message").append("Please enter a valid number. <br>");
 		} else {
 			$(this).removeClass("isInvalid");
 			$(this).addClass("isValid");
@@ -61,7 +61,7 @@ isValid = function() {
 			invalids++;
 			$(this).removeClass("isValid");
 			$(this).addClass("isInvalid");
-			$("#message").append("error validating text \n");
+			$("#message").append("Please enter a valid text (English charachters). <br>");
 		} else {
 			$(this).removeClass("isInvalid");
 			$(this).addClass("isValid");
