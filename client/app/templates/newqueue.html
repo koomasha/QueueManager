@@ -4,15 +4,15 @@
 		{{> appChooseQueue}}
 		{{> appAdditionalDetails}}
 
-		<h1>Find Your Queue</h1>
+		<h1 id="findQueueh1">Find Queue</h1>
 		<br><br>
 
-    <button type="button" class="btn btn-default" aria-label="Left Align" id="scangps">
+    <button type="button" class="btn btn-default btn-lg btn-block" aria-label="Left Align" id="scangps">
     Via GPS
       <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
     </button>
 
-    <button type="button" class="btn btn-default" aria-label="Left Align" id="scanqr">
+    <button type="button" class="btn btn-default btn-lg btn-block" aria-label="Left Align" id="scanqr">
     Via QR code
       <span class="glyphicon glyphicon-qrcode" aria-hidden="true"></span>
     </button>
@@ -26,18 +26,18 @@
 </template>
 
 <template name="appChooseBranch">
-    <div id="appChooseBranchModal" class="modal notvisible">
-        <div class="modal-content">
+    <div id="appChooseBranchModal" class="notvisible mobileModal">
+        <div class="mobileModalContent">
             <div class="modal-header">
                 <center>
-                    <h4>Choose a branch</h4>
+                    <h3>Choose a branch</h3>
                 </center>
             </div>
 
             <div class="modal-body">
                 <div id="branchesgroup" class="list-group">
 					{{#each branchItem}}
-                        <a href="#" id="{name}}" class="list-group-item">{{name}}</a>
+                        <a href="#" id="{{name}}" class="list-group-item">{{name}}</a>
 					{{/each}}
                 </div>
 
@@ -50,11 +50,11 @@
 </template>
 
 <template name="appChooseQueue">
-  <div id="appChooseQueueModal" class="modal notvisible">
-      <div class="modal-content">
+  <div id="appChooseQueueModal" class="notvisible mobileModal">
+      <div class="mobileModalContent">
       	<div class="modal-header">
           	<center>
-        		<h4>Choose a queue</h4>
+        		<h3>Choose a queue</h3>
         	</center>
         </div>
 
@@ -62,9 +62,9 @@
         	<div id="queuesgroup" class="list-group">
         		{{#each queueItem}}
 			  		 {{#if isInQueue}}
-                <button id="{{name}}" class="list-group-item disabledQueue" disabled="true">{{name}} - You already have a turn</button>
+                <button id="{{name}}" class="list-group-item disabledQueue btn-block" disabled="true">{{name}} - You already have a turn</button>
               {{else}}
-                <button id="{{name}}" class="list-group-item">{{name}}</button>
+                <button id="{{name}}" class="list-group-item btn-block">{{name}}</button>
               {{/if}}
 			  	{{/each}}
 			</div>
@@ -78,22 +78,22 @@
 </template>
 
 <template name="appAdditionalDetails">
-  <div id="appAdditionalDetailsModal" class="modal notvisible">
-      <div class="modal-content">
+  <div id="appAdditionalDetailsModal" class="notvisible mobileModal">
+      <div class="mobileModalContent">
       <div class="modal-header">
           	<center>
-        		<h4>Additional details are required</h4>
+        		<h3>Additional details are required</h3>
         	</center>
         </div>
         <div class="modal-body">
         	{{#each detail}}
         		<div class="input-group" dir="ltr" style="margin-top: 4px;">
-				      <input type="text" class="form-control {{type}}" aria-describedby="sizing-addon2" style="height: 30px;" onfocus=inputFocus(this) required>
-				      <id class="input-group-addon">{{name}}</id>
-				    </div>
+                    <id class="input-group-addon">{{name}}</id>
+                    <input type="text" class="form-control {{type}}" aria-describedby="sizing-addon2" style="height: 30px;" onfocus=inputFocus(this) required>
+                </div>
         	{{/each}}
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer additionalFooter">
         	<center>
             <p id="message" style="color: red;"></p>
         	  <button class="btn cancel" data-dismiss="modal">Cancel</button>
