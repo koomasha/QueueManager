@@ -925,7 +925,7 @@ if(!Meteor.isCordova)
      LAYOUT
 /////////////////////////////*/
 	Template.boLayout.events({
-		'click .logout':function(evt,tmpl){	
+		'click .logout':function(event,tmpl){
 			event.preventDefault();
 			Meteor.logout();
 		},

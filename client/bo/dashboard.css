@@ -1,7 +1,7 @@
-.desktop-body{
-	background-image: url('bubbles.jpg');
+/**.desktop-body{
+	background-image: url('bubbles-blue.jpg');
 	background-size:cover;
-}
+}**/
 
 input[type="checkbox"]{
     width: 13px;
