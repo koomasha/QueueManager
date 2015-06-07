@@ -1,13 +1,13 @@
 <template name="appLayout">
-	<div class="navbar navbar-static-top">
-		<div class="navbar-inner">
-			<a class="brand" href="/">LineApp</a>
-			<ul class="nav">
-			  <li id="newqueueli" class="active"><a class="brand" href="#newqueue" id="newqueue">Join queue</a></li>
-			  <li id="myqueuesli"><a class="brand" href="#myqueues" id="myqueues">My queues</a></li>
-			</ul>
-		</div>
-	</div>
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="navbar-inner">
+            <ul class="nav navbar-nav">
+                <li><p class="brand">LineApp</p></li>
+                <li id="newqueueli" class="active"><a class="brand" href="#newqueue" id="newqueue">Join queue</a></li>
+                <li id="myqueuesli"><a class="brand" href="#myqueues" id="myqueues">My queues</a></li>
+            </ul>
+        </div>
+    </nav>
 	<div class="container">
 		{{>yield}}
 	</div>
@@ -15,4 +15,4 @@
     <footer class="footer">
         <p>Your code: {{phoneIdLastDigits}}</p>
     </footer>
-</template>	
+</template>
