@@ -31,6 +31,7 @@ Meteor.methods({
         return formattedDuration;
     },
     statisticsTopClerk : function(from, to, queueOrBranch, queueOrBranchId){
+        console.log("Getting top clerk for " + queueOrBranch + " with id " + queueOrBranchId);
         var match = {
             creationTime:{
                 $gte:Number(from),
