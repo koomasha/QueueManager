@@ -7,6 +7,7 @@
 */
 
 Template.boQueueStatisticsItem.onRendered(function(){
+	console.log("event fired - boQueueStatisticsItem.onRendered");
 	var from = this.find('.from-time').value;
 	var to = this.find('.to-time').value;
 	var queueId = Session.get('queueId');
@@ -58,7 +59,8 @@ Template.boQueueStatistics.events({
 	}
 });
 
-Template.boBranchStatisticsItem.onRendered(function(){
+Template.boBranchStatisticsItem.onRendered(function() {
+	console.log("event fired - boBranchStatistics click .statistics");
 	var from = this.find('.from-time').value;
 	var to = this.find('.to-time').value;
 	var branchId = Session.get('branchId');
@@ -78,6 +80,23 @@ Template.boBranchStatisticsItem.onRendered(function(){
 	}
 });
 
+Template.boDashboard.events({
+	'click .branch-statistics': function(evt, tmpl) {
+		console.log("event fired - boBranchStatistics click .statistics");
+		Session.set("showBoBranchStatistics", true);
+	},
+	'click .not-branch-statistics': function(evt, tmpl) {
+		console.log("event fired - boBranchStatistics click NOT .statistics");
+		Session.set("showBoBranchStatistics", false);
+	}
+});
+
+Template.boBranchDashboard.helpers({
+	showBoBranchStatistics: function() {
+		return Session.get("showBoBranchStatistics");
+	}
+})
+
 Template.boBranchStatistics.helpers({
 	now : function(){
 		return moment().valueOf();
@@ -90,5 +109,11 @@ Template.boBranchStatistics.helpers({
 	},
 	never: function(){
 		return moment("19700101", "YYYYMMDD").valueOf();
+	}
+});
+
+Template.boBranchStatisticsItem.helpers({
+	dummy: function(){
+		return Session.get('dummyForStatistics');
 	}
 });

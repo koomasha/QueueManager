@@ -7,7 +7,7 @@ if(!Meteor.isCordova)
 	boUsersInBranch = new Meteor.Collection("boUsersInBranch");
 	boUsersByEmail = new Meteor.Collection("boUsersByEmail");
 
-	Session.setDefault('logotext','iTickets');
+	Session.setDefault('logotext','LineApp');
 
 	Session.setDefault('showBoModal',false);
 	Session.setDefault('showBoQueueList',true);
@@ -925,7 +925,7 @@ if(!Meteor.isCordova)
      LAYOUT
 /////////////////////////////*/
 	Template.boLayout.events({
-		'click .logout':function(evt,tmpl){	
+		'click .logout':function(event,tmpl){
 			event.preventDefault();
 			Meteor.logout();
 		},

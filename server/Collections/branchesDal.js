@@ -44,12 +44,12 @@ Branches.before.insert(function (userId, doc) {
       upsert:true,
       new: true
     }).sequence;
-    kioskId  = Accounts.createUser({username:'iticket'+sequence,password:doc.password,profile:{branchId:doc._id}});
+    kioskId  = Accounts.createUser({username:'kiosk'+sequence,password:doc.password,profile:{branchId:doc._id}});
   }
   var u = Meteor.users.findOne({_id:userId});
   doc.creationTime = Date.now();
   doc.users = [{userId:userId,role:'Admin',email:u.emails[0].address,name:u.profile.name, station:0}];
-  doc.kioskUsername = 'iticket'+sequence;
+  doc.kioskUsername = 'kiosk'+sequence;
   doc.kioskId = kioskId;
 });
 

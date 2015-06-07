@@ -35,9 +35,9 @@
       <div class="col-sm-12 text-center well well-lg outerbg">              
           <h4 class="name-header">Branches</h4>
        </div> 
-      <div class="col-sm-12 well well-lg outerbg"> 
+      <div class="col-sm-12 well well-lg outerbg branch-toolbar">
          <div class="col-md-6 col-sm-12">
-          <input type="search" class="form-control search-branch" placeholder="Search branch"/>
+          <input type="search-branch" class="form-control search-branch" placeholder="Search branch"/>
         </div> 
         <div class="col-md-6 col-sm-12">
           <button type="button" class="btn btn-warning add-branch">Create Branch</button>
@@ -96,11 +96,11 @@
   <div class = "row well well-lg outerbg">
    <div class="row container-fluid">
     <ul class="nav nav-tabs" role="tablist" id="BranchTabs">
-      <li role="presentation" class="active"><a href="#queues" aria-controls="queues" role="tab" data-toggle="tab">Queues</a></li>
+      <li role="presentation" class="active not-branch-statistics"><a href="#queues" aria-controls="queues" role="tab" data-toggle="tab">Queues</a></li>
      {{#if userIsAdmin}}
-      <li role="presentation"><a href="#users" aria-controls="users" role="tab" data-toggle="tab">Users</a></li>
-      {{/if}}
-      <!--   <li role="presentation"><a href="#statistics" aria-controls="statistics" role="tab" data-toggle="tab">Statistics</a></li> -->
+      <li role="presentation"><a href="#users" class="not-branch-statistics" aria-controls="users" role="tab" data-toggle="tab">Users</a></li>
+     {{/if}}
+        <li role="presentation"><a href="#statistics" class="branch-statistics" aria-controls="statistics" role="tab" data-toggle="tab">Statistics</a></li>
     </ul>
 </div>
  <div class="row container-fluid">
@@ -109,7 +109,9 @@
      {{#if userIsAdmin}}
       <div role="tabpanel" class="tab-pane" id="users">{{>boBranchUsers}}</div>
       {{/if}}
-      <!--<div role="tabpanel" class="tab-pane" id="statistics">Statistics</div> -->
+      <div role="tabpanel" class="tab-pane" id="statistics">
+          {{#if showBoBranchStatistics}}{{>boBranchStatistics}}{{/if}}
+      </div>
     </div>
     </div>
   </div>

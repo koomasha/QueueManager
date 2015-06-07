@@ -1,7 +1,7 @@
-.desktop-body{
-	background-image: url('bubbles.jpg');
+/**.desktop-body{
+	background-image: url('bubbles-blue.jpg');
 	background-size:cover;
-}
+}**/
 
 input[type="checkbox"]{
     width: 13px;
@@ -31,6 +31,20 @@ input[type="password"]{
   transition:none;
 }
 
+input[type="search"]{
+    box-sizing: content-box;
+}
+
+.branch-toolbar {
+    padding-left: 0px;
+}
+
+
+
+.branch-toolbar > .col-md-6 {
+    padding-right: 0px;
+}
+
 
 label {
     display: block;
@@ -47,11 +61,27 @@ textarea {
 }
 
 .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
-  background-color: rgba(251,253,234,0.8);
+  background-color: rgba(65, 216, 252, 0.8);
+    border-color: #38b4d7;
+}
+
+.nav-tabs > li > a, .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
+    background-color: rgba(251,253,234,0.8);
+    border-color: #DDD;
+}
+
+.nav-tabs > li > a:hover {
+    background-color: #3abcde;
+    border-color: #2f96b4;
+}
+
+.nav-tabs {
+    border-bottom: none;
 }
 
 .tab-content {
   overflow: hidden !important;
+    margin-top: 10px;
 }
 
 #geoMap{
