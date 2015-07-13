@@ -1,7 +1,7 @@
 if(!Meteor.isCordova)
 {
 
-	//Meteor.subscribe('Users');
+	Meteor.subscribe('Users');
 	
 	Meteor.subscribe("Branches");
 	

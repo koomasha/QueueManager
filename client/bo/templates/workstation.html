@@ -5,7 +5,7 @@
 		</div>
 		<div class="col-md-4 col-md-offset-1 line-stats text-center">
 			 <div class="col-md-5 col-md-offset-4"><h4>My station: {{clerkStationNumber}}</h4></div>
-			 <span class="col-md-1 glyphicon glyphicon-pencil icon green-icon change-clerk-station " style="margin-top: 10px;" title="Change station" aria-hidden="true"></span>
+			 <span class="col-md-1 glyphicon glyphicon-pencil icon blue-icon change-clerk-station " style="margin-top: 10px;" title="Change station" aria-hidden="true"></span>
 		</div>
 		
 	</div>
@@ -17,7 +17,7 @@
 		{{>boTicketDetails}}
 	{{else}}
 		<div class="row">
-			<button type="button" class="col-md-3 col-md-offset-4 btn btn-warning next-ticket" disabled="{{disableNextTicket}}">Next</button>
+			<button type="button" class="col-md-3 col-md-offset-4 btn btn-info next-ticket" disabled="{{disableNextTicket}}">Next</button>
 		</div>
 	{{/if}}	
 	</div>
@@ -51,7 +51,7 @@
 				</div>
 			</div>	
 			<div class="row">
-					<button type="button" class="col-md-2 col-md-offset-2 btn btn-success done-ticket">Done</button>
+					<button type="button" class="col-md-2 col-md-offset-2 btn btn-info done-ticket">Done</button>
 					<button type="button" class="col-md-2 col-md-offset-4 btn btn-danger skip-ticket">Skip</button>
 			</div>
 		</div>	

@@ -21,7 +21,7 @@
 			</div>
 			{{#if userIsManager}}	
 				<div class="col-md-2 col-sm-2">
-					<button type="button" class="btn btn-warning add-queue">Add new queue to branch</button>
+					<button type="button" class="btn btn-info add-queue">Add new queue to branch</button>
 				</div>
 			{{/if}}	
 		</div>  
@@ -69,11 +69,6 @@
 					<div class="col-md-1 col-sm-1 queue-reset-ticket-count" data-id="{{_id}}">
 						<span class="glyphicon glyphicon-refresh icon red-icon"  title="Reset tickets count" aria-hidden="true"></span>
 					</div>
-
-					<div class="col-md-1 col-sm-1 queue-prefix" data-id="{{_id}}">
-						<span class="glyphicon glyphicon-font icon blue-icon" title="Change prefix" aria-hidden="true"></span>
-					</div>
-
 					{{#if queueIsPublic ./_id}}
 						<div class="col-md-1 col-sm-1 public-queue" data-id="{{_id}}">
 							<span class="glyphicon glyphicon-user icon green-icon" title="Public" aria-hidden="true"></span>
@@ -83,6 +78,11 @@
 							<span class="glyphicon glyphicon-user icon red-icon" title="Managers" aria-hidden="true"></span>
 						</div>
 					{{/if}}	
+					<div class="col-md-1 col-sm-1 queue-prefix" data-id="{{_id}}">
+						<span class="glyphicon glyphicon-font icon blue-icon" title="Change prefix" aria-hidden="true"></span>
+					</div>
+
+			
 					<div class="col-md-1 col-sm-1 queue-statistics" data-id="{{_id}}" title="Statistics">
 						<span class="glyphicon icon blue-icon glyphicon-stats" title="Statistics" aria-hidden="true"></span>
 					</div>
