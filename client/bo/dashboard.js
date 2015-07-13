@@ -428,7 +428,7 @@ if(!Meteor.isCordova)
 			setModalData(
 				'Create new branch',
 				'',
-				'Save','warning','add-branch');
+				'Save','info','add-branch');
 		},
 
 		'click .branchItem':function(evt,tmpl){
@@ -474,7 +474,7 @@ if(!Meteor.isCordova)
 			setModalData(
 				'Edit branch',
 				'',
-				'Save','warning','edit-branch');
+				'Save','info','edit-branch');
 		},
 		'click .delete-branch':function(){
 			var branchName = Branches.findOne({_id:Session.get('branchId')}).name;
@@ -519,7 +519,7 @@ if(!Meteor.isCordova)
 	    	setModalData(
 				'Add new queue',
 				'',
-				'Save','warning','add-queue');
+				'Save','info','add-queue');
 			},
 	    'keyup input.search-queue': function (evt) {
 	        Session.set("queueSearchString", evt.currentTarget.value);
@@ -556,7 +556,7 @@ if(!Meteor.isCordova)
 			setModalData(
 				'Close '+queueName,
 				'Set '+ queueName+' to closed',
-				'Save','warning','unactive');
+				'Save','info','unactive');
 		},
 
 		'click .unactive-queue':function(evt,tmpl){
@@ -567,7 +567,7 @@ if(!Meteor.isCordova)
 			setModalData(
 				'Open '+queueName,
 				'Set '+ queueName+' to open',
-				'Save','warning','active');
+				'Save','info','active');
 		},				
 		'click .public-queue':function(evt,tmpl){
 			Session.set('queueId',this._id);
@@ -575,7 +575,7 @@ if(!Meteor.isCordova)
 			setModalData(
 				'Change '+queueName+' access privileges',
 				'Set '+ queueName+' be visible only by managers',
-				'Save','warning','unpublic');
+				'Save','info','unpublic');
 		},		
 		'click .unpublic-queue':function(evt,tmpl){
 			Session.set('queueId',this._id);
@@ -583,7 +583,7 @@ if(!Meteor.isCordova)
 			setModalData(
 				'Change '+queueName+' access privileges',
 				'Set '+ queueName+' be visible to all',
-				'Save','warning','public');
+				'Save','info','public');
 		},				
 		'click .add-details-to-queue':function(evt,tmpl){
 			Session.set('showBoAdditionalDetails',true);
@@ -609,11 +609,11 @@ if(!Meteor.isCordova)
 			var openTickets = Tickets.find({queueId:this.id, status:'Waiting'}).count();
 			var queue = Queues.findOne({_id:this._id});
 			var ticketsInService = Tickets.find({queueId:this.id,status:'Getting Service',isValid:true}).fetch();
-			if(openTickets == 0 && !queue.active && !ticketsInService){
+			if(openTickets == 0 && !queue.active && ticketsInService.length == 0){
 			setModalData(
 				'Reset tickets count',
 				'Reset tickets count for queue '+queue.name,
-				'Reset','warning','reset-tickets');
+				'Reset','info','reset-tickets');
 			}
 			else{
 			setModalData(
@@ -629,7 +629,7 @@ if(!Meteor.isCordova)
 			setModalData(
 				'Change queue pefix',
 				'',
-				'Change','warning','change-prefix');
+				'Change','info','change-prefix');
 		},
 	});
 
@@ -712,7 +712,7 @@ if(!Meteor.isCordova)
 			setModalData(
 				'Change station',
 				'',
-				'Save','warning','change-clerk-station');
+				'Save','info','change-clerk-station');
 		},
 	});
 
@@ -872,9 +872,9 @@ if(!Meteor.isCordova)
 
 	Template.boAddUser.events({
 		'click .user-add' :function(evt,tmpl){
-			var u = Meteor.users.findOne({_id:this._id});
+			var u = boUsersByEmail.findOne({_id:this._id});
 	    	if(u){
-		    	Branches.update({ _id:Session.get('branchId') },{ $push: {users: { userId:u._id, role:'Clerk', email:u.emails[0].address, name:u.profile.name, station:0}}});
+		    	Branches.update({ _id:Session.get('branchId') },{ $push: {users: { userId:u._id, role:'Clerk', email:u.email, name:u.name, station:0}}});
 				Session.set('userId',null);
 				Session.set("showBoAddUser",false);
 				Session.set("showBoModal",false);
@@ -898,14 +898,14 @@ if(!Meteor.isCordova)
 			setModalData(
 				'Change role of '+userName,
 				'',
-				'Change','warning','change-role');
+				'Change','info','change-role');
 		},
 		'click .user-remove': function(){
 			Session.set('userId',this.userId);
 			Session.set('showBoModal',false);
 			var branchUsers = Branches.findOne({_id:Session.get('branchId')}).users;
 			var userName = Meteor.users.findOne({_id:this.userId}).profile.name;
-			if(users.length > 0){
+			if(branchUsers.length > 0){
 				setModalData(
 					'Remove user '+userName,
 					'Confirm removing '+userName,
@@ -935,7 +935,7 @@ if(!Meteor.isCordova)
 	    	setModalData(
 				'My details',
 				'',
-				'Save','warning','my-user-profile');
+				'Save','info','my-user-profile');
 		},
 	});
 

@@ -6,6 +6,10 @@ if(!Meteor.isCordova)
       return a === b;
     });
 
+    Template.registerHelper('feQueueIsOpen', function (id) {
+      return Queues.findOne({_id:id}).active;
+    });
+
 
 	//----------- FE ONLY CODE ------------
 	

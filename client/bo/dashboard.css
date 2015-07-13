@@ -61,8 +61,8 @@ textarea {
 }
 
 .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
-  background-color: rgba(65, 216, 252, 0.8);
-    border-color: #38b4d7;
+  background-color: rgba(91, 192, 222, 0.1);
+    border-color: #A1EEFE;
 }
 
 .nav-tabs > li > a, .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
@@ -71,8 +71,8 @@ textarea {
 }
 
 .nav-tabs > li > a:hover {
-    background-color: #3abcde;
-    border-color: #2f96b4;
+    background-color: rgba(91, 192, 222, 0.3);
+    border-color: #A1EEFE;
 }
 
 .nav-tabs {
@@ -109,7 +109,7 @@ textarea {
 }
 
 .modal-content{
-    background-image: url('bubbles.jpg') !important;
+    background-image: url('bubbles-blue.jpg') !important;
     pointer-events:all;
 }
 
@@ -147,11 +147,11 @@ textarea {
   cursor:auto;
 }
 .outerbg{
-  background-color: rgba(251,253,234,0.5) !important;
+  background-color: rgba(234, 253, 253, 0.5) !important;
 }
 
 .innerbg{
-	background-color: rgba(251,253,234,0.8);
+	background-color: rgba(234, 250, 253,0.8);
 }
 
 
@@ -170,16 +170,16 @@ textarea {
 
 .name-header{
     /*margin-left: 30px;*/
-    color: #5A8E3C;
+    color: #3C828E;
 }
 
 .text-item{
-      color: #426B00;
+      color: #004F6B;
       font-size: 16px;
 }
 
 .line-stats{
-    color: #FAA732;
+    color: #32BDFA;
 }
 
 .red-icon{
@@ -187,7 +187,8 @@ textarea {
 }
 
 .green-icon{
-  color: #52B339;
+ /* color: #52B339; */
+  color: #2FCB8A;
 }
 
 .blue-icon{
@@ -212,15 +213,15 @@ textarea {
 .branch-name-title{
     font-size: 35px;
     font-weight: bold;
-    text-shadow: -3px 3px 3px rgba(106, 192, 94, 1);
-    color:#FAA327;
-      margin-bottom: 15px;
+    text-shadow: -3px 3px 3px rgba(192, 229, 240, 1);
+    color: #276AFA;
+    margin-bottom: 15px;
 }
 
 .branch-address{
     font-size: 20px;
     font-weight: bold;
-    text-shadow: -3px 3px 3px rgba(106, 192, 94, 1);
+    text-shadow: -3px 3px 3px rgba(199, 226, 245, 1);
 }
 
 .add-branch-input{
