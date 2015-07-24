@@ -66,12 +66,17 @@ if(!Meteor.isCordova)
     });
 
     Template.feQueuesStatus.rendered = function() {
+          var auto = 2000;
+          var num  = Queues.find().count();
+    	  if(num > 3)
+    	  	num = 3;
 	      $("#owl-demo").owlCarousel({
-	      			items:3,
-	      			autoplay:2000,
-    				//loop:true,
+	      			items:num,
+	      			autoplay:auto,
+    				loop:true,
     				dots:false
     			});
+
 	};
 	
     Template.feQueuesStatus.helpers({
@@ -95,7 +100,11 @@ if(!Meteor.isCordova)
     });
 
     Template.feMain.events({
-    	'click #feBtnMain': function (event) { Session.set('feShow','feMaster'); },
+    	'click #feBtnMain': function (event) { 
+    		if($('#owl-demo').length > 0)
+    			$('#owl-demo').data('owlCarousel').destroy();
+    		Session.set('feShow','feMaster'); 
+    	},
     });
 
 	Template.feTickets.helpers({
