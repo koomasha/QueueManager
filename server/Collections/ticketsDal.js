@@ -63,7 +63,9 @@
 
 
 	boChangeTicketStatus = function (ticket,status,userId,comment){
+		console.log("status is " + status);
 		var update = {status: status, userId:userId, comment:comment};
+		
 		if (status === 'Done' || status === 'Skipped') {
 			update["serviceEndTime"] = moment().valueOf();
 		} else if (status === 'Getting Service') {
@@ -72,6 +74,7 @@
 			var clerkStation = users[0].station;
 			console.log("clerkStation is " + JSON.stringify(clerkStation));
 			update["station"] = clerkStation;
+			update["serviceStartTime"] = moment().valueOf();
 		}
 		return Tickets.findAndModify({
 			query: { _id: ticket._id },

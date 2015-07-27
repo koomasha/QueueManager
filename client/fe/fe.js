@@ -5,6 +5,9 @@ if(!Meteor.isCordova)
 	Template.registerHelper('feEquals', function (a, b) {
       return a === b;
     });
+    Template.registerHelper('feNotEquals', function (a) {
+      return a != '0';
+    });
 
     Template.registerHelper('feQueueIsOpen', function (id) {
       return Queues.findOne({_id:id}).active;
@@ -54,9 +57,8 @@ if(!Meteor.isCordova)
 			      	var q = Queues.findOne(doc.queueId);
 			      	if(q){
 				      	var queueName = q.name;
-				      	if(q.prefix) queueName = q.prefix + ' - ' + q.name;
-
-				      	feNextTicketArr.push({sequence : doc.sequence,name: queueName});
+				      	if(q.prefix) queueName = q.name;
+				      	feNextTicketArr.push({sequence : q.prefix + doc.sequence,name: queueName, station: doc.station});
 				      }
 			      }
 			    }

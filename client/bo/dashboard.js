@@ -125,7 +125,7 @@ if(!Meteor.isCordova)
      STARTUP
 /////////////////////////////*/
 
-	Meteor.startup(function() {  
+/*	Meteor.startup(function() {  
 	  GoogleMaps.load({
 	  	libraries: 'places',
 	  	key:'AIzaSyBfYO6YHpsMhHKPCsunDrgC1aH-gUflWfQ'
@@ -143,7 +143,7 @@ if(!Meteor.isCordova)
 		});
 	}
 
-
+*/
 /*//////////////////////////////
      GLOBAL HELPERS
 /////////////////////////////*/
@@ -212,6 +212,16 @@ if(!Meteor.isCordova)
 			return 'selected';
 		}
 		return '';
+	});
+
+	Template.registerHelper('ticketCode',function(){
+		if(Session.get('ticket'))
+		{
+			var phoneCode = Session.get('ticket').phone;
+			if(phoneCode)
+				return phoneCode.substr(phoneCode.length - 5);;
+		}
+		return 0;
 	});
 
 	Template.registerHelper('clerkStationNumber',function(){
@@ -295,13 +305,29 @@ if(!Meteor.isCordova)
 			closeModal();
 			var role = tmpl.find('.user-role-input').value
 			var branch = Branches.findOne({_id:Session.get('branchId')});
+			var numOfAdmins = 0;
+			for(i = 0; i < branch.users.length; i++)
+			{
+				if(branch.users[i].role == 'Admin')
+					numOfAdmins++;
+			}
 			for(var i = 0; i < branch.users.length; i++){
 				if(branch.users[i].userId == Session.get('userId')) {
-					branch.users[i].role = role;
-					Branches.update({_id:Session.get('branchId')},{$set: {users:branch.users } });
-					i = branch.users.length;
+					if(branch.users[i].role != 'Admin' || numOfAdmins > 2){
+						branch.users[i].role = role;
+						Branches.update({_id:Session.get('branchId')},{$set: {users:branch.users } });
+						i = branch.users.length;
+					}
+					else{
+						i = branch.users.length;
+						setModalData(
+							'Change role',
+							'Last Admin in branch can not be changed',
+							'','','none');
+					}
 				}
 			}
+
 		},
 		'click .save-user-remove':function(){
 			closeModal();
@@ -342,6 +368,7 @@ if(!Meteor.isCordova)
 				if(users[i].userId == Meteor.user()._id){
 					users[i].station = tmpl.find('.clerk-station-input').value;
 					newUsers.push(users[i]);
+					Session.set('clerkStationNumber',users[i].station);
 				}
 				else{
 					newUsers.push(users[i]);
@@ -703,6 +730,7 @@ if(!Meteor.isCordova)
 		'click .next-ticket':function(evt,tmpl){
 			var openTickets = Tickets.find({queueId:Session.get('queueId'), status:'Waiting'}).count();
 			//var queue = Queues.findOne({_id:Session.get('queueId')});
+			
 			if(openTickets > 0){
 				Meteor.call('boNextTicket',Session.get('queueId'),function(err, data) {Session.set('ticket', data)});
 			}
@@ -719,7 +747,10 @@ if(!Meteor.isCordova)
 	Template.boTicketDetails.helpers({
 		currentTicket: function(){
 			if(Session.get('ticket'))
-				return Session.get('ticket').sequence;
+			{
+				prefix = Queues.findOne({_id:Session.get('queueId')}).prefix;
+				return prefix + Session.get('ticket').sequence;
+			}
 			else return '--';
 		},
 		clientInput:function(){
@@ -905,7 +936,7 @@ if(!Meteor.isCordova)
 			Session.set('showBoModal',false);
 			var branchUsers = Branches.findOne({_id:Session.get('branchId')}).users;
 			var userName = Meteor.users.findOne({_id:this.userId}).profile.name;
-			if(branchUsers.length > 0){
+			if(branchUsers.length > 1){
 				setModalData(
 					'Remove user '+userName,
 					'Confirm removing '+userName,
@@ -961,7 +992,7 @@ if(!Meteor.isCordova)
 	Template.boLoginForm.events({
 		'click .user-bo-login':function(event,tmpl){
 			event.preventDefault();
-			var email = tmpl.find('.login-email').value;
+			var email = tmpl.find('.login-email').value.toLowerCase();
 			var password = tmpl.find('.login-password').value;
 
 
@@ -1013,7 +1044,7 @@ if(!Meteor.isCordova)
 
 		'click .user-bo-signup':function(event,tmpl){
 			event.preventDefault();
-			var email = tmpl.find('.signup-email').value;
+			var email = tmpl.find('.signup-email').value.toLowerCase();
 			var password = tmpl.find('.signup-password').value;
 			var name = tmpl.find('.signup-name').value;
 			if(!email || !validateEmail(email)){
