@@ -44,7 +44,7 @@ Branches.before.insert(function (userId, doc) {
       upsert:true,
       new: true
     }).sequence;
-    kioskId  = Accounts.createUser({username:'iTicket'+sequence,password:doc.password,profile:{branchId:doc._id}});
+    kioskId  = Accounts.createUser({username:'kiosk'+sequence,password:doc.password,profile:{branchId:doc._id}});
   }
   var u = Meteor.users.findOne({_id:userId});
   doc.creationTime = Date.now();
