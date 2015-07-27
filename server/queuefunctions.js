@@ -41,7 +41,7 @@ Meteor.methods({
 
 			Queues.findAndModify({
 				query: { _id: ticket.queueId },
-				update: { $inc: { opentickets: -1 }},
+				update: { $inc: { openTickets: -1 }},
 				new: true
 			});
 
