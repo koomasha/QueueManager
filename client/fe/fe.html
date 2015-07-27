@@ -1,34 +1,34 @@
 <template name="feMain">
-<center id="feMain">
-	<H1 id="feBtnMain">{{Branch.name}}</H1>
-	{{#if feEquals feShow 'feMaster'}}
-		{{>feMaster}}
-	{{/if}}
-	{{#if feEquals feShow 'feDash'}}
-		{{>feDash}}
-	{{/if}}
-	{{#if feEquals feShow 'feTickets'}}
-		{{>feTickets}}
-	{{/if}}
-</center>
+	<center id="feMain">
+		<H1 id="feBtnMain">{{Branch.name}}</H1>
+		{{#if feEquals feShow 'feMaster'}}
+			{{>feMaster}}
+		{{/if}}
+		{{#if feEquals feShow 'feDash'}}
+			{{>feDash}}
+		{{/if}}
+		{{#if feEquals feShow 'feTickets'}}
+			{{>feTickets}}
+		{{/if}}
+	</center>
 </template>
 
 <template name="feMaster">
-<button id="feBtnDash" type="button" class="btn  btn-primary btn-lg">Dashboard</button>
-<button id="feBtnTicket" type="button" class="btn  btn-primary btn-lg">Get Ticket</button>
+	<button id="feBtnDash" type="button" class="btn  btn-primary btn-lg">Dashboard</button>
+	<button id="feBtnTicket" type="button" class="btn  btn-primary btn-lg">Get Ticket</button>
 </template>
 
 
 <template name="feTickets">
-{{#each Queues}}
-	{{>feQueue}}
-{{/each}}
+	{{#each Queues}}
+		{{>feQueue}}
+	{{/each}}
 </template>
 
 <template name="feQueue">
 	{{#if feQueueIsOpen _id}}
 		<button id="feBtnQueue" type="button" class="btn  btn-primary btn-lg" data-id="{{_id}}">
-			{{prefix}} {{#if prefix}} - {{/if}} {{name}} 
+			{{name}} 
 
 		</button>
 		{{#if feEquals feCurQueueId queueID}}
@@ -49,31 +49,30 @@
 
 
 <template name="feDash">
-{{>feQueuesStatus}}
-{{#if feNextTicket}}
-	{{>feNextTicket}}
-{{/if}}
+	{{>feQueuesStatus}}
+	{{#if feNextTicket}}
+		{{>feNextTicket}}
+	{{/if}}
 </template>
 
 <template name="feQueuesStatus">
-
-<div id="owl-demo" class="owl-carousel">
- {{#each  CurQueues}}
-   <div >
-	   <h1>
-		   <div>{{name}}</div>
-	   </h1>
-	   <h2>
-		   {{#if feEquals tServiceNum 0}}
-			   <div>No customers is service</div>
-		   {{else}}
-	 		  <div>In Service ({{tServiceNum}}): {{#each tService}} {{sequence}} {{/each}} </div>
-		   {{/if}}
-	 		  <div>Waiting ({{tWaitingNum}}): {{#each tWaiting}} {{sequence}} {{/each}} </div>
-	   </h2>
- 	</div>
- {{/each}}
-</div>
+	<div id="owl-demo" class="owl-carousel">
+	 {{#each  CurQueues}}
+	   <div >
+		   <h1>
+			   <div>{{name}}</div>
+		   </h1>
+		   <h2>
+			   {{#if feEquals tServiceNum 0}}
+				   <div>No customers is service</div>
+			   {{else}}
+		 		  <div>In Service ({{tServiceNum}}): {{#each tService}} {{sequence}} {{/each}} </div>
+			   {{/if}}
+		 		  <div>Waiting ({{tWaitingNum}}): {{#each tWaiting}} {{sequence}} {{/each}} </div>
+		   </h2>
+	 	</div>
+	 {{/each}}
+	</div>
 </template>
 
 
@@ -86,6 +85,9 @@
 	        </div>
 			<div class="modal-body text-center outerbg text-item">  
 			<h2>Next ticket is: {{ticket.sequence}}</h2>
+			{{#if feNotEquals ticket.station}}
+				<h2>Station number is: {{ticket.station}}</h2>
+			{{/if}}	
 			</div>
 		</div>
 	</center>
