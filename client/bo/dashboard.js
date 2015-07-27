@@ -125,7 +125,7 @@ if(!Meteor.isCordova)
      STARTUP
 /////////////////////////////*/
 
-/*	Meteor.startup(function() {  
+	Meteor.startup(function() {  
 	  GoogleMaps.load({
 	  	libraries: 'places',
 	  	key:'AIzaSyBfYO6YHpsMhHKPCsunDrgC1aH-gUflWfQ'
@@ -143,7 +143,7 @@ if(!Meteor.isCordova)
 		});
 	}
 
-*/
+
 /*//////////////////////////////
      GLOBAL HELPERS
 /////////////////////////////*/
