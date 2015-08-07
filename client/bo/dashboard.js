@@ -40,7 +40,7 @@ if(!Meteor.isCordova)
 	Session.setDefault('boAlertText',null);
 
 	Session.setDefault('boGeoAddress',"Rabenu Yeruham Street, Tel Aviv-Yafo, Israel");
-	Session.setDefault('boGeoCoordinates',null);
+	Session.setDefault('boGeoCoordinates',{lat:32.0483274,lng:34.76178440000001});
 /*//////////////////////////////
      LOCAL FUNCTIONS
 /////////////////////////////*/
@@ -78,7 +78,6 @@ if(!Meteor.isCordova)
 		var active = (tmpl.find('.branch-active').value == "true");
 		var password = tmpl.find('.branch-password').value;
 		var website = tmpl.find('.branch-website').value;
-		console.log(Session.get("boGeoCoordinates"));
 		if(name && password){
 			if(action == 'add')
 			{
@@ -138,7 +137,7 @@ if(!Meteor.isCordova)
 			if (GoogleMaps.loaded()) {
 				$('#geoInput').geocomplete({map: $("#geoMap"),location:Session.get('boGeoAddress')}).bind("geocode:result", function(event, result){
 					Session.set('boGeoAddress',result.formatted_address);
-					Session.set('boGeoCoordinates',{lat:result.geometry.location.A,lng:result.geometry.location.F});
+					Session.set('boGeoCoordinates',{lat:result.geometry.location.G,lng:result.geometry.location.K});
 				});
 			}
 		});
