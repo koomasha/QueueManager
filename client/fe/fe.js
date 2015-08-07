@@ -67,6 +67,7 @@ if(!Meteor.isCordova)
 		}
     });
 
+    var owlTimer;
     Template.feQueuesStatus.rendered = function() {
           var auto = 2000;
           var num  = Queues.find().count();
@@ -74,13 +75,26 @@ if(!Meteor.isCordova)
     	  	num = 3;
 	      $("#owl-demo").owlCarousel({
 	      			items:num,
-	      			autoplay:auto,
-    				loop:true,
+	      			//autoplay:auto,
+    				loop:false,
     				dots:false
     			});
-
+        owlTimer = Meteor.setInterval(owlCarouselMove, 2000);
 	};
 	
+    var owlCarouselMove = function(){
+        if($('#owl-demo').length > 0){
+            var owl = $('#owl-demo').data('owlCarousel');
+
+            if(owl.pos.max == 0) return;
+            
+            if(owl.pos.current == owl.pos.max)
+                owl.to(0,1000);
+            else
+                owl.next();
+        }
+    }
+    
     Template.feQueuesStatus.helpers({
     	CurQueues:function(){
     		 var qs = Queues.find().map(function(q){
@@ -105,6 +119,8 @@ if(!Meteor.isCordova)
     	'click #feBtnMain': function (event) { 
     		if($('#owl-demo').length > 0)
     			$('#owl-demo').data('owlCarousel').destroy();
+            if(owlTimer) 
+                Meteor.clearInterval(owlTimer);
     		Session.set('feShow','feMaster'); 
     	},
     });
@@ -196,6 +212,7 @@ if(!Meteor.isCordova)
 			}, 200);
 		}
 	}
+
 };
 
 
