@@ -78,6 +78,7 @@ if(!Meteor.isCordova)
 		var active = (tmpl.find('.branch-active').value == "true");
 		var password = tmpl.find('.branch-password').value;
 		var website = tmpl.find('.branch-website').value;
+		console.log(Session.get("boGeoCoordinates"));
 		if(name && password){
 			if(action == 'add')
 			{
@@ -128,7 +129,7 @@ if(!Meteor.isCordova)
 	Meteor.startup(function() {  
 	  GoogleMaps.load({
 	  	libraries: 'places',
-	  	key:'AIzaSyBfYO6YHpsMhHKPCsunDrgC1aH-gUflWfQ'
+	  	key:'AIzaSyA6z6Tz5yDJOPlQKs3QUL9u3u0OggOG2SQ'
 	  });
 	});
 
