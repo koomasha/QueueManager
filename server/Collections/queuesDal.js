@@ -47,6 +47,13 @@ Meteor.methods({
     if (!ticket) {
       return;
     }
+
+    var closeTicket = Tickets.find({queueId:queueId, status:'Waiting'},{ sort: {creationTime: -1}, skip:3, limit:1}).fetch();
+    console.log('closeticket is ' + closeTicket);
+    if (closeTicket[0]) {
+      pushCloseTurn(closeTicket[0]);
+    }
+
     return boChangeTicketStatus(ticket,"Getting Service",this.userId,'');
   },
 

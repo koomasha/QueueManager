@@ -10,13 +10,11 @@
 		        children: [
 		            {
 		                find: function(ticket) {
-		                	console.log("queueId:"+ticket.queueId);
 		                    return Queues.find({ _id: ticket.queueId});
 		                }
 		            },
 		            {
 		                find: function(ticket) {
-		                	console.log("branchId:"+ticket.branchId);
 		                    return Branches.find({ _id: ticket.branchId});
 		                }
 		            },
@@ -66,7 +64,10 @@
 		console.log("status is " + status);
 		var update = {status: status, userId:userId, comment:comment};
 		
-		if (status === 'Done' || status === 'Skipped') {
+		if (status === 'Done') {
+			update["serviceEndTime"] = moment().valueOf();
+		} else if (status === 'Skipped') {
+			pushSkip(ticket);
 			update["serviceEndTime"] = moment().valueOf();
 		} else if (status === 'Getting Service') {
 			var users = Branches.findOne({_id:ticket.branchId}, {users: { $elemMatch:{userId:userId}}}).users;
@@ -75,6 +76,7 @@
 			console.log("clerkStation is " + JSON.stringify(clerkStation));
 			update["station"] = clerkStation;
 			update["serviceStartTime"] = moment().valueOf();
+			pushOnTurn(ticket);
 		}
 		return Tickets.findAndModify({
 			query: { _id: ticket._id },
