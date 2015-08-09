@@ -77,7 +77,6 @@ if(Meteor.isCordova) {
 
 	Template.appAdditionalDetails.events = {
 		'click .save':function(evt,tmpl){
-			console.log('save additionalDetails');
 
 			if (isValid()) {
 				var additionalDetailsFromUser = [];
@@ -91,7 +90,6 @@ if(Meteor.isCordova) {
 						additional.value = this.value;
 					});
 
-					console.log('val: ' + additional.value);
 					additionalDetailsFromUser.push(additional);
 				});
 
@@ -108,8 +106,6 @@ if(Meteor.isCordova) {
 		},
 
 		'click .cancel':function(){
-			console.log('cancel additionalDetails');
-
 			Session.set('additionalDetails', undefined);
 			$('#appAdditionalDetailsModal').addClass('notvisible');
 		}
@@ -128,7 +124,6 @@ if(Meteor.isCordova) {
 	});
 
 	function scangps() {
-		console.log('searching..');
 		$('#erroralert').addClass('notvisible');
 		GPSLocation.getCurrentPosition(findnearbranches, onGpsError, { timeout: 30000 });
 	}
@@ -145,7 +140,7 @@ if(Meteor.isCordova) {
 				alert('Operation failed. Please try again.');
 			} else {
 				if (response.length === 0) {
-					$('#errorLabel').text('Nothing was found in your area');
+					$('#errorLabel').text('No open branches were found nearby.');
 					$('#erroralert').removeClass('notvisible');
 				} else {
 					$('#erroralert').addClass('notvisible');
@@ -156,6 +151,7 @@ if(Meteor.isCordova) {
 	}
 
 	function scanqueueqr() {
+		$('#erroralert').addClass('notvisible');
 		cordova.plugins.barcodeScanner.scan(
 			function (result) {
 				if (!result.cancelled) {
@@ -168,21 +164,25 @@ if(Meteor.isCordova) {
 	}
 
 	function getQueuesByBranch(branchId) {
-		Meteor.call('getQueuesByBranch', branchId, function(err, response) {
-			console.log('response');
-
-			if (err) {
-				alert('Operation failed. Please try again.');
-			} else {
-				if (response.length === 0) {
-					$('#errorLabel').text('There are no active queues in this branch.');
-					$('#erroralert').removeClass('notvisible');
+		var branch = Branches.findOne({_id: branchId});
+		if (!branch.active) {
+			$('#errorLabel').text('This branch in currently closed.');
+			$('#erroralert').removeClass('notvisible');
+		} else {
+			Meteor.call('getQueuesByBranch', branchId, function(err, response) {
+				if (err) {
+					alert('Operation failed. Please try again.');
 				} else {
-					$('#erroralert').addClass('notvisible');
-					showAvailableQueues(response);
+					if (response.length === 0) {
+						$('#errorLabel').text('There are no active queues in this branch.');
+						$('#erroralert').removeClass('notvisible');
+					} else {
+						$('#erroralert').addClass('notvisible');
+						showAvailableQueues(response);
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	function addUserToQueue(queue) {

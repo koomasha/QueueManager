@@ -136,6 +136,12 @@ body {
     color: darkcyan;
 }
 
+a.branchInfoH {
+    color: darkturquoise;
+    font-size: x-large;
+    text-decoration: underline;
+}
+
 .mobileModal {
     /*display:block;*/
     /*border:none;*/
@@ -175,6 +181,7 @@ body {
 
 #queuesgroup > .btn-block {
     margin-top: 0;
+    text-align: center;
 }
 
 .modal-header h3 {
